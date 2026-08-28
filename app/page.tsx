@@ -1,0 +1,3 @@
+export default function Home() {
+  return <main className="grid min-h-screen place-items-center p-8"><section className="max-w-xl space-y-3"><p className="text-sm font-medium tracking-wide text-neutral-500">GTM OS</p><h1 className="text-3xl font-semibold tracking-tight">Project foundation is ready.</h1><p className="text-neutral-600">The application shell, database tooling, and local development environment are configured.</p></section></main>;
+}

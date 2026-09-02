@@ -8,16 +8,19 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "node --require tsx/cjs --test lib/**/*.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
   },
-  "engines": { "node": ">=22.0.0" },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.44.0",
+    "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.468.0",
     "next": "^16.0.0",
     "pg": "^8.13.0",

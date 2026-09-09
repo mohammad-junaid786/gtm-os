@@ -25,6 +25,11 @@ export type NavSection = {
   items: NavItem[];
 };
 
+// ---------------------------------------------------------------------------
+// Static nav sections — used by the legacy flat routes (pre-product-context).
+// When the product context is available, use buildProductNav() instead.
+// ---------------------------------------------------------------------------
+
 export const navSections: NavSection[] = [
   {
     id: "workspace",
@@ -107,6 +112,120 @@ export const settingsItem: NavItem = {
   description: "Workspace and application preferences.",
 };
 
+// ---------------------------------------------------------------------------
+// Product-scoped nav builder (Stage 5+)
+//
+// Generates navigation sections whose hrefs are prefixed with the product
+// base path: /w/[workspaceSlug]/[productSlug]
+//
+// Usage:
+//   const { sections, settings } = buildProductNav("/w/acme/acme-analytics");
+//
+// Future module pages should be added here (e.g. /strategy, /research)
+// rather than as top-level flat routes.
+// ---------------------------------------------------------------------------
+
+export interface ProductNavConfig {
+  sections: NavSection[];
+  settingsItem: NavItem;
+}
+
+/**
+ * Build product-scoped navigation items for a given product base path.
+ *
+ * @param basePath - The product base path, e.g. "/w/acme/acme-analytics"
+ */
+export function buildProductNav(basePath: string): ProductNavConfig {
+  const b = basePath.replace(/\/$/, ""); // strip trailing slash
+
+  return {
+    sections: [
+      {
+        id: "product",
+        label: "Product",
+        items: [
+          {
+            href: b,
+            label: "Overview",
+            icon: LayoutDashboard,
+            description: "Product snapshot and recent activity.",
+          },
+          {
+            href: `${b}/accounts`,
+            label: "Accounts",
+            icon: Building2,
+            description: "Companies and target accounts.",
+          },
+          {
+            href: `${b}/contacts`,
+            label: "Contacts",
+            icon: Users,
+            description: "People associated with accounts.",
+          },
+          {
+            href: `${b}/campaigns`,
+            label: "Campaigns",
+            icon: Megaphone,
+            description: "Outbound and inbound campaign work.",
+          },
+        ],
+      },
+      {
+        id: "intelligence",
+        label: "Intelligence",
+        items: [
+          {
+            href: `${b}/icp`,
+            label: "ICP",
+            icon: Target,
+            description: "Ideal customer profile definitions.",
+          },
+          {
+            href: `${b}/signals`,
+            label: "Signals",
+            icon: Radio,
+            description: "Market and account signals.",
+          },
+          {
+            href: `${b}/research`,
+            label: "Research",
+            icon: Search,
+            description: "Account and market research.",
+          },
+        ],
+      },
+      {
+        id: "execution",
+        label: "Execution",
+        items: [
+          {
+            href: `${b}/plays`,
+            label: "Plays",
+            icon: Workflow,
+            description: "Repeatable go-to-market plays.",
+          },
+          {
+            href: `${b}/sequences`,
+            label: "Sequences",
+            icon: ListOrdered,
+            description: "Multi-step outreach sequences.",
+          },
+        ],
+      },
+    ],
+    settingsItem: {
+      href: `${b}/settings`,
+      label: "Settings",
+      icon: Settings,
+      description: "Workspace and application preferences.",
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers (used by both static and product-scoped nav)
+// ---------------------------------------------------------------------------
+
 export function getAllNavItems(): NavItem[] {
   return [...navSections.flatMap((section) => section.items), settingsItem];
 }
@@ -122,5 +241,6 @@ export function getNavItemByPathname(pathname: string): NavItem | undefined {
 
 export function isNavItemActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
+  // Exact match or sub-path match
   return pathname === href || pathname.startsWith(`${href}/`);
 }

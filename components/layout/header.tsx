@@ -17,13 +17,25 @@ function getMacSnapshot() {
 export function Header({
   onOpenMobileNav,
   mobileNavOpen,
+  productName,
+  workspaceName,
 }: {
   onOpenMobileNav: () => void;
   mobileNavOpen: boolean;
+  /**
+   * When provided (product-scoped shell), the product name is shown in the
+   * workspace indicator in the top-right corner.
+   */
+  productName?: string;
+  /**
+   * When provided (product-scoped shell), the workspace name is shown as a
+   * label next to the workspace indicator.
+   */
+  workspaceName?: string;
 }) {
   const pathname = usePathname();
   const current = getNavItemByPathname(pathname);
-  const title = current?.label ?? "GTM OS";
+  const title = current?.label ?? productName ?? "GTM OS";
   const isMac = useSyncExternalStore(subscribe, getMacSnapshot, () => false);
   const shortcut = isMac ? "⌘K" : "Ctrl K";
 
@@ -61,12 +73,18 @@ export function Header({
       </button>
 
       <div className="flex items-center gap-2">
-        <span className="hidden text-xs text-muted sm:inline">Workspace</span>
+        {workspaceName ? (
+          <span className="hidden max-w-28 truncate text-xs text-muted sm:inline" title={workspaceName}>
+            {workspaceName}
+          </span>
+        ) : (
+          <span className="hidden text-xs text-muted sm:inline">Workspace</span>
+        )}
         <div
           className="flex size-7 items-center justify-center rounded-sm border border-border bg-surface text-[11px] font-medium text-muted"
-          aria-label="User profile placeholder"
+          aria-label={workspaceName ? `Workspace: ${workspaceName}` : "User profile placeholder"}
         >
-          —
+          {workspaceName ? workspaceName.charAt(0).toUpperCase() : "—"}
         </div>
       </div>
     </header>

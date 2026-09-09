@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isNavItemActive, navSections, settingsItem, type NavItem } from "@/lib/navigation";
+import {
+  isNavItemActive,
+  navSections,
+  settingsItem as defaultSettingsItem,
+  type NavItem,
+  type NavSection,
+} from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
@@ -31,11 +37,27 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
   );
 }
 
-export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+export function SidebarNav({
+  onNavigate,
+  sections = navSections,
+  settingsItem = defaultSettingsItem,
+}: {
+  onNavigate?: () => void;
+  /**
+   * Navigation sections to render. Defaults to the static flat-route sections.
+   * Pass the result of buildProductNav(basePath).sections for product-scoped nav.
+   */
+  sections?: NavSection[];
+  /**
+   * Settings nav item. Defaults to the static /settings item.
+   * Pass buildProductNav(basePath).settingsItem for product-scoped nav.
+   */
+  settingsItem?: NavItem;
+}) {
   return (
     <nav aria-label="Primary" className="flex h-full flex-col">
       <div className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
-        {navSections.map((section) => (
+        {sections.map((section) => (
           <div key={section.id}>
             <p className="px-2.5 pb-2 text-[11px] font-medium tracking-[0.08em] text-muted uppercase">
               {section.label}

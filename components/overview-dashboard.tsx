@@ -8,19 +8,43 @@ const placeholderStats = [
   { label: "Plays", hint: "No records yet" },
 ] as const;
 
-export function OverviewDashboard() {
+interface OverviewDashboardProps {
+  /**
+   * Workspace name from the resolved product context.
+   * Undefined when rendered outside a product route (legacy).
+   */
+  workspaceName?: string;
+  /**
+   * Product name from the resolved product context.
+   * Undefined when rendered outside a product route (legacy).
+   */
+  productName?: string;
+}
+
+export function OverviewDashboard({ workspaceName, productName }: OverviewDashboardProps) {
   return (
     <div className="space-y-8">
       <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Overview</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+          {productName ? productName : "Overview"}
+        </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted">
-          A workspace-level view of go-to-market work. Metrics and activity will appear here once data exists.
+          {workspaceName && productName ? (
+            <>
+              <span className="font-medium text-foreground">{workspaceName}</span>
+              {" · "}
+              {productName} — go-to-market overview. Metrics and activity will appear here once
+              data exists.
+            </>
+          ) : (
+            "A workspace-level view of go-to-market work. Metrics and activity will appear here once data exists."
+          )}
         </p>
       </div>
 
       <section aria-labelledby="overview-kpis-heading">
         <h2 id="overview-kpis-heading" className="sr-only">
-          Workspace metrics
+          {productName ? `${productName} metrics` : "Workspace metrics"}
         </h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {placeholderStats.map((stat) => (

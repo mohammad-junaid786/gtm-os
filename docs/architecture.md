@@ -377,3 +377,140 @@ Stage 4 uses the existing `workspaces`, `workspace_members`, and `products` tabl
 - Slug normalisation in resolvers (2 tests)
 
 Run tests: `npm test`
+
+
+---
+
+## Part 3 – Stage 5: Product-Scoped Application Shell
+
+Stage 5 connects the Stage 4 workspace/product routing context to the GTM OS application shell and Overview dashboard. The shell is now genuinely product-scoped — no fake users, no hardcoded IDs.
+
+### Root layout vs product layout responsibilities
+
+| Concern | Root layout (`app/layout.tsx`) | Product layout (`app/w/[workspaceSlug]/[productSlug]/layout.tsx`) |
+|---|---|---|
+| HTML/body structure | ✅ | — |
+| Google Fonts | ✅ | — |
+| Global CSS | ✅ | — |
+| Auth + context resolution | — | ✅ |
+| AppShell rendering | — | ✅ |
+| Product-scoped navigation | — | ✅ |
+| ProductContextProvider | — | ✅ |
+
+The root layout no longer mounts `AppShell`. Pre-product-context routes (`/`, `/accounts`, etc.) render without the shell — they are pre-authentication placeholders and have no resolved product context.
+
+### AppShell is now product-scoped
+
+`AppShell` is mounted exclusively inside the product route layout. It receives:
+
+- `sections` — product-scoped nav from `buildProductNav(basePath)`
+- `settingsItem` — product-scoped settings link
+- `workspaceName` — shown in the header workspace indicator
+- `productName` — used as fallback header title
+
+All props are optional; the component's original static-nav behavior is preserved for backward compatibility.
+
+### ProductContext propagation
+
+The server layout resolves the full domain context (`WorkspaceRow` + `ProductRow`) and extracts a **serializable subset** to pass to the client:
+
+```
+Server layout (server component)
+  → resolveProductContext() [DB access, server-only]
+  → extract { workspaceId, workspaceName, workspaceSlug,
+               productId, productName, productSlug }
+  → <ProductContextProvider value={...}> (client component)
+      → useProductContext() available in any child client component
+```
+
+No raw DB objects, no server-only modules, and no secrets cross the server/client boundary. Only plain strings are passed to the client.
+
+### ProductContextProvider + useProductContext
+
+`lib/product-context.tsx` exports:
+
+- `ProductContextProvider` — wraps the product shell with resolved context
+- `useProductContext()` — hook for client components to access workspace/product display values
+- `ProductContextValue` — the serializable context shape
+
+### Product-scoped navigation
+
+`lib/navigation.ts` exports `buildProductNav(basePath)` which returns nav sections and a settings item with all hrefs prefixed by `basePath` (e.g. `/w/acme/acme-analytics`):
+
+```
+/w/[workspaceSlug]/[productSlug]          → Overview
+/w/[workspaceSlug]/[productSlug]/accounts → Accounts (placeholder)
+/w/[workspaceSlug]/[productSlug]/contacts → Contacts (placeholder)
+...
+/w/[workspaceSlug]/[productSlug]/settings → Settings (placeholder)
+```
+
+Future module pages are added to `buildProductNav` — they appear in the sidebar automatically. Static `navSections` (flat routes) are preserved for backward compat.
+
+### SidebarNav / Sidebar / Header
+
+`SidebarNav` and `Sidebar` now accept optional `sections` and `settingsItem` props (default: static flat-route nav).
+
+`Header` now accepts optional `workspaceName` and `productName` props. When `workspaceName` is provided:
+- The top-right indicator shows the workspace's first letter (avatar-style)
+- The workspace name is shown as a label next to the indicator
+
+### Overview is now product-aware
+
+`OverviewDashboard` accepts optional `workspaceName` and `productName` props. When provided:
+- `<h1>` shows the product name
+- The description shows `workspace · product — go-to-market overview`
+
+The product overview page (`page.tsx`) does NOT duplicate context resolution. Instead it renders `ProductContextConsumer` — a thin `"use client"` component that reads from `ProductContextProvider` and forwards `workspaceName` + `productName` to `OverviewDashboard`.
+
+```
+layout.tsx (server) → resolveProductContext → ProductContextProvider
+page.tsx (server)   → ProductContextConsumer (client)
+                    → useProductContext()
+                    → OverviewDashboard({ workspaceName, productName })
+```
+
+### Pre-product-context routes
+
+The existing flat routes (`/`, `/accounts`, `/campaigns`, etc.) were NOT deleted. They render without AppShell (no shell = no sidebar, no header). They remain as pre-authentication entry points. A future auth integration can redirect authenticated users from `/` to their product route.
+
+### Authentication behavior
+
+The product layout calls `getCurrentUserId()` — the Stage 4 auth seam — first. Since auth is not yet implemented:
+1. `getCurrentUserId()` returns `null`
+2. The layout calls `notFound()` immediately
+3. The product shell and all child pages are unreachable
+
+No fake user, no bypass, no hardcoded workspace/product IDs. Once `getCurrentUserId` is connected to a real auth provider, the full product shell resolves without architectural rewrites.
+
+### Module layout
+
+```
+lib/
+  navigation.ts             – buildProductNav(basePath) added
+  product-context.tsx       – ProductContextProvider, useProductContext
+
+components/
+  layout/
+    app-shell.tsx           – accepts sections/settingsItem/workspaceName/productName
+    sidebar.tsx             – forwards sections/settingsItem to SidebarNav
+    sidebar-nav.tsx         – accepts sections/settingsItem props (defaults preserved)
+    header.tsx              – accepts workspaceName/productName props
+    product-context-consumer.tsx – thin client bridge for the overview page
+  overview-dashboard.tsx    – accepts workspaceName/productName props
+
+app/
+  layout.tsx                – root layout: HTML/body/fonts/CSS only (no AppShell)
+  page.tsx                  – standalone landing page (no AppShell)
+  w/
+    [workspaceSlug]/
+      [productSlug]/
+        layout.tsx          – auth → resolve context → AppShell → ProductContextProvider
+        page.tsx            – product overview via ProductContextConsumer
+```
+
+### No new dependencies
+
+Stage 5 uses only existing project dependencies. No Redux, Zustand, Jotai, or other global state libraries were added.
+
+Run tests: `npm test`

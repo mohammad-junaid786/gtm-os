@@ -1,28 +1,24 @@
 /**
- * Product route page — /w/[workspaceSlug]/[productSlug]
+ * Product Overview page — /w/[workspaceSlug]/[productSlug]
  *
- * Resolution chain:
- *   1. getCurrentUserId()         → null until auth is configured → notFound()
- *   2. resolveProductContext()    → workspace membership + product lookup
- *   3. Render product context     → (reached only once auth is wired up)
+ * The layout (layout.tsx) handles auth + context resolution and renders AppShell.
+ * This page receives the resolved context from the layout via ProductContextProvider
+ * and renders the product-aware Overview dashboard.
  *
- * Security:
- *   - No fake/default userId is ever substituted.
- *   - `resolveProductContext` establishes workspace membership before
- *     any product data is accessed.
- *   - Archived products, non-members, and missing resources all surface
- *     as `notFound()` — no distinguishing information is leaked.
+ * Note: context resolution (auth, membership, product lookup) is performed
+ * once in layout.tsx — NOT duplicated here. The layout calls notFound() on
+ * any failure before this page renders.
  *
- * Next.js async params convention (Next.js 15+):
- *   `params` is a Promise and must be awaited before destructuring.
+ * We re-resolve the context here only for generateMetadata (title).
+ * The page itself reads context from the provider, not the DB.
  */
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getCurrentUserId } from "@/lib/routing/current-user";
 import { resolveProductContext } from "@/lib/routing/resolver";
+import { ProductContextConsumer } from "@/components/layout/product-context-consumer";
 
 // ---------------------------------------------------------------------------
-// Metadata
+// Metadata (separate from layout.tsx — Next.js uses the closest generateMetadata)
 // ---------------------------------------------------------------------------
 
 export async function generateMetadata({
@@ -33,56 +29,21 @@ export async function generateMetadata({
   const { workspaceSlug, productSlug } = await params;
 
   const userId = await getCurrentUserId();
-  if (!userId) {
-    return { title: "Not Found" };
-  }
+  if (!userId) return { title: "Not Found" };
 
   const result = await resolveProductContext({ userId, workspaceSlug, productSlug });
-  if (!result.ok) {
-    return { title: "Not Found" };
-  }
+  if (!result.ok) return { title: "Not Found" };
 
-  return {
-    title: result.data.product.name,
-    description: `${result.data.product.name} in ${result.data.workspace.name}`,
-  };
+  return { title: "Overview" };
 }
 
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
-export default async function ProductPage({
-  params,
-}: {
-  params: Promise<{ workspaceSlug: string; productSlug: string }>;
-}) {
-  const { workspaceSlug, productSlug } = await params;
-
-  // Step 1: Obtain current user — null means auth is not yet configured.
-  const userId = await getCurrentUserId();
-  if (!userId) {
-    // Authentication is not implemented yet.
-    // Do not bypass authorization — fail via the standard not-found boundary.
-    notFound();
-  }
-
-  // Step 2: Resolve workspace membership + product
-  const result = await resolveProductContext({ userId, workspaceSlug, productSlug });
-  if (!result.ok) {
-    notFound();
-  }
-
-  // Step 3: Render (reached only once auth is wired up)
-  const { workspace, product } = result.data;
-
-  return (
-    <div>
-      <h1>{product.name}</h1>
-      <p>
-        Workspace: {workspace.name} ({workspace.slug})
-      </p>
-      <p>Product slug: {product.slug}</p>
-    </div>
-  );
+export default function ProductOverviewPage() {
+  // The layout has already verified auth + context. If we reach here, the
+  // ProductContextProvider is available in the tree. We use a thin client
+  // consumer to forward context to OverviewDashboard.
+  return <ProductContextConsumer />;
 }

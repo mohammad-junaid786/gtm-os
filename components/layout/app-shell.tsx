@@ -3,8 +3,36 @@
 import { type ReactNode, useEffect, useId, useState } from "react";
 import { Header, MobileNavCloseButton } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
+import type { NavSection, NavItem } from "@/lib/navigation";
 
-export function AppShell({ children }: { children: ReactNode }) {
+interface AppShellProps {
+  children: ReactNode;
+  /**
+   * Product-scoped navigation sections. When omitted, the shell renders
+   * the static flat-route sections (for pre-product-context routes).
+   */
+  sections?: NavSection[];
+  /**
+   * Product-scoped settings nav item.
+   */
+  settingsItem?: NavItem;
+  /**
+   * Workspace display name — shown in the header workspace indicator.
+   */
+  workspaceName?: string;
+  /**
+   * Product display name — used as a fallback header title.
+   */
+  productName?: string;
+}
+
+export function AppShell({
+  children,
+  sections,
+  settingsItem,
+  workspaceName,
+  productName,
+}: AppShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const titleId = useId();
   const sidebarId = "mobile-sidebar";
@@ -36,7 +64,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </a>
 
       <aside className="sticky top-0 hidden h-screen w-56 shrink-0 border-r border-border bg-sidebar md:flex md:flex-col">
-        <Sidebar />
+        <Sidebar sections={sections} settingsItem={settingsItem} />
       </aside>
 
       {mobileNavOpen ? (
@@ -60,13 +88,23 @@ export function AppShell({ children }: { children: ReactNode }) {
               </p>
               <MobileNavCloseButton onClose={() => setMobileNavOpen(false)} />
             </div>
-            <Sidebar showBrand={false} onNavigate={() => setMobileNavOpen(false)} />
+            <Sidebar
+              showBrand={false}
+              onNavigate={() => setMobileNavOpen(false)}
+              sections={sections}
+              settingsItem={settingsItem}
+            />
           </div>
         </div>
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header mobileNavOpen={mobileNavOpen} onOpenMobileNav={() => setMobileNavOpen(true)} />
+        <Header
+          mobileNavOpen={mobileNavOpen}
+          onOpenMobileNav={() => setMobileNavOpen(true)}
+          workspaceName={workspaceName}
+          productName={productName}
+        />
         <main id="main-content" className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 md:px-6">
           {children}
         </main>

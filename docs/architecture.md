@@ -237,3 +237,143 @@ All DB access is wrapped in `try/catch` so that infrastructure errors (missing `
 The `server-only` package is stubbed at test runner startup via `lib/test-setup/server-only-stub.cjs`, which is pre-loaded via `--require` in the `npm test` script. This allows service modules to be statically imported in tests while running in plain Node.js.
 
 Run tests: `npm test`
+
+
+---
+
+## Part 3 – Stage 4: Routing + Workspace/Product Context
+
+Stage 4 introduces the secure route resolution layer that maps URL parameters to fully-resolved domain objects. No authentication, no UI redesign, and no product CRUD UI are introduced.
+
+### URL structure
+
+```
+/w/[workspaceSlug]/[productSlug]
+```
+
+Example: `/w/acme/acme-analytics`
+
+The route resolves through:
+
+```
+URL params (workspaceSlug, productSlug)
+  + userId (from future auth seam)
+→ resolveProductContext()
+→ { workspace: WorkspaceRow, product: ProductRow (active) }
+→ page renders
+```
+
+### Module layout
+
+```
+lib/routing/
+  types.ts          – Domain types (ProductContext, RouteResolutionError) — no server-only
+  resolver.ts       – Server-only resolvers (resolveWorkspaceForUser, getProductBySlug,
+                       resolveProductContext)
+  current-user.ts   – Auth seam (server-only; returns null until auth is configured)
+  index.ts          – Barrel re-export
+  resolver.test.ts  – Validation/contract tests (no live DB required)
+
+app/w/
+  [workspaceSlug]/
+    [productSlug]/
+      layout.tsx    – Minimal layout (root AppShell still wraps it; Stage 5 migrates this)
+      page.tsx      – Product page; calls notFound() until auth is wired up
+```
+
+### Why `getWorkspaceBySlug` is not a security boundary
+
+`getWorkspaceBySlug` (Stage 2) looks up a workspace by slug alone. It does NOT check whether the requesting user is a member of that workspace. Using it as a gate would allow any caller who knows a workspace slug to access its data — a significant authorization hole.
+
+Stage 4 replaces this with `resolveWorkspaceForUser(userId, workspaceSlug)`, which performs a JOIN through `workspace_members`:
+
+```sql
+SELECT workspaces.*
+FROM   workspace_members
+JOIN   workspaces ON workspace_members.workspace_id = workspaces.id
+WHERE  workspace_members.user_id = $userId
+AND    workspaces.slug = $normalizedSlug
+LIMIT  1;
+```
+
+If either the workspace does not exist OR the user is not a member, `NOT_FOUND` is returned. The two cases are indistinguishable to callers.
+
+### Membership-aware workspace resolver
+
+`resolveWorkspaceForUser(userId, workspaceSlug)`:
+
+1. Validates `userId` as a UUID before DB access → `USER_ID_INVALID`
+2. Normalises and validates `workspaceSlug` → `WORKSPACE_SLUG_INVALID`
+3. JOINs `workspace_members` and `workspaces` — one round-trip
+4. Returns `NOT_FOUND` for both "workspace missing" and "user not a member"
+5. Returns the resolved `WorkspaceRow` on success
+
+### Workspace-scoped product lookup
+
+`getProductBySlug(workspaceId, productSlug)`:
+
+- Requires `workspaceId` — product slugs are NEVER resolved globally
+- Normalises and validates `productSlug` before DB access
+- Returns both active and archived products (caller decides)
+- `resolveProductContext` rejects archived products explicitly
+
+### Product context resolver
+
+`resolveProductContext({ userId, workspaceSlug, productSlug })` orchestrates:
+
+1. `resolveWorkspaceForUser` — validate userId, then establish membership
+2. `getProductBySlug(workspace.id, productSlug)` — workspace-scoped
+3. Reject archived products (`archived_at IS NOT NULL`) → `NOT_FOUND`
+4. Return `{ workspace, product }` — both canonical DB objects, never raw URL values
+
+All negative outcomes (invalid user, bad slug, no membership, no product, archived product) return `NOT_FOUND`. Callers cannot distinguish failure reasons.
+
+### NOT_FOUND generic error policy
+
+| Actual failure reason | Returned error code |
+|---|---|
+| `userId` is not a UUID | `USER_ID_INVALID` |
+| `workspaceSlug` normalises to empty | `WORKSPACE_SLUG_INVALID` |
+| Workspace does not exist | `NOT_FOUND` |
+| Workspace exists but user is not a member | `NOT_FOUND` |
+| Product does not exist in workspace | `NOT_FOUND` |
+| Product exists but is archived | `NOT_FOUND` |
+| DB/infra error | `UNKNOWN` |
+
+`USER_ID_INVALID` and `WORKSPACE_SLUG_INVALID` surface from `resolveProductContext` so that callers can distinguish malformed inputs from legitimate not-found states. These fire before any DB access.
+
+### Explicit userId requirement
+
+Every resolver requires an explicit `userId`. There is no fallback, no first-workspace-for-user shortcut, and no default principal. If `userId` is not available (auth not configured), the call must not be made.
+
+### Authentication seam
+
+`lib/routing/current-user.ts` exports `getCurrentUserId(): Promise<string | null>`. Currently returns `null`. The product route page calls it first:
+
+```ts
+const userId = await getCurrentUserId();
+if (!userId) notFound();  // no fake user, no bypass
+```
+
+When a real auth provider is chosen, only `getCurrentUserId` needs to change. The resolver chain, membership check, and route structure remain identical.
+
+### Archived products not routable
+
+`resolveProductContext` rejects products with `archived_at IS NOT NULL`. Archived products return the same `NOT_FOUND` as missing products — the UI cannot distinguish them. Archived products may be accessed by admin tooling via `getProductBySlug` directly (which returns all products), but they will never resolve through the standard product route.
+
+### No database schema changes
+
+Stage 4 uses the existing `workspaces`, `workspace_members`, and `products` tables from Stage 1. No migration was created.
+
+### Testing
+
+20 tests in `lib/routing/resolver.test.ts` across 6 suites. All tests are deterministic and require no live database:
+
+- `resolveWorkspaceForUser` input validation (6 tests)
+- `getProductBySlug` input validation (5 tests)
+- `resolveProductContext` orchestration (4 tests)
+- `ProductContext` type shape (2 tests)
+- Cross-workspace scoping contract (1 test)
+- Slug normalisation in resolvers (2 tests)
+
+Run tests: `npm test`

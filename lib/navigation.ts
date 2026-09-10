@@ -171,15 +171,21 @@ export function buildProductNav(basePath: string): ProductNavConfig {
         ],
       },
       {
+        id: "strategy",
+        label: "Strategy",
+        items: [
+          {
+            href: `${b}/strategy/icp`,
+            label: "ICP",
+            icon: Target,
+            description: "Ideal customer profile for this product.",
+          },
+        ],
+      },
+      {
         id: "intelligence",
         label: "Intelligence",
         items: [
-          {
-            href: `${b}/icp`,
-            label: "ICP",
-            icon: Target,
-            description: "Ideal customer profile definitions.",
-          },
           {
             href: `${b}/signals`,
             label: "Signals",

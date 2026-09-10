@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "icps_one_active_per_product" ON "icps" USING btree ("product_id") WHERE "icps"."archived_at" IS NULL;

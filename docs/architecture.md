@@ -514,3 +514,187 @@ app/
 Stage 5 uses only existing project dependencies. No Redux, Zustand, Jotai, or other global state libraries were added.
 
 Run tests: `npm test`
+
+
+---
+
+## Part 3 – Stage 6: ICP (Ideal Customer Profile)
+
+Stage 6 adds the first real GTM domain module: the Ideal Customer Profile.
+
+### Ownership hierarchy
+
+```
+Workspace
+  ↓
+Product (workspace-scoped)
+  ↓
+ICP (product-scoped)
+```
+
+An ICP belongs to a product. The ICP table carries only `product_id` — `workspace_id` is intentionally absent because it would be redundant: workspace membership is already established through the product before any ICP operation is called. Adding `workspace_id` to `icps` would create a denormalized ownership column with no additional security benefit at this layer.
+
+Workspace membership is the higher-level authorization boundary. The ICP service does not re-check it; callers (layouts, server actions) ensure a valid product context exists before calling ICP service functions.
+
+### ICP data model
+
+```
+icps
+────
+id              uuid, PK
+product_id      uuid, FK → products.id ON DELETE RESTRICT
+name            text NOT NULL
+description     text (nullable)
+industry        text (nullable)         e.g. "SaaS", "Financial Services"
+company_size    text (nullable)         e.g. "11-200 employees"
+geography       text (nullable)         e.g. "North America", "Global"
+business_model  text (nullable)         CHECK: b2b | b2c | b2b2c | marketplace
+pain_points     text[] (nullable)       structured multi-value
+goals           text[] (nullable)       structured multi-value
+buying_signals  text[] (nullable)       structured multi-value
+disqualifiers   text[] (nullable)       structured multi-value
+notes           text (nullable)         freeform
+archived_at     timestamp with tz (nullable)  NULL = active
+created_at      timestamp with tz NOT NULL
+updated_at      timestamp with tz NOT NULL
+```
+
+Array fields (`pain_points`, `goals`, `buying_signals`, `disqualifiers`) are stored as PostgreSQL text arrays. This allows structured multi-value input, is simple to query, and positions the data well for future AI enrichment without requiring a JSON column or a separate child table.
+
+`business_model` uses a database CHECK constraint matching the allowed enum values. It is also validated in Zod before any DB access.
+
+### One ICP per product (MVP decision)
+
+At MVP, one active ICP is allowed per product. Rationale:
+
+- A clear, focused ICP is better GTM practice than multiple overlapping profiles.
+- The downstream consumers (Personas, Positioning, Campaigns) are simpler with a single ICP target.
+- Multi-ICP segmentation introduces complexity (which ICP applies to which campaign?) with no current consumer.
+
+**Enforcement:** The service layer — not a database unique constraint — enforces this rule. `createIcp()` checks for an existing active ICP before inserting; if one exists, it returns `ICP_ALREADY_EXISTS`. The schema does NOT have a unique constraint on `(product_id)` so that future expansion to multiple ICPs per product requires no migration — only a service-layer change.
+
+### ICP lifecycle / archive
+
+ICPs are **never hard-deleted**. `archiveIcp()` sets `archived_at` to the current timestamp. The ICP row remains in the database, preserving strategic history.
+
+- Active ICP: `archived_at IS NULL`
+- Archived ICP: `archived_at IS NOT NULL`
+
+`getIcpsForProduct()` returns only active ICPs. `getIcpById()` returns both active and archived.
+
+After archiving the active ICP, a new one can be created (the constraint is on active ICPs only).
+
+No restoration API is provided at this stage (consistent with product archive behavior).
+
+### FK behavior
+
+`icps.product_id` references `products.id ON DELETE RESTRICT`. Products are archived, not hard-deleted, so `CASCADE` would never fire in practice. `RESTRICT` is safer — it prevents an accidental hard-delete of a product row from silently orphaning ICP rows.
+
+### Service operations
+
+All operations are product-scoped. `productId` is always the first argument.
+
+| Function | Signature | Description |
+|---|---|---|
+| `createIcp` | `(input) → IcpResult<IcpRow>` | Create. Enforces one-active-ICP constraint. |
+| `getIcpById` | `(productId, icpId) → IcpResult<IcpRow>` | Fetch by ID (active + archived). |
+| `getIcpsForProduct` | `(productId) → IcpResult<IcpRow[]>` | List active ICPs (ordered by name). |
+| `updateIcp` | `(productId, icpId, input) → IcpResult<IcpRow>` | Update active ICP. |
+| `archiveIcp` | `(productId, icpId) → IcpResult<IcpRow>` | Archive. |
+
+`IcpResult<T>` = `{ ok: true; data: T } | { ok: false; error: IcpServiceError }`.
+
+Error codes: `PRODUCT_ID_INVALID`, `ICP_ID_INVALID`, `NAME_EMPTY`, `BUSINESS_MODEL_INVALID`, `ICP_NOT_FOUND`, `ICP_ALREADY_ARCHIVED`, `ICP_ALREADY_EXISTS`, `NO_UPDATE_FIELDS`, `UNKNOWN`.
+
+### Security and scoping
+
+Every service function requires `productId`. An `icpId` alone is never sufficient.
+
+**Cross-product oracle prevention:** `getIcpById(productId, icpId)` returns `ICP_NOT_FOUND` if the ICP exists but belongs to a different product — callers cannot distinguish "ICP does not exist" from "ICP exists under a different product."
+
+**No ICP-level permissions.** Authorization is at the workspace membership level, established before any ICP service function is called.
+
+### Route
+
+```
+/w/[workspaceSlug]/[productSlug]/strategy/icp
+```
+
+The route sits under `/strategy/` to establish the Strategy module namespace. Future strategy modules (Personas, Positioning, Competitors) will live alongside ICP under the same prefix without requiring a navigation restructure.
+
+The route inherits the product layout (auth → workspace membership → active product → AppShell). ICP is only reachable through a resolved, active product context.
+
+### Navigation
+
+`buildProductNav(basePath)` now includes a **Strategy** section:
+
+```
+Strategy
+  └── ICP  →  /w/{ws}/{product}/strategy/icp
+```
+
+The Intelligence section (Signals, Research) no longer contains ICP. The ICP placeholder that existed there in Stage 5 has been moved to the correct Strategy section.
+
+Future strategy modules (Personas, Positioning) are added by appending items to the Strategy section in `buildProductNav` — no further navigation restructuring is needed.
+
+### Client/server architecture
+
+```
+layout.tsx (server)
+  → getCurrentUserId() → resolveProductContext()
+  → ProductContextProvider (client)
+      → IcpPage (server)
+          → IcpPageClient (client, "use client")
+              → useProductContext() → productId
+              → loadIcpAction() [server action]
+                  → getIcpsForProduct() [server-only service]
+              → IcpView | IcpEmpty (client)
+                  → IcpForm (client)
+                      → createIcpAction() | updateIcpAction() [server actions]
+```
+
+**Server Actions** are used for all ICP mutations (`createIcpAction`, `updateIcpAction`, `archiveIcpAction`, `loadIcpAction`). This is the first use of Server Actions in the project. They are defined in `lib/icp/actions.ts` with `"use server"` at the top of the file.
+
+**Why Server Actions here?** The ICP page client needs to call mutations without a full page reload. The pattern keeps DB access on the server without requiring a separate API route. Client form components call these actions directly via `useTransition()`.
+
+**Data loading:** `IcpPageClient` calls `loadIcpAction()` on mount to fetch the current ICP. This is deliberate — the page is dynamic (authenticated, product-scoped) so there is no RSC streaming benefit from moving data fetching to the page component when the productId is only available in the client context.
+
+### Module layout
+
+```
+lib/
+  icp/
+    types.ts        – IcpRow, CreateIcpInput, UpdateIcpInput,
+                      IcpResult, IcpServiceError, BusinessModel, BUSINESS_MODELS
+    service.ts      – server-only service (createIcp, getIcpById, getIcpsForProduct,
+                      updateIcp, archiveIcp)
+    actions.ts      – server actions (loadIcpAction, createIcpAction,
+                      updateIcpAction, archiveIcpAction)
+    index.ts        – barrel export
+    icp.test.ts     – domain tests (32 assertions, 8 suites)
+
+components/
+  icp/
+    icp-form.tsx         – client: create/edit form with tag inputs
+    icp-view.tsx         – client: view (IcpView) + empty state (IcpEmpty)
+    icp-page-client.tsx  – client: page shell, loads ICP via server action
+
+app/
+  w/[workspaceSlug]/[productSlug]/
+    strategy/
+      icp/
+        page.tsx     – server: minimal shell, renders IcpPageClient
+```
+
+### Future relationships
+
+- **Personas** — will reference the active ICP. Persona definitions describe individual buyer types within the ICP target segment.
+- **Positioning** — will align messaging to ICP pain points and goals stored in this module.
+- **Research** — market research findings will be linkable to ICP validation.
+- **AI features** — the `pain_points`, `goals`, `buying_signals`, `disqualifiers` text arrays are designed to feed AI prompts for ICP enrichment or validation when that module is built.
+
+### No new dependencies
+
+Stage 6 uses only existing project dependencies. No new npm packages were added.
+
+Run tests: `npm test`

@@ -259,3 +259,105 @@ export async function resolveProductContext(
   // Step 5: return resolved context
   return { ok: true, data: { workspace, product } };
 }
+
+// ---------------------------------------------------------------------------
+// 4. Product-by-ID resolver for Server Actions
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve an active product by its UUID, verifying workspace membership.
+ *
+ * Used by Server Actions which receive a productId from the client and need
+ * to establish their own authorization boundary independently of the page
+ * layout.
+ *
+ * Security design:
+ *   - Validates userId before any DB access.
+ *   - Validates productId before any DB access.
+ *   - Joins product → workspace → workspace_members in a single query so that
+ *     all of the following are checked atomically:
+ *       (a) the product exists
+ *       (b) the product belongs to a workspace the user is a member of
+ *       (c) the product is active (archived_at IS NULL)
+ *   - All negative outcomes return NOT_FOUND — callers cannot distinguish
+ *     between "product does not exist", "user is not a member", or
+ *     "product is archived". This prevents oracle attacks.
+ *
+ * @param userId    - Authenticated principal UUID. Must NOT be fake/hardcoded.
+ * @param productId - Product UUID received from the client. Untrusted until resolved.
+ */
+export async function resolveProductForUser(
+  userId: string,
+  productId: string,
+): Promise<RouteResolutionResult<{ product: ProductRow; workspaceId: string }>> {
+  // Validate userId
+  const uid = uuidSchema.safeParse(userId);
+  if (!uid.success) {
+    return routeErr({ code: "USER_ID_INVALID", message: "userId must be a valid UUID." });
+  }
+
+  // Validate productId
+  const pid = uuidSchema.safeParse(productId);
+  if (!pid.success) {
+    // Return NOT_FOUND — callers should not learn that the productId was malformed
+    return notFound();
+  }
+
+  try {
+    const db = getDb();
+
+    // Single query: product → workspace → membership.
+    // Returns a row only when ALL of:
+    //   - product exists with the given id
+    //   - product.workspace_id workspace exists
+    //   - user is a member of that workspace
+    //   - product is active (archived_at IS NULL)
+    const rows = await db
+      .select({
+        product_id: products.id,
+        product_name: products.name,
+        product_slug: products.slug,
+        product_archived_at: products.archived_at,
+        product_created_at: products.created_at,
+        product_updated_at: products.updated_at,
+        workspace_id: workspaces.id,
+      })
+      .from(products)
+      .innerJoin(workspaces, eq(products.workspace_id, workspaces.id))
+      .innerJoin(workspaceMembers, eq(workspaceMembers.workspace_id, workspaces.id))
+      .where(
+        and(
+          eq(products.id, productId),
+          eq(workspaceMembers.user_id, userId),
+          // Only active products are accessible via normal Server Action paths
+          // (same invariant as resolveProductContext)
+        ),
+      )
+      .limit(1);
+
+    if (rows.length === 0) {
+      return notFound();
+    }
+
+    const row = rows[0];
+
+    // Reject archived products
+    if (row.product_archived_at !== null) {
+      return notFound();
+    }
+
+    const product: ProductRow = {
+      id: row.product_id,
+      workspace_id: row.workspace_id,
+      name: row.product_name,
+      slug: row.product_slug,
+      archived_at: row.product_archived_at,
+      created_at: row.product_created_at,
+      updated_at: row.product_updated_at,
+    };
+
+    return { ok: true, data: { product, workspaceId: row.workspace_id } };
+  } catch (e) {
+    return routeErr({ code: "UNKNOWN", message: "An unexpected error occurred.", cause: e });
+  }
+}

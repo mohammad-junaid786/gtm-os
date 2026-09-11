@@ -172,3 +172,43 @@ export const icps = pgTable(
     ),
   ],
 );
+
+// ---------------------------------------------------------------------------
+// personas
+//
+// Ownership hierarchy: icp -> persona.
+// Product scoping is maintained by joining icps.
+// ---------------------------------------------------------------------------
+
+export const personas = pgTable(
+  "personas",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    icp_id: uuid("icp_id")
+      .notNull()
+      .references(() => icps.id, { onDelete: "restrict" }),
+
+    // ── Identity ─────────────────────────────────────────────────────────────
+    name: text("name").notNull(),
+    role: text("role").notNull(),
+
+    // ── Structured Fields (Arrays) ───────────────────────────────────────────
+    goals: text("goals").array(),
+    pain_points: text("pain_points").array(),
+    motivations: text("motivations").array(),
+    objections: text("objections").array(),
+    decision_criteria: text("decision_criteria").array(),
+    preferred_channels: text("preferred_channels").array(),
+    messaging_angles: text("messaging_angles").array(),
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+    /** NULL → active; non-NULL → archived. Personas are never hard-deleted. */
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    // Fast lookup of all personas for an ICP
+    index("personas_icp_id_idx").on(t.icp_id),
+  ],
+);

@@ -698,3 +698,42 @@ app/
 Stage 6 uses only existing project dependencies. No new npm packages were added.
 
 Run tests: `npm test`
+
+## Stage 7 — Personas
+
+Stage 7 introduces the Personas domain, building directly upon the ICP module (Stage 6). An ICP defines the target company, while Personas define the specific buyers and roles within that company.
+
+### Data Model and Invariants
+
+The `personas` table belongs to an `icp_id`. Since ICPs are scoped to products, Personas are implicitly scoped to products. The service layer enforces strict product-scoping by always verifying the `icp_id` belongs to the `product_id` passed to the service operation.
+
+Like Products and ICPs, Personas use the soft-archive pattern (`archived_at`).
+
+### Server Actions and Shared Authorization
+
+Server actions for mutations use a new shared routing helper `authorizeProductAction` located in `lib/routing/authorize-action.ts`. This extracts the authorization logic initially introduced in Stage 6, allowing both ICP and Persona Server Actions to securely verify that the current user has access to the specified product before invoking any domain services.
+
+### Module layout
+
+```
+lib/
+  personas/
+    types.ts        — PersonaRow, CreatePersonaInput, UpdatePersonaInput, PersonaResult, PersonaServiceError
+    service.ts      — server-only service (createPersona, getPersonasForIcp, updatePersona, archivePersona)
+    actions.ts      — server actions (loadPersonasAction, createPersonaAction, updatePersonaAction, archivePersonaAction)
+    index.ts        — barrel export
+    personas.test.ts — domain tests
+
+components/
+  personas/
+    persona-form.tsx         — client: create/edit form with tag inputs
+    persona-view.tsx         — client: view individual persona
+    persona-list.tsx         — client: manage list of personas
+    personas-page-client.tsx — client: page shell, loads active ICP and its personas via server actions
+
+app/
+  w/[workspaceSlug]/[productSlug]/
+    strategy/
+      personas/
+        page.tsx     — server: minimal shell, renders PersonasPageClient
+```

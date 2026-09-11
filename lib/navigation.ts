@@ -180,6 +180,12 @@ export function buildProductNav(basePath: string): ProductNavConfig {
             icon: Target,
             description: "Ideal customer profile for this product.",
           },
+          {
+            href: `${b}/strategy/personas`,
+            label: "Personas",
+            icon: Users,
+            description: "Buyer roles and messaging within the ICP.",
+          },
         ],
       },
       {

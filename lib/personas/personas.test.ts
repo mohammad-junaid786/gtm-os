@@ -11,7 +11,6 @@ import {
   createPersona,
   getPersonasForIcp,
   updatePersona,
-  archivePersona,
 } from "./service.js";
 
 // Static import of Server Actions.
@@ -30,11 +29,12 @@ const VALID_UUID_A = "00000000-0000-0000-0000-000000000001";
 const VALID_UUID_B = "00000000-0000-0000-0000-000000000002";
 const VALID_UUID_C = "00000000-0000-0000-0000-000000000003";
 
-function expectCode(result: { ok: false; error: { code: string } }, code: string) {
+function expectCode(result: { ok: boolean; error?: { code: string } }, code: string) {
+  assert.equal(result.ok, false);
   assert.equal(
-    result.error.code,
+    result.error?.code,
     code,
-    `Expected error code "${code}" but got "${result.error.code}"`,
+    `Expected error code "${code}" but got "${result.error?.code}"`,
   );
 }
 
@@ -45,46 +45,46 @@ function expectCode(result: { ok: false; error: { code: string } }, code: string
 describe("createPersona", () => {
   test("fails if productId is not a UUID", async () => {
     const r = await createPersona("invalid", { icpId: VALID_UUID_A, name: "N", role: "R" });
-    expectCode(r as any, "PRODUCT_ID_INVALID");
+    expectCode(r, "PRODUCT_ID_INVALID");
   });
 
   test("fails if icpId is not a UUID", async () => {
     const r = await createPersona(VALID_UUID_B, { icpId: "invalid", name: "N", role: "R" });
-    expectCode(r as any, "ICP_ID_INVALID");
+    expectCode(r, "ICP_ID_INVALID");
   });
 
   test("fails if name is empty", async () => {
     const r = await createPersona(VALID_UUID_B, { icpId: VALID_UUID_A, name: "  ", role: "R" });
-    expectCode(r as any, "NAME_EMPTY");
+    expectCode(r, "NAME_EMPTY");
   });
 
   test("fails if role is empty", async () => {
     const r = await createPersona(VALID_UUID_B, { icpId: VALID_UUID_A, name: "N", role: "  " });
-    expectCode(r as any, "ROLE_EMPTY");
+    expectCode(r, "ROLE_EMPTY");
   });
 });
 
 describe("getPersonasForIcp", () => {
   test("fails if productId is not a UUID", async () => {
     const r = await getPersonasForIcp("invalid", VALID_UUID_A);
-    expectCode(r as any, "PRODUCT_ID_INVALID");
+    expectCode(r, "PRODUCT_ID_INVALID");
   });
 
   test("fails if icpId is not a UUID", async () => {
     const r = await getPersonasForIcp(VALID_UUID_A, "invalid");
-    expectCode(r as any, "ICP_ID_INVALID");
+    expectCode(r, "ICP_ID_INVALID");
   });
 });
 
 describe("updatePersona", () => {
   test("fails if no fields are provided", async () => {
     const r = await updatePersona(VALID_UUID_A, VALID_UUID_B, VALID_UUID_C, {});
-    expectCode(r as any, "NO_UPDATE_FIELDS");
+    expectCode(r, "NO_UPDATE_FIELDS");
   });
 
   test("fails if name is empty string", async () => {
     const r = await updatePersona(VALID_UUID_A, VALID_UUID_B, VALID_UUID_C, { name: "  " });
-    expectCode(r as any, "NAME_EMPTY");
+    expectCode(r, "NAME_EMPTY");
   });
 });
 

@@ -49,7 +49,7 @@ const updatePersonaSchema = z
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-function err(code: any, message: string): { ok: false; error: any } {
+function err<T extends string>(code: T, message: string): { ok: false; error: { code: T; message: string; cause?: unknown } } {
   return { ok: false, error: { code, message } };
 }
 

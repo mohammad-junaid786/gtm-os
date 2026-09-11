@@ -6,6 +6,7 @@ import {
   uniqueIndex,
   index,
   check,
+  integer,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -211,4 +212,121 @@ export const personas = pgTable(
     // Fast lookup of all personas for an ICP
     index("personas_icp_id_idx").on(t.icp_id),
   ],
+);
+
+// ---------------------------------------------------------------------------
+// leads
+//
+// Stage 8 lightweight lead/account entity. Product scoped.
+// ---------------------------------------------------------------------------
+
+export const leads = pgTable(
+  "leads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    product_id: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+
+    company: text("company").notNull(),
+    contact: text("contact").notNull(),
+    role: text("role"),
+    email: text("email"),
+    website: text("website"),
+    source: text("source"),
+    icp_score: integer("icp_score"),
+    status: text("status").notNull(),
+    owner: text("owner"),
+    notes: text("notes"),
+
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("leads_product_id_idx").on(t.product_id),
+  ]
+);
+
+// ---------------------------------------------------------------------------
+// campaigns
+//
+// Stage 8 execution module. Product scoped.
+// Financial metrics (budget, revenue, spend) stored as integer cents.
+// ---------------------------------------------------------------------------
+
+export const campaigns = pgTable(
+  "campaigns",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    product_id: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+
+    name: text("name").notNull(),
+    objective: text("objective"),
+    audience: text("audience"),
+    channel: text("channel"),
+    start_date: timestamp("start_date", { withTimezone: true }),
+    end_date: timestamp("end_date", { withTimezone: true }),
+    /** Budget in cents */
+    budget: integer("budget"),
+    status: text("status").notNull(),
+
+    // Metrics
+    impressions: integer("impressions").default(0).notNull(),
+    clicks: integer("clicks").default(0).notNull(),
+    leads_generated: integer("leads_generated").default(0).notNull(),
+    qualified_leads: integer("qualified_leads").default(0).notNull(),
+    conversions: integer("conversions").default(0).notNull(),
+    /** Revenue in cents */
+    revenue: integer("revenue").default(0).notNull(),
+    /** Spend in cents */
+    spend: integer("spend").default(0).notNull(),
+
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("campaigns_product_id_idx").on(t.product_id),
+  ]
+);
+
+// ---------------------------------------------------------------------------
+// experiments
+//
+// Stage 8 execution module. Product scoped.
+// Budget stored as integer cents.
+// ---------------------------------------------------------------------------
+
+export const experiments = pgTable(
+  "experiments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    product_id: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+
+    name: text("name").notNull(),
+    hypothesis: text("hypothesis"),
+    goal: text("goal"),
+    audience: text("audience"),
+    channel: text("channel"),
+    variant: text("variant"),
+    primary_metric: text("primary_metric"),
+    secondary_metrics: text("secondary_metrics").array(),
+    start_date: timestamp("start_date", { withTimezone: true }),
+    end_date: timestamp("end_date", { withTimezone: true }),
+    /** Budget in cents */
+    budget: integer("budget"),
+    status: text("status").notNull(),
+
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("experiments_product_id_idx").on(t.product_id),
+  ]
 );

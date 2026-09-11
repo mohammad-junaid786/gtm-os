@@ -32,8 +32,6 @@
  *   - They return serializable values only (no DB objects, no server-only types).
  *   - Client components import from this file but cannot access the DB directly.
  */
-import { getCurrentUserId } from "@/lib/routing/current-user";
-import { resolveProductForUser } from "@/lib/routing/resolver";
 import { authorizeProductAction } from "@/lib/routing/authorize-action";
 import { createIcp, updateIcp, archiveIcp, getIcpsForProduct } from "@/lib/icp/service";
 import type { CreateIcpInput, UpdateIcpInput, IcpResult, IcpRow } from "@/lib/icp/types";

@@ -737,3 +737,19 @@ app/
       personas/
         page.tsx     — server: minimal shell, renders PersonasPageClient
 ```
+
+## Stage 8 — Execution (Leads, Campaigns, Experiments)
+
+Stage 8 implements the Execution blueprint modules, bringing lightweight operations management to the product-scoped workspace.
+
+### Core Modules
+- **Leads**: Flat account/contact lists representing execution targets. Intentionally lightweight, avoiding full CRM complexity.
+- **Campaigns**: Management for inbound/outbound campaigns, budget tracking, and derived financial metrics (CAC, CPL, ROAS). All monetary values (budget, revenue, spend) are strictly stored as integer cents to prevent floating-point precision errors.
+- **Experiments**: Structured go-to-market experimentation tracking (hypothesis, channels, variants).
+
+### Architecture Consistency
+Like all previous stages:
+- Entities are strictly product-scoped (`product_id`).
+- Authorization goes through `authorizeProductAction` in Server Actions, avoiding client-side boundary trust.
+- Hard deletes are avoided; everything uses the `archived_at` soft-archive pattern.
+- The UI follows the `[Domain]PageClient` → `[Domain]List` → `[Domain]Form` React pattern with optimistic transitions and centralized error handling.

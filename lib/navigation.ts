@@ -10,6 +10,7 @@ import {
   Target,
   Users,
   Workflow,
+  Beaker,
 } from "lucide-react";
 
 export type NavItem = {
@@ -41,24 +42,6 @@ export const navSections: NavSection[] = [
         icon: LayoutDashboard,
         description: "Workspace snapshot and recent activity.",
       },
-      {
-        href: "/accounts",
-        label: "Accounts",
-        icon: Building2,
-        description: "Companies and target accounts.",
-      },
-      {
-        href: "/contacts",
-        label: "Contacts",
-        icon: Users,
-        description: "People associated with accounts.",
-      },
-      {
-        href: "/campaigns",
-        label: "Campaigns",
-        icon: Megaphone,
-        description: "Outbound and inbound campaign work.",
-      },
     ],
   },
   {
@@ -89,6 +72,24 @@ export const navSections: NavSection[] = [
     id: "execution",
     label: "Execution",
     items: [
+      {
+        href: "/leads",
+        label: "Leads",
+        icon: Building2,
+        description: "Target accounts and contacts.",
+      },
+      {
+        href: "/campaigns",
+        label: "Campaigns",
+        icon: Megaphone,
+        description: "Outbound and inbound campaign work.",
+      },
+      {
+        href: "/experiments",
+        label: "Experiments",
+        icon: Beaker,
+        description: "GTM experiments and hypotheses.",
+      },
       {
         href: "/plays",
         label: "Plays",
@@ -150,24 +151,6 @@ export function buildProductNav(basePath: string): ProductNavConfig {
             icon: LayoutDashboard,
             description: "Product snapshot and recent activity.",
           },
-          {
-            href: `${b}/accounts`,
-            label: "Accounts",
-            icon: Building2,
-            description: "Companies and target accounts.",
-          },
-          {
-            href: `${b}/contacts`,
-            label: "Contacts",
-            icon: Users,
-            description: "People associated with accounts.",
-          },
-          {
-            href: `${b}/campaigns`,
-            label: "Campaigns",
-            icon: Megaphone,
-            description: "Outbound and inbound campaign work.",
-          },
         ],
       },
       {
@@ -210,6 +193,24 @@ export function buildProductNav(basePath: string): ProductNavConfig {
         id: "execution",
         label: "Execution",
         items: [
+          {
+            href: `${b}/execution/leads`,
+            label: "Leads",
+            icon: Building2,
+            description: "Target accounts and contacts.",
+          },
+          {
+            href: `${b}/execution/campaigns`,
+            label: "Campaigns",
+            icon: Megaphone,
+            description: "Outbound and inbound campaign work.",
+          },
+          {
+            href: `${b}/execution/experiments`,
+            label: "Experiments",
+            icon: Beaker,
+            description: "GTM experiments and hypotheses.",
+          },
           {
             href: `${b}/plays`,
             label: "Plays",

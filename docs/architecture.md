@@ -753,3 +753,13 @@ Like all previous stages:
 - Authorization goes through `authorizeProductAction` in Server Actions, avoiding client-side boundary trust.
 - Hard deletes are avoided; everything uses the `archived_at` soft-archive pattern.
 - The UI follows the `[Domain]PageClient` → `[Domain]List` → `[Domain]Form` React pattern with optimistic transitions and centralized error handling.
+
+## Stage 9 — Analytics and Measurement
+
+Stage 9 provides the "Measure" phase of the GTM OS blueprint by aggregating data from the Execution module (Stage 8).
+
+### Read-Only Aggregation Layer
+No schema changes or snapshot tables were introduced for this MVP. Metrics (CAC, CPL, ROAS, pipeline conversion rates) are dynamically computed from the `leads`, `campaigns`, and `experiments` tables using a dedicated `lib/analytics/` domain module.
+
+### Security and Scoping
+Like the other product modules, all Server Actions for analytics go through the `authorizeProductAction` boundary, ensuring the client-supplied product ID is verified against the workspace membership context before querying the database.

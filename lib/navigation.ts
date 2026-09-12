@@ -11,6 +11,7 @@ import {
   Users,
   Workflow,
   Beaker,
+  BarChart2,
 } from "lucide-react";
 
 export type NavItem = {
@@ -222,6 +223,18 @@ export function buildProductNav(basePath: string): ProductNavConfig {
             label: "Sequences",
             icon: ListOrdered,
             description: "Multi-step outreach sequences.",
+          },
+        ],
+      },
+      {
+        id: "measurement",
+        label: "Measurement",
+        items: [
+          {
+            href: `${b}/analytics`,
+            label: "Analytics",
+            icon: BarChart2,
+            description: "Performance metrics for your go-to-market execution.",
           },
         ],
       },

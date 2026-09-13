@@ -22,7 +22,7 @@ GTM OS is designed so the core application works without paid AI APIs. AI featur
 
 ## Current status
 
-Stages 1–5 of the build are complete. The foundational architecture is in place:
+Stages 1–10 of the build are complete. The foundational architecture is in place:
 
 - workspace and product data models
 - server-side domain services (workspace creation, product CRUD)
@@ -82,18 +82,18 @@ For implementation details, see [docs/architecture.md](docs/architecture.md).
 - [x] Membership-aware workspace resolver
 - [x] Product-scoped application shell and navigation
 - [x] Product-aware Overview foundation
+- [x] ICP (Ideal Customer Profile)
+- [x] Personas
+- [x] Execution (plays, sequences, campaigns)
+- [x] Analytics and measurement
+- [x] Learnings
 
 ### Upcoming
 
 - [ ] Authentication integration
-- [ ] ICP (Ideal Customer Profile)
-- [ ] Personas
 - [ ] Positioning
 - [ ] Competitors
 - [ ] Research library
-- [ ] Execution (plays, sequences, campaigns)
-- [ ] Analytics and measurement
-- [ ] Learnings
 - [ ] AI architecture (optional, provider-agnostic)
 - [ ] AI features (BYOK, local Ollama support)
 - [ ] Demo mode

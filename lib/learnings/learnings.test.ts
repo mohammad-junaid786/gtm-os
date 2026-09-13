@@ -154,27 +154,27 @@ describe("Server Action authorization model", () => {
     const result = await loadLearningsAction(VALID_UUID_A);
     assert.equal(result.ok, false);
     const err = result as { ok: false; error: { code?: string } | string };
-    assert.equal(err.error.code || err.error, "UNKNOWN");
+    assert.equal((err.error as { code?: string }).code || err.error, "UNKNOWN");
   });
 
   test("createLearningAction returns generic error when not authenticated", async () => {
     const result = await createLearningAction(VALID_UUID_A, { title: "A", insight: "B" });
     assert.equal(result.ok, false);
     const err = result as { ok: false; error: { code?: string } | string };
-    assert.equal(err.error.code || err.error, "UNKNOWN");
+    assert.equal((err.error as { code?: string }).code || err.error, "UNKNOWN");
   });
 
   test("updateLearningAction returns generic error when not authenticated", async () => {
     const result = await updateLearningAction(VALID_UUID_A, VALID_UUID_B, { title: "C" });
     assert.equal(result.ok, false);
     const err = result as { ok: false; error: { code?: string } | string };
-    assert.equal(err.error.code || err.error, "UNKNOWN");
+    assert.equal((err.error as { code?: string }).code || err.error, "UNKNOWN");
   });
 
   test("archiveLearningAction returns generic error when not authenticated", async () => {
     const result = await archiveLearningAction(VALID_UUID_A, VALID_UUID_B);
     assert.equal(result.ok, false);
     const err = result as { ok: false; error: { code?: string } | string };
-    assert.equal(err.error.code || err.error, "UNKNOWN");
+    assert.equal((err.error as { code?: string }).code || err.error, "UNKNOWN");
   });
 });

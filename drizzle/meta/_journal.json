@@ -43,6 +43,13 @@
       "when": 1789282868215,
       "tag": "0005_clammy_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789308118945,
+      "tag": "0006_futuristic_bromley",
+      "breakpoints": true
     }
   ]
 }

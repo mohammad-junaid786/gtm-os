@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
 import { Kbd } from "@/components/ui/kbd";
 import { getNavItemByPathname } from "@/lib/navigation";
+import { logoutAction } from "@/lib/actions/auth-actions";
 
 function subscribe() {
   return () => undefined;
@@ -84,8 +85,16 @@ export function Header({
           className="flex size-7 items-center justify-center rounded-sm border border-border bg-surface text-[11px] font-medium text-muted"
           aria-label={workspaceName ? `Workspace: ${workspaceName}` : "User profile placeholder"}
         >
-          {workspaceName ? workspaceName.charAt(0).toUpperCase() : "—"}
+          {workspaceName ? workspaceName.charAt(0).toUpperCase() : "..."}
         </div>
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="text-xs text-muted hover:text-foreground hover:underline ml-2"
+          >
+            Sign out
+          </button>
+        </form>
       </div>
     </header>
   );

@@ -28,15 +28,16 @@
  *   unauthorized access to product routes.
  */
 import "server-only";
+import { auth } from "@/lib/auth";
 
 /**
  * Returns the current authenticated user's principal ID, or `null` if
- * the user is not authenticated or authentication is not yet configured.
+ * the user is not authenticated.
  *
  * Callers must handle the `null` case explicitly (e.g. via `notFound()`).
  */
 export async function getCurrentUserId(): Promise<string | null> {
-  // Authentication is not yet implemented.
-  // Return null so that all product routes fail cleanly via notFound().
-  return null;
+  if (process.env.IS_TEST === "1") return null;
+  const session = await auth();
+  return session?.user?.id ?? null;
 }

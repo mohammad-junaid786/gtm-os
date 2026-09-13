@@ -1,33 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-
+import { getCurrentUserId } from "@/lib/routing/current-user";
+import { resolveUserDefaultRoute } from "@/lib/routing/default-route";
+import { redirect } from "next/navigation";
 export const metadata: Metadata = { title: "GTM OS" };
 
-/**
- * Root page — rendered without the application shell.
- *
- * The full GTM OS application shell requires a resolved product context,
- * which requires authentication (not yet implemented). This page exists
- * as the entry point before a product is selected.
- *
- * Once authentication is implemented, this page can redirect authenticated
- * users to their product route. For now it provides a plain landing point.
- */
-export default function RootPage() {
+export default async function RootPage() {
+  const userId = await getCurrentUserId();
+  if (userId) {
+    const redirectUrl = await resolveUserDefaultRoute(userId);
+    redirect(redirectUrl);
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-4 text-foreground">
-      <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">GTM OS</h1>
-        <p className="max-w-sm text-sm leading-relaxed text-muted">
-          Open-source go-to-market operating system. Sign in to access your workspace and product.
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-foreground">
+      <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-sm border max-w-md w-full">
+        <h1 className="text-3xl font-bold mb-4">Welcome to GTM OS</h1>
+        <p className="text-muted-foreground text-center mb-8">
+          Your Go-To-Market Operating System for strategy, execution, and analytics.
         </p>
-      </div>
-      <p className="text-xs text-muted">
-        Authentication is not yet configured.{" "}
-        <Link href="/w/demo/demo-product" className="underline underline-offset-2 hover:text-foreground">
-          Try the product route →
+
+        <Link
+          href="/login"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+        >
+          Sign In
         </Link>
-      </p>
+      </div>
     </div>
   );
 }

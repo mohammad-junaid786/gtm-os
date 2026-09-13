@@ -12,6 +12,7 @@ import {
   Workflow,
   Beaker,
   BarChart2,
+  Lightbulb,
 } from "lucide-react";
 
 export type NavItem = {
@@ -235,6 +236,12 @@ export function buildProductNav(basePath: string): ProductNavConfig {
             label: "Analytics",
             icon: BarChart2,
             description: "Performance metrics for your go-to-market execution.",
+          },
+          {
+            href: `${b}/learnings`,
+            label: "Learnings",
+            icon: Lightbulb,
+            description: "Strategic insights and action items.",
           },
         ],
       },

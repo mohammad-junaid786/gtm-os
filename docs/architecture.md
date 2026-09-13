@@ -763,3 +763,21 @@ No schema changes or snapshot tables were introduced for this MVP. Metrics (CAC,
 
 ### Security and Scoping
 Like the other product modules, all Server Actions for analytics go through the `authorizeProductAction` boundary, ensuring the client-supplied product ID is verified against the workspace membership context before querying the database.
+ # #   S t a g e   1 0      L e a r n i n g s 
+ 
+ S t a g e   1 0   i n t r o d u c e s   t h e   L e a r n i n g s   m o d u l e ,   p r o v i d i n g   a   s t r u c t u r e d   w a y   t o   c a p t u r e ,   t r a c k ,   a n d   r e v i e w   s t r a t e g i c   i n s i g h t s   d e r i v e d   f r o m   E x e c u t i o n   ( S t a g e   8 )   a n d   A n a l y t i c s   ( S t a g e   9 ) . 
+ 
+ # # #   D a t a   M o d e l   a n d   A r c h i t e c t u r e 
+ 
+ T h e   \ l e a r n i n g s \   t a b l e   i s   s t r i c t l y   p r o d u c t - s c o p e d   a n d   f o l l o w s   t h e   \  r c h i v e d _ a t \   s o f t - a r c h i v e   p a t t e r n   e s t a b l i s h e d   i n   p r e v i o u s   s t a g e s .   I t   a l l o w s   c a p t u r i n g   i n s i g h t s ,   l i n k i n g   t h e m   t o   s o u r c e   e n t i t i e s   ( l i k e   c a m p a i g n s   o r   e x p e r i m e n t s )   v i a   a   l o o s e   \ s o u r c e _ i d \   U U I D   a n d   \ s o u r c e _ t y p e \   s t r i n g ,   a n d   t r a c k i n g   c o n f i d e n c e ,   i m p a c t ,   a n d   a c t i o n a b l e   n e x t   s t e p s . 
+ 
+ W h e n   a   \ s o u r c e _ i d \   i s   p r o v i d e d ,   t h e   s e r v i c e   l a y e r   e x p l i c i t l y   v a l i d a t e s   t h a t   t h e   r e f e r e n c e d   e n t i t y   ( e . g .   C a m p a i g n ,   E x p e r i m e n t ,   o r   L e a d )   e x i s t s   a n d   b e l o n g s   t o   t h e   s a m e   p r o d u c t ,   p r e v e n t i n g   c r o s s - p r o d u c t   o r a c l e s   a n d   b r o k e n   r e f e r e n c e s . 
+ 
+ # # #   S e c u r i t y   a n d   S c o p i n g 
+ 
+ A l l   S e r v e r   A c t i o n s   u s e   t h e   s h a r e d   \  u t h o r i z e P r o d u c t A c t i o n \   r o u t i n g   h e l p e r   t o   s e c u r e l y   v e r i f y   w o r k s p a c e   m e m b e r s h i p   a n d   p r o d u c t   c o n t e x t   b e f o r e   e x e c u t i n g   a n y   d a t a b a s e   r e a d s   o r   m u t a t i o n s . 
+ 
+ # # #   U s e r   I n t e r f a c e 
+ 
+ L e a r n i n g s   a r e   i n t e g r a t e d   i n t o   t h e   \ M e a s u r e m e n t \   n a v i g a t i o n   s e c t i o n   a l o n g s i d e   A n a l y t i c s ,   r e i n f o r c i n g   t h e   G T M   l o o p :   P L A N   ’!  E X E C U T E   ’!  M E A S U R E   ’!  L E A R N .  
+ 

@@ -330,3 +330,35 @@ export const experiments = pgTable(
     index("experiments_product_id_idx").on(t.product_id),
   ]
 );
+
+// ---------------------------------------------------------------------------
+// learnings
+//
+// Stage 10 module for tracking strategic insights and lessons learned.
+// Product scoped.
+// ---------------------------------------------------------------------------
+
+export const learnings = pgTable(
+  "learnings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    product_id: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+
+    title: text("title").notNull(),
+    insight: text("insight").notNull(),
+    source_type: text("source_type"),
+    source_id: uuid("source_id"),
+    confidence_level: text("confidence_level"),
+    impact_level: text("impact_level"),
+    action_items: text("action_items").array(),
+
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("learnings_product_id_idx").on(t.product_id),
+  ]
+);

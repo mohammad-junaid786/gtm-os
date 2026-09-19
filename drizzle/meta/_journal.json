@@ -50,6 +50,13 @@
       "when": 1789308118945,
       "tag": "0006_futuristic_bromley",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789811110666,
+      "tag": "0007_cultured_morlocks",
+      "breakpoints": true
     }
   ]
 }

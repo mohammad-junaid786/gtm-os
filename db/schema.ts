@@ -365,6 +365,69 @@ export const learnings = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// positioning
+//
+// Stage 12 module for defining product-level market positioning.
+// Product scoped. One active positioning record per product at MVP.
+//
+// Design decisions:
+// - One active positioning per product at MVP. Enforced at BOTH the service
+//   layer (pre-insert check for a friendlier error) AND the database level
+//   (partial unique index: UNIQUE(product_id) WHERE archived_at IS NULL).
+//   The DB constraint is the final authority and prevents concurrent inserts.
+// - Positioning is a peer of ICP at the product level, not a child of it.
+//   No FK to icps or personas.
+// - All text fields are optional. Positioning is developed iteratively.
+// - alternatives and proof_points are stored as text arrays for structured
+//   multi-value input. Forward-compatible with a future competitors FK table.
+// - FK uses ON DELETE RESTRICT because products are archived, not hard-deleted.
+// ---------------------------------------------------------------------------
+
+export const positioning = pgTable(
+  "positioning",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    product_id: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+
+    // ── Core positioning fields ───────────────────────────────────────────────
+    /** One-sentence positioning statement (max 2000 chars) */
+    positioning_statement: text("positioning_statement"),
+    /** Free-text narrative of the intended customer (max 2000 chars) */
+    target_customer: text("target_customer"),
+    /** Core problem the product solves (max 2000 chars) */
+    customer_problem: text("customer_problem"),
+    /** Differentiated value this product delivers (max 2000 chars) */
+    unique_value: text("unique_value"),
+    /** Competitive alternatives/substitutes (each element max 500 chars) */
+    alternatives: text("alternatives").array(),
+    /** Reasons to believe / proof points (each element max 500 chars) */
+    proof_points: text("proof_points").array(),
+
+    // ── Freeform ─────────────────────────────────────────────────────────────
+    notes: text("notes"),
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+    /** NULL → active; non-NULL → archived. Positioning is never hard-deleted. */
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    // Fast lookup of positioning records for a product
+    index("positioning_product_id_idx").on(t.product_id),
+    // One active positioning per product enforced at the database level.
+    // Allows multiple archived records (no constraint when archived_at IS NOT NULL).
+    // The partial unique index is the final authority on the invariant;
+    // the service layer also checks before insert for a friendlier error.
+    uniqueIndex("positioning_one_active_per_product")
+      .on(t.product_id)
+      .where(sql`${t.archived_at} IS NULL`),
+  ],
+);
+
+// ---------------------------------------------------------------------------
 // auth.js
 // ---------------------------------------------------------------------------
 

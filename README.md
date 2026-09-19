@@ -22,7 +22,7 @@ GTM OS is designed so the core application works without paid AI APIs. AI featur
 
 ## Current status
 
-Stages 1–10 of the build are complete. The foundational architecture is in place:
+Stages 1–11 of the build are complete. The foundational architecture is in place:
 
 - workspace and product data models
 - server-side domain services (workspace creation, product CRUD)
@@ -31,7 +31,7 @@ Stages 1–10 of the build are complete. The foundational architecture is in pla
 - product-scoped application shell
 - product-aware Overview foundation
 
-**Authentication is not yet implemented.** The routing layer is designed so a future authentication provider can supply the current user ID without requiring any rewrite of the resolver or shell architecture. Until then, the product-scoped route resolves to a 404.
+**Authentication is implemented.** The routing layer seamlessly uses the authenticated user ID for membership-aware workspace resolution and product-scoped access.
 
 ---
 
@@ -87,10 +87,10 @@ For implementation details, see [docs/architecture.md](docs/architecture.md).
 - [x] Execution (plays, sequences, campaigns)
 - [x] Analytics and measurement
 - [x] Learnings
+- [x] Authentication integration
 
 ### Upcoming
 
-- [ ] Authentication integration
 - [ ] Positioning
 - [ ] Competitors
 - [ ] Research library

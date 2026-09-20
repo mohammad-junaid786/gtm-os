@@ -1,7 +1,7 @@
 import { z } from "zod";
-import type { AIProvider } from "../provider.js";
-import type { AIConfig } from "../config.js";
-import type { AIRequestOptions, AIResult, AIResponse } from "../types.js";
+import type { AIProvider } from "../provider";
+import type { AIConfig } from "../config";
+import type { AIRequestOptions, AIResult, AIResponse } from "../types";
 
 const openAIResponseSchema = z.object({
   model: z.string().optional(),

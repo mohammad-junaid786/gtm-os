@@ -31,11 +31,11 @@ describe("generateIcpDraftAction", () => {
     mock.restoreAll();
     authMock = mock.method(actions._deps, "authorizeProductAction", async () => ({
       ok: true,
-      value: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
+      data: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
     }));
     aiMock = mock.method(actions._deps, "generateText", async () => ({
       ok: true,
-      data: { text: '{"name":"AI ICP"}' },
+      data: { content: '{"name":"AI ICP"}' },
       usage: {},
     }));
   });
@@ -54,7 +54,7 @@ describe("generateIcpDraftAction", () => {
   test("returns MALFORMED_RESPONSE for invalid json", async () => {
     aiMock.mock.mockImplementation(async () => ({
       ok: true,
-      data: { text: "No JSON here" },
+      data: { content: "No JSON here" },
       usage: {},
     }));
 
@@ -71,23 +71,19 @@ describe("generateIcpDraftAction", () => {
 });
 
 describe("generatePersonaDraftAction", () => {
-  let _authMock: ReturnType<typeof mock.method>;
-  let _aiMock: ReturnType<typeof mock.method>;
-  let _icpMock: ReturnType<typeof mock.method>;
-
   beforeEach(() => {
     mock.restoreAll();
-    _authMock = mock.method(actions._deps, "authorizeProductAction", async () => ({
+    mock.method(actions._deps, "authorizeProductAction", async () => ({
       ok: true,
-      value: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
+      data: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
     }));
-    _icpMock = mock.method(actions._deps, "getIcpById", async (prodId: string, icpId: string) => {
+    mock.method(actions._deps, "getIcpById", async (prodId: string, icpId: string) => {
       if (prodId !== VALID_UUID_A || icpId !== VALID_UUID_B) return { ok: false };
-      return { ok: true, value: { name: "Existing ICP" } as unknown as import("@/lib/icp/types").IcpRow };
+      return { ok: true, data: { name: "Existing ICP" } as unknown as import("@/lib/icp/types").IcpRow };
     });
-    _aiMock = mock.method(actions._deps, "generateText", async () => ({
+    mock.method(actions._deps, "generateText", async () => ({
       ok: true,
-      data: { text: '{"name":"AI Persona", "role":"Manager"}' },
+      data: { content: '{"name":"AI Persona", "role":"Manager"}' },
       usage: {},
     }));
   });
@@ -106,28 +102,23 @@ describe("generatePersonaDraftAction", () => {
 });
 
 describe("generatePositioningDraftAction", () => {
-  let _authMock: ReturnType<typeof mock.method>;
-  let _aiMock: ReturnType<typeof mock.method>;
-  let _icpMock: ReturnType<typeof mock.method>;
-  let _personaMock: ReturnType<typeof mock.method>;
-
   beforeEach(() => {
     mock.restoreAll();
-    _authMock = mock.method(actions._deps, "authorizeProductAction", async () => ({
+    mock.method(actions._deps, "authorizeProductAction", async () => ({
       ok: true,
-      value: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
+      data: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
     }));
-    _icpMock = mock.method(actions._deps, "getIcpById", async (prodId: string, icpId: string) => {
+    mock.method(actions._deps, "getIcpById", async (prodId: string, icpId: string) => {
       if (prodId !== VALID_UUID_A || icpId !== VALID_UUID_B) return { ok: false };
-      return { ok: true, value: { name: "Existing ICP" } as unknown as import("@/lib/icp/types").IcpRow };
+      return { ok: true, data: { name: "Context ICP" } as unknown as import("@/lib/icp/types").IcpRow };
     });
-    _personaMock = mock.method(actions._deps, "getPersonaContext", async (prodId: string, personaId: string) => {
-      if (prodId !== VALID_UUID_A || personaId !== "persona-1") return null;
-      return { name: "Existing Persona" };
+    mock.method(actions._deps, "getPersonaContext", async (prodId: string, personaId: string) => {
+      if (prodId !== VALID_UUID_A || personaId !== "persona-1") return undefined;
+      return { name: "Context Persona", role: "CISO" };
     });
-    _aiMock = mock.method(actions._deps, "generateText", async () => ({
+    mock.method(actions._deps, "generateText", async () => ({
       ok: true,
-      data: { text: '{"positioning_statement":"AI Positioning"}' },
+      data: { content: '{"positioning_statement":"AI Positioning"}' },
       usage: {},
     }));
   });

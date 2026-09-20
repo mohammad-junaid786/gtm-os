@@ -1,6 +1,6 @@
 "use server";
 
-import { getAiConfig } from "./config.js";
+import { getAiConfig } from "./config";
 import { authorizeProductAction } from "@/lib/routing/authorize-action";
 import { generateText } from "./service";
 import { extractJson } from "./utils";
@@ -89,11 +89,11 @@ You must return ONLY valid JSON matching this schema:
 Do not include any explanation or markdown outside of the JSON block.`;
 
   // 3. Call AI
-  const result = await _deps.generateText({ systemPrompt, prompt });
+  const result = await _deps.generateText({ messages: [{ role: "system", content: systemPrompt }, { role: "user", content: prompt }] });
   if (!result.ok) return result;
 
   // 4. Extract and validate
-  const jsonStr = extractJson(result.data.text);
+  const jsonStr = extractJson(result.data.content);
   if (!jsonStr) {
     return { ok: false, error: { code: "MALFORMED_RESPONSE", message: "Could not extract JSON from response" } };
   }
@@ -101,7 +101,7 @@ Do not include any explanation or markdown outside of the JSON block.`;
   let parsedJson;
   try {
     parsedJson = JSON.parse(jsonStr);
-  } catch (e) {
+  } catch {
     return { ok: false, error: { code: "MALFORMED_RESPONSE", message: "JSON could not be parsed" } };
   }
 
@@ -145,7 +145,7 @@ export async function generatePersonaDraftAction(
     return { ok: false, error: { code: "UNKNOWN", message: "Invalid or unauthorized ICP context" } };
   }
 
-  const icp = icpResult.value;
+  const icp = icpResult.data;
   const icpContextStr = JSON.stringify({
     name: icp.name,
     description: icp.description,
@@ -176,11 +176,11 @@ You must return ONLY valid JSON matching this schema:
 Do not include any explanation or markdown outside of the JSON block.`;
 
   // 4. Call AI
-  const result = await _deps.generateText({ systemPrompt, prompt });
+  const result = await _deps.generateText({ messages: [{ role: "system", content: systemPrompt }, { role: "user", content: prompt }] });
   if (!result.ok) return result;
 
   // 5. Extract and Validate
-  const jsonStr = extractJson(result.data.text);
+  const jsonStr = extractJson(result.data.content);
   if (!jsonStr) {
     return { ok: false, error: { code: "MALFORMED_RESPONSE", message: "Could not extract JSON from response" } };
   }
@@ -188,7 +188,7 @@ Do not include any explanation or markdown outside of the JSON block.`;
   let parsedJson;
   try {
     parsedJson = JSON.parse(jsonStr);
-  } catch (e) {
+  } catch {
     return { ok: false, error: { code: "MALFORMED_RESPONSE", message: "JSON could not be parsed" } };
   }
 
@@ -229,7 +229,7 @@ export async function generatePositioningDraftAction(
     if (!icpResult.ok) {
       return { ok: false, error: { code: "UNKNOWN", message: "Invalid or unauthorized ICP context" } };
     }
-    const icp = icpResult.value;
+    const icp = icpResult.data;
     contextStr += `\nICP Context:\n${JSON.stringify({
       name: icp.name,
       description: icp.description,
@@ -271,11 +271,11 @@ You must return ONLY valid JSON matching this schema:
 Do not include any explanation or markdown outside of the JSON block.`;
 
   // 4. Call AI
-  const result = await _deps.generateText({ systemPrompt, prompt });
+  const result = await _deps.generateText({ messages: [{ role: "system", content: systemPrompt }, { role: "user", content: prompt }] });
   if (!result.ok) return result;
 
   // 5. Extract and Validate
-  const jsonStr = extractJson(result.data.text);
+  const jsonStr = extractJson(result.data.content);
   if (!jsonStr) {
     return { ok: false, error: { code: "MALFORMED_RESPONSE", message: "Could not extract JSON from response" } };
   }
@@ -283,7 +283,7 @@ Do not include any explanation or markdown outside of the JSON block.`;
   let parsedJson;
   try {
     parsedJson = JSON.parse(jsonStr);
-  } catch (e) {
+  } catch {
     return { ok: false, error: { code: "MALFORMED_RESPONSE", message: "JSON could not be parsed" } };
   }
 

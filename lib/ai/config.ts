@@ -1,6 +1,6 @@
 import "server-only";
-import { env } from "../env.js";
-import type { AIResult } from "./types.js";
+import { env } from "../env";
+import type { AIResult } from "./types";
 
 export interface AIConfig {
   provider: "openai-compatible" | "ollama";

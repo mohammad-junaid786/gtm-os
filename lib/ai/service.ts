@@ -1,9 +1,9 @@
 import "server-only";
 
-import type { AIRequestOptions, AIResult, AIResponse } from "./types.js";
-import { getAiConfig } from "./config.js";
-import { openAICompatibleProvider } from "./providers/openai-compatible.js";
-import { ollamaProvider } from "./providers/ollama.js";
+import type { AIRequestOptions, AIResult, AIResponse } from "./types";
+import { getAiConfig } from "./config";
+import { openAICompatibleProvider } from "./providers/openai-compatible";
+import { ollamaProvider } from "./providers/ollama";
 
 /**
  * Generates text using the currently configured AI provider.

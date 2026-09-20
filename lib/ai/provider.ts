@@ -1,5 +1,5 @@
-import type { AIConfig } from "./config.js";
-import type { AIRequestOptions, AIResult, AIResponse } from "./types.js";
+import type { AIConfig } from "./config";
+import type { AIRequestOptions, AIResult, AIResponse } from "./types";
 
 /**
  * The internal interface that all AI provider adapters must implement.

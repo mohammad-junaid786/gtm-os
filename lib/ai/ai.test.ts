@@ -1,10 +1,10 @@
 import { test, describe, mock, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 
-import { env } from "../env.js";
-import { getAiConfig } from "./config.js";
-import { generateText } from "./service.js";
-import type { AIRequestOptions } from "./types.js";
+import { env } from "../env";
+import { getAiConfig } from "./config";
+import { generateText } from "./service";
+import type { AIRequestOptions } from "./types";
 
 const DUMMY_REQUEST: AIRequestOptions = {
   messages: [{ role: "user", content: "Hello" }],

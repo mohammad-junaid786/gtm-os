@@ -1,3 +1,3 @@
-export { generateText } from "./service.js";
-export * from "./types.js";
-export { getAiConfig, type AIConfig } from "./config.js";
+export { generateText } from "./service";
+export * from "./types";
+export { getAiConfig, type AIConfig } from "./config";

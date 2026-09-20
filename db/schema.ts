@@ -8,6 +8,7 @@ import {
   check,
   integer,
   primaryKey,
+  date,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -542,4 +543,48 @@ export const verificationTokens = pgTable(
   (vt) => [
     primaryKey({ columns: [vt.identifier, vt.token] }),
   ]
-)
+);
+
+// ---------------------------------------------------------------------------
+// research_items
+// ---------------------------------------------------------------------------
+
+export const researchItems = pgTable(
+  "research_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /**
+     * The product this research item belongs to.
+     */
+    product_id: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+
+    /** Optional competitor context */
+    competitor_id: uuid("competitor_id")
+      .references(() => competitors.id, { onDelete: "set null" }),
+
+    // ── Identity ─────────────────────────────────────────────────────────────
+    title: text("title").notNull(),
+    /** Validated as: interview, article, report, competitor_analysis, other */
+    type: text("type").notNull(),
+    source_name: text("source_name"),
+    source_url: text("source_url"),
+
+    // ── Content ──────────────────────────────────────────────────────────────
+    /** The core findings/notes. Max 10,000 chars. */
+    content: text("content"),
+    /** When the publication or interview occurred */
+    date_researched: date("date_researched"),
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+    /** NULL → active; non-NULL → archived. */
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    // Fast lookup of all research items for a product
+    index("research_product_id_idx").on(t.product_id),
+  ],
+);

@@ -2,7 +2,7 @@
 
 An open-source, self-hostable web application for planning, executing, measuring, experimenting, and learning from go-to-market strategies.
 
-> 🚧 **Early development.** The foundational architecture is in place. GTM domain modules are being built incrementally.
+> 🚀 **MVP implementation complete through Stage 17.** The foundational architecture and core GTM modules are fully implemented.
 
 ---
 
@@ -16,24 +16,30 @@ PLAN → EXECUTE → MEASURE → LEARN → IMPROVE → PLAN AGAIN
 
 Target users are founders, indie hackers, early-stage startups, and small GTM teams who want a structured, self-owned alternative to scattered spreadsheets and disconnected SaaS tools.
 
-GTM OS is designed so the core application works without paid AI APIs. AI features will be optional and provider-agnostic.
+GTM OS is designed so the core application works without paid AI APIs. AI features are optional and provider-agnostic.
 
 ---
 
-## Current status
+## Core capabilities
 
-Stages 1–12 of the build are complete. The foundational architecture is in place:
+MVP implementation complete through Stage 17. GTM OS includes the following modules:
 
-- workspace and product data models
-- server-side domain services (workspace creation, product CRUD)
-- secure product-scoped routing (`/w/[workspaceSlug]/[productSlug]`)
-- membership-aware workspace resolution
-- product-scoped application shell
-- product-aware Overview foundation
+- **Workspace / Product**: Isolated data boundaries and product management.
+- **Authentication**: Seamless membership-aware routing.
+- **Strategy**: ICP, Personas, Positioning.
+- **Market**: Competitors, Research Library.
+- **Execution**: Leads, Campaigns, Experiments.
+- **Measurement**: Analytics and Learnings.
+- **AI Drafting**: Integrated AI capabilities for Strategy modules.
+- **Demo Mode**: Instant onboarding with representative data.
 
-**Authentication is implemented.** The routing layer seamlessly uses the authenticated user ID for membership-aware workspace resolution and product-scoped access.
+### Demo Mode
 
-**Positioning is implemented.** The Positioning module allows a GTM team to define and maintain the product's market positioning — including the positioning statement, target customer, customer problem, unique value, proof points, and competitive alternatives.
+Demo Mode is available directly from onboarding.
+- It requires authentication but does not require an AI API key.
+- It creates a real, fully isolated demo workspace and product for the authenticated user using normal application data boundaries.
+- The generated data is deterministic and internally coherent.
+- Note: It is an isolated sandbox for the individual user, not a public playground.
 
 ---
 
@@ -86,19 +92,20 @@ For implementation details, see [docs/architecture.md](docs/architecture.md).
 - [x] Product-aware Overview foundation
 - [x] ICP (Ideal Customer Profile)
 - [x] Personas
-- [x] Execution (plays, sequences, campaigns)
+- [x] Execution (plays, sequences, campaigns, leads)
 - [x] Analytics and measurement
 - [x] Learnings
 - [x] Authentication integration
 - [x] Positioning
+- [x] Competitors
+- [x] Research library
+- [x] AI architecture (optional, provider-agnostic)
+- [x] AI features (BYOK, local Ollama support)
+- [x] Demo mode
 
-### Upcoming
-- [ ] Competitors
-- [ ] Research library
-- [ ] AI architecture (optional, provider-agnostic)
-- [ ] AI features (BYOK, local Ollama support)
-- [ ] Demo mode
-- [ ] Open-source polish and contribution guide
+### Future Work
+
+Future capabilities beyond the MVP are still in planning.
 
 ---
 
@@ -134,13 +141,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### Environment variables
 
-`.env.example` documents the required variables. Currently only one is needed:
+`.env.example` documents the required variables. Currently only one is needed for core functionality:
 
 ```
 DATABASE_URL=postgresql://user:password@localhost:5432/gtm_os
 ```
 
 `DATABASE_URL` is read exclusively by server-side code and Drizzle CLI commands. It is never exposed to the client bundle.
+
+Optional AI configuration requires additional server-side environment variables (`AI_PROVIDER`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`), but the application functions normally without them.
 
 ### Available scripts
 
@@ -162,26 +171,22 @@ npm run db:studio    # Open Drizzle Studio (database browser)
 
 ## Database
 
-PostgreSQL is the only supported database. Drizzle ORM is used for schema definition, migrations, and queries. The schema currently defines three tables:
+PostgreSQL is the only supported database. Drizzle ORM is used for schema definition, migrations, and queries. The schema covers workspaces, products, and persistent GTM domain models (ICP, Personas, Positioning, Competitors, Research, Leads, Campaigns, Experiments, Learnings).
 
-- `workspaces` — top-level organizational unit with a globally unique slug
-- `workspace_members` — membership join table; `user_id` is an opaque UUID (no users table yet)
-- `products` — workspace-scoped products with slug uniqueness per workspace; archived, never hard-deleted
+Note: Analytics is a read-only aggregation layer over existing domain data and does not have its own analytics tables.
 
 Migrations live in `drizzle/` and are generated with `npm run db:generate` and applied with `npm run db:migrate`.
 
 ---
 
-## AI direction
+## AI Architecture
 
-AI is intentionally optional and will not be required for core GTM functionality. Planned approach:
+AI is an optional copilot. Core functionality does not require an AI provider.
 
-- **BYOK** (Bring Your Own Key) — users provide their own API keys
-- **Provider abstraction** — switchable between OpenAI, Anthropic, and others
-- **Local inference** — Ollama support planned for fully offline use
-- The core application will remain fully functional without any AI configuration
-
-None of this is implemented yet.
+- **Provider Abstraction**: Switchable between OpenAI-compatible APIs and local Ollama.
+- **Server-side Config**: Keys are never exposed to the client (BYOK).
+- **Drafting**: Generates drafts for ICP, Personas, and Positioning using workspace context.
+- **Safe Persistence**: AI generates drafts only; normal application forms handle actual data persistence.
 
 ---
 
@@ -196,3 +201,5 @@ If you are exploring the codebase, the best starting points are:
 - [`lib/workspace/`](lib/workspace/) — workspace domain services
 - [`lib/product/`](lib/product/) — product domain services
 - [`lib/routing/`](lib/routing/) — route resolver and auth seam
+- [`lib/ai/`](lib/ai/) — AI capabilities and provider abstraction
+- [`lib/demo/`](lib/demo/) — Demo Mode isolation and seeding

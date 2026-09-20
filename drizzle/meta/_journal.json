@@ -57,6 +57,13 @@
       "when": 1789811110666,
       "tag": "0007_cultured_morlocks",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789899774494,
+      "tag": "0008_clammy_union_jack",
+      "breakpoints": true
     }
   ]
 }

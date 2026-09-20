@@ -428,6 +428,66 @@ export const positioning = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// Competitors (Stage 13)
+// ---------------------------------------------------------------------------
+export const competitors = pgTable(
+  "competitors",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /**
+     * The product this competitor belongs to.
+     * RESTRICT prevents deleting a product that has competitors.
+     */
+    product_id: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+
+    // ── Identity ─────────────────────────────────────────────────────────────
+    /** Display name (preserved as entered, max 255 chars) */
+    name: text("name").notNull(),
+    /**
+     * Lowercase trimmed name, computed by the service layer.
+     * This column carries the partial unique index to enforce case-insensitive uniqueness.
+     * Never shown in the UI.
+     */
+    name_normalized: text("name_normalized").notNull(),
+    /** Optional URL (validated as http/https by the service layer) */
+    website: text("website"),
+    /** e.g. "Direct", "Indirect", "Substitute" */
+    category: text("category"),
+
+    // ── Intelligence ─────────────────────────────────────────────────────────
+    /** Free-text overview of the competitor (max 2000 chars) */
+    description: text("description"),
+    /** Array of free-text tags (each max 500 chars) */
+    strengths: text("strengths").array(),
+    /** Array of free-text tags (each max 500 chars) */
+    weaknesses: text("weaknesses").array(),
+    /** What we do better (each max 500 chars) */
+    differentiators: text("differentiators").array(),
+    /** Pricing/business model notes (max 2000 chars) */
+    pricing_notes: text("pricing_notes"),
+    /** Internal freeform notes (max 10000 chars) */
+    notes: text("notes"),
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+    /** NULL → active; non-NULL → archived. Competitors are never hard-deleted. */
+    archived_at: timestamp("archived_at", { withTimezone: true }),
+    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    // Fast lookup of all competitors for a product
+    index("competitors_product_id_idx").on(t.product_id),
+    // Case-insensitive duplicate prevention within active set
+    // Enforces: one active competitor per product per normalized name
+    uniqueIndex("competitors_one_active_per_product_name")
+      .on(t.product_id, t.name_normalized)
+      .where(sql`${t.archived_at} IS NULL`),
+  ],
+);
+
+// ---------------------------------------------------------------------------
 // auth.js
 // ---------------------------------------------------------------------------
 

@@ -108,7 +108,7 @@ describe("Research Service - Input Validation", () => {
 });
 
 describe("Research Service - Database Invariants", () => {
-  let queryMock: any;
+  let queryMock: ReturnType<typeof mock.method>;
 
   before(() => {
     env.DATABASE_URL = "postgres://dummy";
@@ -121,9 +121,9 @@ describe("Research Service - Database Invariants", () => {
     queryMock.mock.restore();
   });
 
-  function setMockRows(responses: any[][]) {
+  function setMockRows(responses: unknown[][]) {
     let callCount = 0;
-    queryMock.mock.mockImplementation(async (config: any) => {
+    queryMock.mock.mockImplementation(async (_config: unknown) => {
       // Return the next response array or empty
       const rows = responses[callCount++] || [];
       return { rows };

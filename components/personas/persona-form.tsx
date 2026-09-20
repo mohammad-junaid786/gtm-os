@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { createPersonaAction, updatePersonaAction } from "@/lib/personas/actions";
+import { getAiAvailabilityAction, generatePersonaDraftAction } from "@/lib/ai/actions";
 import type { PersonaRow } from "@/lib/personas/types";
 import { cn } from "@/lib/utils";
 
@@ -161,6 +162,38 @@ export function PersonaForm({
   const [preferredChannels, setPreferredChannels] = useState<string[]>(persona?.preferred_channels ?? []);
   const [messagingAngles, setMessagingAngles] = useState<string[]>(persona?.messaging_angles ?? []);
 
+  const [isAiEnabled, setIsAiEnabled] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  useEffect(() => {
+    getAiAvailabilityAction().then((res) => setIsAiEnabled(res.isAiEnabled));
+  }, []);
+
+  async function handleAiDraft() {
+    const prompt = aiPrompt.trim();
+    if (!prompt) return;
+    setIsAiLoading(true);
+    setErrorMsg(null);
+    const result = await generatePersonaDraftAction(productId, icpId, prompt);
+    setIsAiLoading(false);
+    if (!result.ok) {
+      setErrorMsg(result.error.message);
+      return;
+    }
+    const draft = result.data;
+    setName(draft.name || "");
+    setRole(draft.role || "");
+    setGoals(draft.goals || []);
+    setPainPoints(draft.pain_points || []);
+    setMotivations(draft.motivations || []);
+    setObjections(draft.objections || []);
+    setDecisionCriteria(draft.decision_criteria || []);
+    setPreferredChannels(draft.preferred_channels || []);
+    setMessagingAngles(draft.messaging_angles || []);
+    setAiPrompt("");
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg(null);
@@ -220,6 +253,38 @@ export function PersonaForm({
       {errorMsg && (
         <div className="rounded-sm border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
           {errorMsg}
+        </div>
+      )}
+
+      {isAiEnabled && !persona && (
+        <div className="rounded-md border border-accent bg-accent/5 p-4 space-y-3">
+          <label className="block text-sm font-medium text-foreground">
+            ✨ Draft with AI
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="E.g. Technical champions who care about ease of integration..."
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAiDraft();
+                }
+              }}
+              className="flex-1 rounded-sm border border-border bg-surface px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+              disabled={isAiLoading}
+            />
+            <button
+              type="button"
+              onClick={handleAiDraft}
+              disabled={isAiLoading || !aiPrompt.trim()}
+              className="rounded-sm bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground disabled:opacity-50"
+            >
+              {isAiLoading ? "Generating..." : "Generate Draft"}
+            </button>
+          </div>
         </div>
       )}
 

@@ -14,8 +14,9 @@
  *   onCancel    — called when the user dismisses the form
  */
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { createIcpAction, updateIcpAction } from "@/lib/icp/actions";
+import { getAiAvailabilityAction, generateIcpDraftAction } from "@/lib/ai/actions";
 import { BUSINESS_MODELS } from "@/lib/icp/types";
 import type { IcpRow, BusinessModel } from "@/lib/icp/types";
 import { cn } from "@/lib/utils";
@@ -235,6 +236,42 @@ export function IcpForm({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const [isAiEnabled, setIsAiEnabled] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  useEffect(() => {
+    getAiAvailabilityAction().then((res) => setIsAiEnabled(res.isAiEnabled));
+  }, []);
+
+  async function handleAiDraft() {
+    const prompt = aiPrompt.trim();
+    if (!prompt) return;
+    setIsAiLoading(true);
+    setErrorMsg(null);
+    const result = await generateIcpDraftAction(productId, prompt);
+    setIsAiLoading(false);
+    if (!result.ok) {
+      setErrorMsg(result.error.message);
+      return;
+    }
+    const draft = result.data;
+    setForm((prev) => ({
+      ...prev,
+      name: draft.name,
+      description: draft.description || "",
+      industry: draft.industry || "",
+      company_size: draft.company_size || "",
+      geography: draft.geography || "",
+      business_model: draft.business_model || "",
+      pain_points: draft.pain_points || [],
+      goals: draft.goals || [],
+      buying_signals: draft.buying_signals || [],
+      disqualifiers: draft.disqualifiers || [],
+    }));
+    setAiPrompt("");
+  }
+
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -291,6 +328,38 @@ export function IcpForm({
         <p role="alert" className="rounded-sm border border-border bg-surface px-4 py-3 text-sm text-foreground">
           {errorMsg}
         </p>
+      )}
+
+      {isAiEnabled && !isEdit && (
+        <div className="rounded-md border border-accent bg-accent/5 p-4 space-y-3">
+          <label className="block text-sm font-medium text-foreground">
+            ✨ Draft with AI
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="E.g. Mid-market healthcare providers looking to reduce compliance overhead..."
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAiDraft();
+                }
+              }}
+              className="flex-1 rounded-sm border border-border bg-surface px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+              disabled={isAiLoading}
+            />
+            <button
+              type="button"
+              onClick={handleAiDraft}
+              disabled={isAiLoading || !aiPrompt.trim()}
+              className="rounded-sm bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground disabled:opacity-50"
+            >
+              {isAiLoading ? "Generating..." : "Generate Draft"}
+            </button>
+          </div>
+        </div>
       )}
 
       {/* ── Identity ──────────────────────────────────────────────── */}

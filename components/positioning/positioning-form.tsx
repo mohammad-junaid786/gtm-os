@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * PositioningForm — handles both create and edit modes.
@@ -14,8 +14,9 @@
  *   onCancel      — called when the user dismisses the form
  */
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { createPositioningAction, updatePositioningAction } from "@/lib/positioning/actions";
+import { getAiAvailabilityAction, generatePositioningDraftAction } from "@/lib/ai/actions";
 import type { PositioningRow } from "@/lib/positioning/types";
 import { cn } from "@/lib/utils";
 
@@ -207,6 +208,38 @@ export function PositioningForm({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const [isAiEnabled, setIsAiEnabled] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  useEffect(() => {
+    getAiAvailabilityAction().then((res) => setIsAiEnabled(res.isAiEnabled));
+  }, []);
+
+  async function handleAiDraft() {
+    const prompt = aiPrompt.trim();
+    if (!prompt) return;
+    setIsAiLoading(true);
+    setError(null);
+    const result = await generatePositioningDraftAction(productId, prompt);
+    setIsAiLoading(false);
+    if (!result.ok) {
+      setError(result.error.message);
+      return;
+    }
+    const draft = result.data;
+    setForm((prev) => ({
+      ...prev,
+      positioning_statement: draft.positioning_statement || "",
+      target_customer: draft.target_customer || "",
+      customer_problem: draft.customer_problem || "",
+      unique_value: draft.unique_value || "",
+      alternatives: draft.alternatives || [],
+      proof_points: draft.proof_points || [],
+    }));
+    setAiPrompt("");
+  }
+
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -246,6 +279,44 @@ export function PositioningForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {error && (
+        <div className="rounded-sm border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
+      {isAiEnabled && !positioning && (
+        <div className="rounded-md border border-accent bg-accent/5 p-4 space-y-3">
+          <label className="block text-sm font-medium text-foreground">
+            ✨ Draft with AI
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="E.g. A privacy-focused alternative to Google Analytics..."
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAiDraft();
+                }
+              }}
+              className="flex-1 rounded-sm border border-border bg-surface px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+              disabled={isAiLoading}
+            />
+            <button
+              type="button"
+              onClick={handleAiDraft}
+              disabled={isAiLoading || !aiPrompt.trim()}
+              className="rounded-sm bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground disabled:opacity-50"
+            >
+              {isAiLoading ? "Generating..." : "Generate Draft"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Positioning Statement */}
       <div className="space-y-2">
         <Label htmlFor="pos-statement">Positioning Statement</Label>

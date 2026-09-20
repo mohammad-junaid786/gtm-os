@@ -22,7 +22,7 @@ GTM OS is designed so the core application works without paid AI APIs. AI featur
 
 ## Current status
 
-Stages 1–11 of the build are complete. The foundational architecture is in place:
+Stages 1–12 of the build are complete. The foundational architecture is in place:
 
 - workspace and product data models
 - server-side domain services (workspace creation, product CRUD)
@@ -32,6 +32,8 @@ Stages 1–11 of the build are complete. The foundational architecture is in pla
 - product-aware Overview foundation
 
 **Authentication is implemented.** The routing layer seamlessly uses the authenticated user ID for membership-aware workspace resolution and product-scoped access.
+
+**Positioning is implemented.** The Positioning module allows a GTM team to define and maintain the product's market positioning — including the positioning statement, target customer, customer problem, unique value, proof points, and competitive alternatives.
 
 ---
 
@@ -88,10 +90,9 @@ For implementation details, see [docs/architecture.md](docs/architecture.md).
 - [x] Analytics and measurement
 - [x] Learnings
 - [x] Authentication integration
+- [x] Positioning
 
 ### Upcoming
-
-- [ ] Positioning
 - [ ] Competitors
 - [ ] Research library
 - [ ] AI architecture (optional, provider-agnostic)

@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 
 function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted uppercase">
+    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted-foreground uppercase">
       {children}
     </label>
   );
@@ -58,7 +58,7 @@ function TextInput({
       maxLength={maxLength}
       disabled={disabled}
       className={cn(
-        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
       )}
     />
@@ -89,7 +89,7 @@ function Textarea({
       rows={rows}
       disabled={disabled}
       className={cn(
-        "w-full resize-y rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full resize-y rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
       )}
     />
@@ -158,7 +158,7 @@ function TagInput({
                 e.stopPropagation();
                 onChange(values.filter((_, j) => j !== i));
               }}
-              className="ml-0.5 text-muted hover:text-foreground"
+              className="ml-0.5 text-muted-foreground hover:text-foreground"
               aria-label={`Remove ${v}`}
             >
               ×
@@ -176,7 +176,7 @@ function TagInput({
         onBlur={commit}
         placeholder={values.length === 0 ? placeholder : undefined}
         disabled={disabled}
-        className="min-w-32 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"
+        className="min-w-32 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
       />
     </div>
   );
@@ -445,7 +445,7 @@ export function IcpForm({
       {/* ── Needs & signals ───────────────────────────────────────── */}
       <fieldset className="space-y-4">
         <legend className="text-sm font-medium text-foreground">Needs &amp; Signals</legend>
-        <p className="text-xs text-muted">Press Enter or comma to add each item.</p>
+        <p className="text-xs text-muted-foreground">Press Enter or comma to add each item.</p>
         <div className="space-y-1.5">
           <Label htmlFor="icp-pain">Pain points</Label>
           <TagInput
@@ -518,7 +518,7 @@ export function IcpForm({
           type="button"
           onClick={onCancel}
           disabled={isPending}
-          className="text-sm text-muted hover:text-foreground focus:outline-none"
+          className="text-sm text-muted-foreground hover:text-foreground focus:outline-none"
         >
           Cancel
         </button>

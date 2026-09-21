@@ -73,7 +73,7 @@ export function PersonaList({
 
       {personas.length === 0 && !isCreating && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border py-16 text-center">
-          <p className="text-sm text-muted">No personas defined for this ICP yet.</p>
+          <p className="text-sm text-muted-foreground">No personas defined for this ICP yet.</p>
           <button
             onClick={() => setIsCreating(true)}
             className="mt-4 text-sm font-medium text-primary hover:underline"

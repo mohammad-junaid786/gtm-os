@@ -105,7 +105,7 @@ export function AppShell({
           workspaceName={workspaceName}
           productName={productName}
         />
-        <main id="main-content" className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 md:px-6">
+        <main id="main-content" className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 md:px-8 md:py-8 lg:px-12 lg:py-10">
           {children}
         </main>
       </div>

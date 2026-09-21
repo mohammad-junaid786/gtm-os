@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted uppercase">
+    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted-foreground uppercase">
       {children}
     </label>
   );
@@ -36,7 +36,7 @@ function TextInput({
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
-        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
       )}
     />
@@ -67,7 +67,7 @@ function Textarea({
       rows={rows}
       disabled={disabled}
       className={cn(
-        "w-full resize-y rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full resize-y rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
       )}
     />
@@ -96,7 +96,7 @@ function NumberInput({
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
-        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
       )}
     />
@@ -194,7 +194,7 @@ function TagInput({
                 e.stopPropagation();
                 onChange(values.filter((_, j) => j !== i));
               }}
-              className="ml-0.5 text-muted hover:text-foreground"
+              className="ml-0.5 text-muted-foreground hover:text-foreground"
             >
               ×
             </button>
@@ -211,7 +211,7 @@ function TagInput({
         onBlur={commit}
         disabled={disabled}
         placeholder={values.length === 0 ? placeholder : undefined}
-        className="min-w-[120px] flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted disabled:opacity-50"
+        className="min-w-[120px] flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-50"
       />
     </div>
   );

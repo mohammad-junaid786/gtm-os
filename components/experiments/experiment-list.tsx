@@ -69,7 +69,7 @@ export function ExperimentList({
 
       {experiments.length === 0 && !isCreating && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border py-16 text-center">
-          <p className="text-sm text-muted">No experiments added yet.</p>
+          <p className="text-sm text-muted-foreground">No experiments added yet.</p>
           <button onClick={() => setIsCreating(true)} className="mt-4 text-sm font-medium text-primary hover:underline">
             Create your first experiment
           </button>
@@ -97,12 +97,12 @@ export function ExperimentList({
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-foreground">{experiment.name}</h3>
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-muted-foreground">
                     {experiment.status} • {experiment.goal || "No goal"}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setEditingId(experiment.id)} className="text-sm text-muted hover:text-foreground">
+                  <button onClick={() => setEditingId(experiment.id)} className="text-sm text-muted-foreground hover:text-foreground">
                     Edit
                   </button>
                   <button
@@ -123,15 +123,15 @@ export function ExperimentList({
 
               <div className="grid gap-4 sm:grid-cols-3 pt-4 border-t border-border">
                 <div>
-                  <div className="text-xs text-muted uppercase">Channel</div>
+                  <div className="text-xs text-muted-foreground uppercase">Channel</div>
                   <div className="text-sm font-medium">{experiment.channel || "—"}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-muted uppercase">Primary Metric</div>
+                  <div className="text-xs text-muted-foreground uppercase">Primary Metric</div>
                   <div className="text-sm font-medium">{experiment.primary_metric || "—"}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-muted uppercase">Budget</div>
+                  <div className="text-xs text-muted-foreground uppercase">Budget</div>
                   <div className="text-sm font-medium">{experiment.budget != null ? `$${(experiment.budget / 100).toFixed(2)}` : "—"}</div>
                 </div>
               </div>

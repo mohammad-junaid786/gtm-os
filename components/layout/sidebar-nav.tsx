@@ -58,16 +58,17 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex items-center gap-2.5 rounded-sm px-2 py-1.5 text-[13px] transition-colors",
+        "flex items-center gap-2.5 rounded px-2.5 py-1.5 text-sm transition-colors",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        active ? "bg-foreground/5 text-foreground" : "text-muted hover:bg-foreground/5 hover:text-foreground",
+        active
+          ? "bg-primary/8 text-primary font-medium"
+          : "text-[#575757] hover:bg-foreground/5 hover:text-foreground"
       )}
     >
-      <span
-        className={cn("h-4 w-0.5 shrink-0 rounded-full", active ? "bg-accent" : "bg-transparent")}
+      <Icon
+        className={cn("size-[14px] shrink-0", active ? "text-primary" : "text-[#9e9e9e]")}
         aria-hidden="true"
       />
-      <Icon className="size-3.5 shrink-0" aria-hidden="true" />
       <span className="truncate">{item.label}</span>
     </Link>
   );
@@ -79,23 +80,15 @@ export function SidebarNav({
   settingsItem = defaultSettingsItem,
 }: {
   onNavigate?: () => void;
-  /**
-   * Navigation sections to render. Defaults to the static flat-route sections.
-   * Pass the result of buildProductNav(basePath).sections for product-scoped nav.
-   */
   sections?: NavSection[];
-  /**
-   * Settings nav item. Defaults to the static /settings item.
-   * Pass buildProductNav(basePath).settingsItem for product-scoped nav.
-   */
   settingsItem?: NavItem;
 }) {
   return (
     <nav aria-label="Primary" className="flex h-full flex-col">
-      <div className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
+      <div className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
         {sections.map((section) => (
           <div key={section.id}>
-            <p className="px-2.5 pb-2 text-[11px] font-medium tracking-[0.08em] text-muted uppercase">
+            <p className="mb-1 px-2.5 text-[9px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
               {section.label}
             </p>
             <ul className="space-y-0.5">

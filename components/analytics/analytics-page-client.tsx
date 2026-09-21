@@ -10,6 +10,7 @@ import {
 import type { GtmMetrics, PipelineFunnel, CampaignPerformance } from "@/lib/analytics/types";
 import { StatCard } from "@/components/ui/stat-card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 export function AnalyticsPageClient() {
@@ -77,17 +78,12 @@ export function AnalyticsPageClient() {
   };
 
   return (
-    <div className="space-y-8 max-w-6xl">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
-            Analytics & Measurement
-          </h1>
-          <p className="text-sm text-neutral-500 mt-1">
-            Performance metrics for your go-to-market execution.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-12 max-w-6xl">
+      <PageHeader
+        eyebrow="MEASUREMENT"
+        title="Analytics & Measurement"
+        description="Performance metrics for your go-to-market execution."
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -108,52 +104,77 @@ export function AnalyticsPageClient() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium text-neutral-900">Pipeline Funnel</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-4">
+        <section aria-labelledby="pipeline-funnel-heading">
+          <h2 id="pipeline-funnel-heading" className="text-sm font-semibold text-foreground">
+            Pipeline Funnel
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">Lead progression across all campaigns.</p>
           {funnel.length === 0 ? (
-            <div className="h-64 flex items-center justify-center border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-500">
+            <div className="h-64 flex items-center justify-center mt-6 border border-dashed border-border rounded-md bg-surface/50 text-sm text-muted-foreground">
               No lead data available.
             </div>
           ) : (
-            <div className="h-64 p-4 border border-neutral-200 rounded-lg">
+            <div className="h-72 mt-6">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={funnel} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e5e5" />
+                <BarChart data={funnel} layout="vertical" margin={{ top: 0, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="status" type="category" axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{ fill: "#f5f5f5" }} />
-                  <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={24} />
+                  <YAxis 
+                    dataKey="status" 
+                    type="category" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: "#6b6b6b", fontSize: 12 }} 
+                    width={90}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: "#f0f0f0", opacity: 0.4 }}
+                    contentStyle={{ borderRadius: '6px', border: '1px solid #dbdbdb', boxShadow: 'none', fontSize: '12px', padding: '8px 12px' }}
+                    itemStyle={{ color: '#212121', fontWeight: 500 }}
+                  />
+                  <Bar dataKey="count" fill="#0562ef" radius={[0, 2, 2, 0]} barSize={20} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           )}
-        </div>
+        </section>
 
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium text-neutral-900">Campaign Performance</h2>
+        <section aria-labelledby="campaign-performance-heading">
+          <h2 id="campaign-performance-heading" className="text-sm font-semibold text-foreground">
+            Campaign Performance
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">Spend versus revenue by campaign.</p>
           {campaigns.length === 0 ? (
-            <div className="h-64 flex items-center justify-center border border-neutral-200 rounded-lg bg-neutral-50 text-sm text-neutral-500">
+            <div className="h-64 flex items-center justify-center mt-6 border border-dashed border-border rounded-md bg-surface/50 text-sm text-muted-foreground">
               No campaign data available.
             </div>
           ) : (
-            <div className="h-64 p-4 border border-neutral-200 rounded-lg">
+            <div className="h-72 mt-6">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={campaigns} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e5e5" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <BarChart data={campaigns} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="name" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: "#6b6b6b", fontSize: 12 }} 
+                    dy={10}
+                  />
                   <YAxis hide />
                   <Tooltip 
-                    cursor={{ fill: "#f5f5f5" }} 
+                    cursor={{ fill: "#f0f0f0", opacity: 0.4 }} 
+                    contentStyle={{ borderRadius: '6px', border: '1px solid #dbdbdb', boxShadow: 'none', fontSize: '12px', padding: '8px 12px' }}
                     formatter={(val: number, name: string) => [formatCurrency(val), name === "revenue" ? "Revenue" : "Spend"]}
+                    itemStyle={{ fontWeight: 500 }}
                   />
-                  <Bar dataKey="spend" fill="#ef4444" radius={[4, 4, 0, 0]} name="Spend" />
-                  <Bar dataKey="revenue" fill="#10b981" radius={[4, 4, 0, 0]} name="Revenue" />
+                  <Bar dataKey="spend" fill="#a3a3a3" radius={[2, 2, 0, 0]} name="Spend" barSize={16} />
+                  <Bar dataKey="revenue" fill="#0562ef" radius={[2, 2, 0, 0]} name="Revenue" barSize={16} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           )}
-        </div>
+        </section>
       </div>
     </div>
   );

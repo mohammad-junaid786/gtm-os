@@ -56,7 +56,7 @@ export function CompetitorList({
       {competitors.length === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center">
           <h3 className="text-sm font-medium text-foreground">No competitors tracked</h3>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1 text-sm text-muted-foreground">
             Add competitors to map out your competitive landscape.
           </p>
           <div className="mt-6">

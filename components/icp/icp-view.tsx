@@ -14,6 +14,7 @@
 import { useState } from "react";
 import type { IcpRow } from "@/lib/icp/types";
 import { IcpForm } from "@/components/icp/icp-form";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -23,7 +24,9 @@ import { cn } from "@/lib/utils";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-medium tracking-[0.08em] text-muted uppercase">{title}</h3>
+      <h3 className="text-[9px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+        {title}
+      </h3>
       {children}
     </div>
   );
@@ -33,8 +36,8 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   if (!value) return null;
   return (
     <div>
-      <p className="text-xs text-muted">{label}</p>
-      <p className="mt-0.5 text-sm text-foreground">{value}</p>
+      <p className="text-[9px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">{label}</p>
+      <p className="mt-0.5 font-mono text-xs text-foreground">{value}</p>
     </div>
   );
 }
@@ -43,12 +46,12 @@ function TagList({ label, values }: { label: string; values: string[] | null | u
   if (!values || values.length === 0) return null;
   return (
     <div>
-      <p className="mb-1.5 text-xs text-muted">{label}</p>
+      <p className="mb-2 text-[9px] font-semibold tracking-[0.12em] uppercase text-muted-foreground">{label}</p>
       <div className="flex flex-wrap gap-1.5">
         {values.map((v, i) => (
           <span
             key={i}
-            className="inline-block rounded-sm border border-border bg-surface/60 px-2 py-0.5 text-xs text-foreground"
+            className="inline-block bg-foreground/5 px-2 py-0.5 text-xs text-foreground"
           >
             {v}
           </span>
@@ -101,25 +104,25 @@ export function IcpView({
         <div className="space-y-1">
           <h2 className="text-base font-semibold text-foreground">{icp.name}</h2>
           {icp.description && (
-            <p className="max-w-2xl text-sm leading-relaxed text-muted">{icp.description}</p>
+            <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{icp.description}</p>
           )}
         </div>
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => setEditing(true)}
-          className={cn(
-            "shrink-0 rounded-sm border border-border px-3 py-1.5 text-xs font-medium text-muted",
-            "hover:border-foreground/20 hover:text-foreground focus:outline-none focus:ring-1 focus:ring-ring",
-          )}
+          className="shrink-0"
         >
           Edit
-        </button>
+        </Button>
       </div>
+
+      <hr className="border-border" />
 
       {/* Firmographics */}
       {hasAnyFirmographics && (
         <Section title="Firmographics">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-4">
             <Field label="Industry" value={icp.industry} />
             <Field label="Company size" value={icp.company_size} />
             <Field label="Geography" value={icp.geography} />
@@ -134,7 +137,7 @@ export function IcpView({
       {/* Needs & Signals */}
       {hasAnySignals && (
         <Section title="Needs &amp; Signals">
-          <div className="space-y-4">
+          <div className="space-y-5">
             <TagList label="Pain points" values={icp.pain_points} />
             <TagList label="Goals / outcomes" values={icp.goals} />
             <TagList label="Buying signals" values={icp.buying_signals} />
@@ -153,8 +156,8 @@ export function IcpView({
       )}
 
       {/* Metadata */}
-      <p className="text-xs text-muted">
-        Last updated {icp.updated_at.toLocaleDateString(undefined, { dateStyle: "medium" })}
+      <p className="font-mono text-[10px] text-muted-foreground">
+        Updated {icp.updated_at.toLocaleDateString("en-US", { dateStyle: "medium" })}
       </p>
     </div>
   );
@@ -184,24 +187,21 @@ export function IcpEmpty({
   }
 
   return (
-    <div className="flex flex-col items-start gap-4 border border-dashed border-border bg-surface/40 px-5 py-10">
-      <div className="space-y-1">
+    <div className="flex flex-col items-start gap-4 py-8">
+      <div className="space-y-1.5">
         <p className="text-sm font-medium text-foreground">No ICP defined yet</p>
-        <p className="max-w-md text-sm leading-relaxed text-muted">
+        <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
           An Ideal Customer Profile describes the type of company that gets the most value from
           your product and is most likely to buy. Define yours to align your go-to-market strategy.
         </p>
       </div>
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onClick={() => setCreating(true)}
-        className={cn(
-          "rounded-sm border border-border bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground",
-          "hover:bg-foreground/10 focus:outline-none focus:ring-1 focus:ring-ring",
-        )}
       >
         Define ICP
-      </button>
+      </Button>
     </div>
   );
 }

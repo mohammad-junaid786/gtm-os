@@ -69,7 +69,7 @@ export function LeadList({
 
       {leads.length === 0 && !isCreating && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border py-16 text-center">
-          <p className="text-sm text-muted">No leads added yet.</p>
+          <p className="text-sm text-muted-foreground">No leads added yet.</p>
           <button onClick={() => setIsCreating(true)} className="mt-4 text-sm font-medium text-primary hover:underline">
             Add your first lead
           </button>
@@ -92,10 +92,10 @@ export function LeadList({
             <div key={lead.id} className="flex items-center justify-between rounded-md border border-border bg-surface p-4">
               <div>
                 <div className="font-medium text-foreground">{lead.company} — {lead.contact}</div>
-                <div className="text-sm text-muted">{lead.role || "No role"} | {lead.email || "No email"} | {lead.status}</div>
+                <div className="text-sm text-muted-foreground">{lead.role || "No role"} | {lead.email || "No email"} | {lead.status}</div>
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setEditingId(lead.id)} className="text-sm text-muted hover:text-foreground">
+                <button onClick={() => setEditingId(lead.id)} className="text-sm text-muted-foreground hover:text-foreground">
                   Edit
                 </button>
                 <button

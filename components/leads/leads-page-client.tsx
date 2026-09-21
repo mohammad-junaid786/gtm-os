@@ -29,12 +29,12 @@ export function LeadsPageClient() {
     <div className="space-y-8">
       <div className="space-y-1">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">Leads</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Lightweight target accounts and contacts for outbound execution.
         </p>
       </div>
 
-      {state.status === "loading" && <p className="text-sm text-muted">Loading…</p>}
+      {state.status === "loading" && <p className="text-sm text-muted-foreground">Loading…</p>}
       {state.status === "error" && (
         <div role="alert" className="border border-border bg-surface/40 px-5 py-6 text-sm text-foreground">
           {state.message}

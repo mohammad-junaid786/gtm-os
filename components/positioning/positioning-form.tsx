@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 
 function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted uppercase">
+    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted-foreground uppercase">
       {children}
     </label>
   );
@@ -56,7 +56,7 @@ function Textarea({
       rows={rows}
       disabled={disabled}
       className={cn(
-        "w-full resize-y rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full resize-y rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
       )}
     />
@@ -124,7 +124,7 @@ function TagInput({
                 e.stopPropagation();
                 onChange(values.filter((_, j) => j !== i));
               }}
-              className="ml-0.5 text-muted hover:text-foreground"
+              className="ml-0.5 text-muted-foreground hover:text-foreground"
               aria-label={`Remove ${v}`}
             >
               x
@@ -142,7 +142,7 @@ function TagInput({
         onBlur={commit}
         placeholder={values.length === 0 ? placeholder : undefined}
         disabled={disabled}
-        className="min-w-32 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"
+        className="min-w-32 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
       />
     </div>
   );
@@ -379,7 +379,7 @@ export function PositioningForm({
           placeholder="Add a proof point and press Enter (e.g. 10 customers in 30 days)"
           disabled={isPending}
         />
-        <p className="text-xs text-muted">
+        <p className="text-xs text-muted-foreground">
           Press Enter or comma to add. Each point max 500 characters.
         </p>
       </div>
@@ -394,7 +394,7 @@ export function PositioningForm({
           placeholder="Add an alternative and press Enter (e.g. Notion, Spreadsheets)"
           disabled={isPending}
         />
-        <p className="text-xs text-muted">
+        <p className="text-xs text-muted-foreground">
           Press Enter or comma to add. Each alternative max 500 characters.
         </p>
       </div>
@@ -439,7 +439,7 @@ export function PositioningForm({
           onClick={onCancel}
           disabled={isPending}
           className={cn(
-            "rounded-sm border border-border px-4 py-2 text-sm font-medium text-muted",
+            "rounded-sm border border-border px-4 py-2 text-sm font-medium text-muted-foreground",
             "hover:border-foreground/20 hover:text-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
           )}
         >

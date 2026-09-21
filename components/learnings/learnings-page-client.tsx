@@ -36,7 +36,7 @@ export function LearningsPageClient() {
 
   if (learnings === null) {
     return (
-      <div className="flex h-32 items-center justify-center text-sm text-muted">
+      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
         Loading learnings...
       </div>
     );
@@ -46,7 +46,7 @@ export function LearningsPageClient() {
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-foreground">Learnings</h1>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-1 text-sm text-muted-foreground">
           Document strategic insights, review past performance, and plan next steps.
         </p>
       </div>

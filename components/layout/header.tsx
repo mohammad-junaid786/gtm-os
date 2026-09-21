@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
 import { Kbd } from "@/components/ui/kbd";
+import { Button } from "@/components/ui/button";
 import { getNavItemByPathname } from "@/lib/navigation";
 import { logoutAction } from "@/lib/actions/auth-actions";
 
@@ -41,59 +42,69 @@ export function Header({
   const shortcut = isMac ? "⌘K" : "Ctrl K";
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background px-4 md:px-6">
-      <button
-        type="button"
-        className="inline-flex size-8 items-center justify-center rounded-sm text-muted hover:bg-foreground/5 hover:text-foreground md:hidden"
+    <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background px-4 md:px-6">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden text-muted-foreground"
         onClick={onOpenMobileNav}
         aria-controls="mobile-sidebar"
         aria-expanded={mobileNavOpen}
         aria-label="Open navigation"
       >
         <Menu className="size-4" aria-hidden="true" />
-      </button>
+      </Button>
 
-      <p className="min-w-0 flex-1 truncate text-sm font-medium tracking-tight text-foreground">{title}</p>
+      <h1 className="font-display min-w-0 flex-1 truncate text-lg font-medium tracking-tight text-foreground">
+        {title}
+      </h1>
 
-      <button
-        type="button"
-        className="hidden h-8 max-w-xs min-w-44 items-center gap-2 rounded-sm border border-border bg-surface px-2.5 text-left text-sm text-muted sm:inline-flex"
-        aria-label="Search (not available yet)"
-      >
-        <Search className="size-3.5 shrink-0" aria-hidden="true" />
-        <span className="flex-1 truncate">Search</span>
-        <Kbd>{shortcut}</Kbd>
-      </button>
-
-      <button
-        type="button"
-        className="inline-flex size-8 items-center justify-center rounded-sm border border-border text-muted sm:hidden"
-        aria-label="Search (not available yet)"
-      >
-        <Search className="size-3.5" aria-hidden="true" />
-      </button>
-
-      <div className="flex items-center gap-2">
-        {workspaceName ? (
-          <span className="hidden max-w-28 truncate text-xs text-muted sm:inline" title={workspaceName}>
-            {workspaceName}
-          </span>
-        ) : (
-          <span className="hidden text-xs text-muted sm:inline">Workspace</span>
-        )}
-        <div
-          className="flex size-7 items-center justify-center rounded-sm border border-border bg-surface text-[11px] font-medium text-muted"
-          aria-label={workspaceName ? `Workspace: ${workspaceName}` : "User profile placeholder"}
+      <div className="flex flex-1 justify-end items-center gap-3">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="hidden h-8 w-full max-w-[200px] justify-start gap-2 px-2.5 text-muted-foreground sm:inline-flex font-normal"
+          aria-label="Search (not available yet)"
         >
-          {workspaceName ? workspaceName.charAt(0).toUpperCase() : "..."}
+          <Search className="size-3.5 shrink-0" aria-hidden="true" />
+          <span className="flex-1 truncate text-left">Search</span>
+          <Kbd className="bg-transparent border-none text-[10px] text-muted-foreground shadow-none px-0">{shortcut}</Kbd>
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8 text-muted-foreground sm:hidden"
+          aria-label="Search (not available yet)"
+        >
+          <Search className="size-3.5" aria-hidden="true" />
+        </Button>
+
+        <div className="h-4 w-px bg-border hidden sm:block" />
+
+        <div className="flex items-center gap-2 pl-1">
+          {workspaceName && (
+            <span className="hidden max-w-[120px] truncate text-xs font-medium text-foreground sm:inline" title={workspaceName}>
+              {workspaceName}
+            </span>
+          )}
+          <div
+            className="flex size-6 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground"
+            aria-label={workspaceName ? `Workspace: ${workspaceName}` : "User profile placeholder"}
+          >
+            {workspaceName ? workspaceName.charAt(0).toUpperCase() : "U"}
+          </div>
         </div>
+
         <form action={logoutAction}>
-          <button
+          <Button
             type="submit"
-            className="text-xs text-muted hover:text-foreground hover:underline ml-2"
+            variant="ghost"
+            size="sm"
+            className="text-xs text-muted-foreground hover:text-foreground h-8 px-2"
           >
             Sign out
-          </button>
+          </Button>
         </form>
       </div>
     </header>
@@ -104,7 +115,7 @@ export function MobileNavCloseButton({ onClose }: { onClose: () => void }) {
   return (
     <button
       type="button"
-      className="inline-flex size-8 items-center justify-center rounded-sm text-muted hover:bg-foreground/5 hover:text-foreground"
+      className="inline-flex size-8 items-center justify-center rounded-sm text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
       onClick={onClose}
       aria-label="Close navigation"
     >

@@ -7,6 +7,7 @@ import { loadCompetitorsAction } from "@/lib/competitors/actions";
 import type { ResearchItemRow } from "@/lib/research/types";
 import type { CompetitorRow } from "@/lib/competitors/types";
 import { ResearchList } from "./research-list";
+import { PageHeader } from "@/components/ui/page-header";
 
 export function ResearchPageClient() {
   const { productId } = useProductContext();
@@ -65,13 +66,12 @@ export function ResearchPageClient() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Research Library</h1>
-        <p className="text-muted-foreground mt-2">
-          Structured insights from articles, interviews, reports, and competitor analysis.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="INTELLIGENCE"
+        title="Research Library"
+        description="Capture and organize market intelligence from articles, interviews, reports, and competitor analysis."
+      />
 
       <ResearchList 
         productId={productId} 

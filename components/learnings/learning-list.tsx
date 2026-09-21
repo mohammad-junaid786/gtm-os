@@ -69,7 +69,7 @@ export function LearningList({
 
       {learnings.length === 0 && !isCreating && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border py-16 text-center">
-          <p className="text-sm text-muted">No learnings captured yet.</p>
+          <p className="text-sm text-muted-foreground">No learnings captured yet.</p>
           <button onClick={() => setIsCreating(true)} className="mt-4 text-sm font-medium text-primary hover:underline">
             Document your first learning
           </button>
@@ -116,7 +116,7 @@ export function LearningList({
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setEditingId(learning.id)} className="text-sm text-muted hover:text-foreground">
+                  <button onClick={() => setEditingId(learning.id)} className="text-sm text-muted-foreground hover:text-foreground">
                     Edit
                   </button>
                   <button
@@ -136,7 +136,7 @@ export function LearningList({
               {learning.action_items && learning.action_items.length > 0 && (
                 <div className="mt-6 border-t border-border pt-4">
                   <h4 className="text-sm font-medium text-foreground mb-2">Next Steps</h4>
-                  <ul className="list-inside list-disc text-sm text-muted">
+                  <ul className="list-inside list-disc text-sm text-muted-foreground">
                     {learning.action_items.map((action, i) => (
                       <li key={i}>{action}</li>
                     ))}

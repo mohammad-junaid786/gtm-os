@@ -66,7 +66,7 @@ function TagInput({
                 e.stopPropagation();
                 onChange(values.filter((_, j) => j !== i));
               }}
-              className="ml-0.5 text-muted hover:text-foreground"
+              className="ml-0.5 text-muted-foreground hover:text-foreground"
               aria-label={`Remove ${v}`}
             >
               x
@@ -84,7 +84,7 @@ function TagInput({
         onBlur={commit}
         placeholder={values.length === 0 ? placeholder : undefined}
         disabled={disabled}
-        className="min-w-32 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted focus:outline-none"
+        className="min-w-32 flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
       />
     </div>
   );

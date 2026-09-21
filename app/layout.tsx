@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { DM_Sans, DM_Mono } from "next/font/google";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({
+const display = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-ibm-sans",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
 });
 
-const mono = IBM_Plex_Mono({
+const mono = DM_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-ibm-mono",
+  variable: "--font-dm-mono",
 });
 
 export const metadata: Metadata = {
@@ -34,9 +35,11 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
-      <body className="font-sans antialiased">
-        {children}
+    <html lang="en" className={`${display.variable} ${mono.variable}`}>
+      <body className="font-sans antialiased text-foreground bg-background">
+        <TooltipProvider>
+          {children}
+        </TooltipProvider>
       </body>
     </html>
   );

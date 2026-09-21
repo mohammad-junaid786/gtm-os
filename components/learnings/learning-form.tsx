@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted uppercase">
+    <label htmlFor={htmlFor} className="block text-xs font-medium tracking-wide text-muted-foreground uppercase">
       {children}
     </label>
   );
@@ -36,7 +36,7 @@ function TextInput({
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
-        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
       )}
     />
@@ -67,7 +67,7 @@ function TextArea({
       disabled={disabled}
       rows={rows}
       className={cn(
-        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted",
+        "w-full rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground",
         "focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50 resize-y",
       )}
     />
@@ -160,7 +160,7 @@ function TagInput({
             type="button"
             onClick={() => removeTag(tag)}
             disabled={disabled}
-            className="text-muted hover:text-foreground focus:outline-none"
+            className="text-muted-foreground hover:text-foreground focus:outline-none"
           >
             ×
           </button>
@@ -174,7 +174,7 @@ function TagInput({
         onKeyDown={handleKeyDown}
         placeholder={tags.length === 0 ? placeholder : ""}
         disabled={disabled}
-        className="flex-1 bg-transparent px-1 text-sm text-foreground focus:outline-none placeholder:text-muted min-w-[120px]"
+        className="flex-1 bg-transparent px-1 text-sm text-foreground focus:outline-none placeholder:text-muted-foreground min-w-[120px]"
       />
     </div>
   );
@@ -275,7 +275,7 @@ export function LearningForm({
 
       <div className="space-y-4 pt-4 border-t border-border">
         <h3 className="text-sm font-medium text-foreground">Source</h3>
-        <p className="text-sm text-muted">Link this learning to the entity that generated it.</p>
+        <p className="text-sm text-muted-foreground">Link this learning to the entity that generated it.</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="sourceType">Source Type</Label>

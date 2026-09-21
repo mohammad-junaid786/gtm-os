@@ -8,6 +8,7 @@ import { PersonaList } from "./persona-list";
 import type { IcpRow } from "@/lib/icp/types";
 import type { PersonaRow } from "@/lib/personas/types";
 import Link from "next/link";
+import { PageHeader } from "@/components/ui/page-header";
 
 type LoadState =
   | { status: "loading" }
@@ -63,17 +64,14 @@ export function PersonasPageClient() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Personas
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
-          The specific roles and buyers within your target accounts. Map their goals, pain points, and decision criteria to align your messaging.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="STRATEGY"
+        title="Personas"
+        description="The specific roles and buyers within your target accounts. Map their goals, pain points, and decision criteria to align your messaging."
+      />
 
       {state.status === "loading" && (
-        <p className="text-sm text-muted">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading…</p>
       )}
 
       {state.status === "error" && (

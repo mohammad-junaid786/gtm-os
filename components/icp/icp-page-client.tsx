@@ -19,6 +19,7 @@ import { useProductContext } from "@/lib/product-context";
 import { IcpView, IcpEmpty } from "@/components/icp/icp-view";
 import { loadIcpAction } from "@/lib/icp/actions";
 import type { IcpRow } from "@/lib/icp/types";
+import { PageHeader } from "@/components/ui/page-header";
 
 type LoadState =
   | { status: "loading" }
@@ -50,21 +51,16 @@ export function IcpPageClient() {
 
   return (
     <div className="space-y-8">
-      {/* Page header */}
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Ideal Customer Profile
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
-          The type of company that gets the most value from{" "}
-          <span className="font-medium text-foreground">{productName}</span> and is most
-          likely to buy. A clear ICP aligns positioning, messaging, and targeting.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="STRATEGY"
+        title="Ideal Customer Profile"
+        description={
+          `The type of company that gets the most value from ${productName ?? "your product"} and is most likely to buy. A clear ICP aligns positioning, messaging, and targeting.`
+        }
+      />
 
-      {/* ICP content */}
       {state.status === "loading" && (
-        <p className="text-sm text-muted">Loading…</p>
+        <p className="text-sm text-muted-foreground">Loading…</p>
       )}
 
       {state.status === "error" && (

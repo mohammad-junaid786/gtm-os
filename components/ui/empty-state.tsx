@@ -12,12 +12,12 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-start gap-2 border border-dashed border-border bg-surface/40 px-5 py-8",
+        "flex flex-col items-center justify-center text-center gap-2 rounded-md border border-dashed border-border bg-surface/50 px-6 py-12",
         className,
       )}
     >
-      <p className="text-sm font-medium text-foreground">{title}</p>
-      <p className="max-w-lg text-sm leading-relaxed text-muted">{description}</p>
+      <p className="text-sm font-semibold text-foreground">{title}</p>
+      <p className="max-w-md text-sm leading-relaxed text-muted-foreground">{description}</p>
     </div>
   );
 }

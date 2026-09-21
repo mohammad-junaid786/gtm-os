@@ -1,27 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0b;
-  --foreground: #f4f4f5;
-  --card: #111113;
-  --card-foreground: #f4f4f5;
-  --popover: #111113;
-  --popover-foreground: #f4f4f5;
-  --primary: #8b9cff;
-  --primary-foreground: #0a0a0b;
-  --secondary: #27272a;
-  --secondary-foreground: #f4f4f5;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --surface: #111113;
-  --sidebar: #0c0c0e;
-  --border: #27272a;
-  --input: #27272a;
-  --accent: #8b9cff;
-  --accent-foreground: #0a0a0b;
-  --destructive: #7f1d1d;
-  --destructive-foreground: #f4f4f5;
-  --ring: #8b9cff;
+  /* Neutral / Layout */
+  --background: #ffffff; /* Neutral 50 */
+  --foreground: #212121; /* Neutral 950 */
+  
+  --card: #ffffff;
+  --card-foreground: #212121;
+  
+  --popover: #ffffff;
+  --popover-foreground: #212121;
+  
+  --surface: #f0f0f0; /* Neutral 100 for secondary surfaces */
+  --sidebar: #f0f0f0;
+  
+  --border: #dbdbdb; /* Neutral 200 */
+  --input: #dbdbdb;
+  
+  --muted: #f0f0f0;
+  --muted-foreground: #6b6b6b; /* Neutral 600 */
+  
+  --primary: #0562ef; /* Primary 500 */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f0f0f0;
+  --secondary-foreground: #575757;
+  
+  --accent: #f2f6fc; /* Accent 50 for ghost/hover */
+  --accent-foreground: #0f2e5c; /* Accent 900 */
+  
+  --destructive: #ef4444; /* Semantic error */
+  --destructive-foreground: #ffffff;
+  
+  --ring: #3d8bff; /* Primary 400 */
 }
 
 @theme inline {
@@ -46,18 +57,33 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-ring: var(--ring);
-  --font-sans: var(--font-ibm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-ibm-mono), ui-monospace, monospace;
+
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, monospace;
+  
+  /* Radius */
+  --radius-sm: 0.0625rem;
+  --radius-md: 0.25rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-none: 0;
+  --radius-full: 9999px;
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display);
 }
 
 *:focus-visible {
@@ -66,5 +92,5 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
 }

@@ -1,5 +1,6 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatCard } from "@/components/ui/stat-card";
+import { PageHeader } from "@/components/ui/page-header";
 
 const placeholderStats = [
   { label: "Leads", hint: "No records yet" },
@@ -22,25 +23,19 @@ interface OverviewDashboardProps {
 }
 
 export function OverviewDashboard({ workspaceName, productName }: OverviewDashboardProps) {
+  const isProductScope = workspaceName && productName;
+
   return (
-    <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          {productName ? productName : "Overview"}
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
-          {workspaceName && productName ? (
-            <>
-              <span className="font-medium text-foreground">{workspaceName}</span>
-              {" · "}
-              {productName} — go-to-market overview. Metrics and activity will appear here once
-              data exists.
-            </>
-          ) : (
-            "A workspace-level view of go-to-market work. Metrics and activity will appear here once data exists."
-          )}
-        </p>
-      </div>
+    <div className="space-y-12">
+      <PageHeader
+        eyebrow={isProductScope ? "PRODUCT" : "WORKSPACE"}
+        title={productName ? productName : "Overview"}
+        description={
+          isProductScope
+            ? `${workspaceName} · go-to-market overview. Metrics and activity will appear here once data exists.`
+            : "A workspace-level view of go-to-market work. Metrics and activity will appear here once data exists."
+        }
+      />
 
       <section aria-labelledby="overview-kpis-heading">
         <h2 id="overview-kpis-heading" className="sr-only">
@@ -53,12 +48,12 @@ export function OverviewDashboard({ workspaceName, productName }: OverviewDashbo
         </div>
       </section>
 
-      <section className="space-y-3" aria-labelledby="overview-activity-heading">
+      <section className="space-y-4" aria-labelledby="overview-activity-heading">
         <div>
-          <h2 id="overview-activity-heading" className="text-sm font-medium text-foreground">
+          <h2 id="overview-activity-heading" className="text-sm font-semibold text-foreground">
             Recent activity
           </h2>
-          <p className="mt-0.5 text-sm text-muted">A chronological feed of workspace events.</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">A chronological feed of workspace events.</p>
         </div>
         <EmptyState
           title="No activity yet"

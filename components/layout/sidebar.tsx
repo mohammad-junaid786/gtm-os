@@ -21,7 +21,12 @@ export function Sidebar({
     <div className={cn("flex h-full min-h-0 flex-col", className)}>
       {showBrand ? (
         <div className="flex h-14 shrink-0 items-center border-b border-border px-5">
-          <p className="text-sm font-semibold tracking-tight text-foreground">GTM OS</p>
+          <div className="flex items-center gap-2">
+            <div className="flex h-5 w-5 items-center justify-center rounded-sm bg-primary">
+              <span className="text-[9px] font-bold leading-none text-primary-foreground tracking-tight">G</span>
+            </div>
+            <p className="font-display text-sm font-semibold tracking-tight text-foreground">GTM OS</p>
+          </div>
         </div>
       ) : null}
       <SidebarNav

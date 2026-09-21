@@ -70,7 +70,7 @@ export function CampaignList({
 
       {campaigns.length === 0 && !isCreating && (
         <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border py-16 text-center">
-          <p className="text-sm text-muted">No campaigns added yet.</p>
+          <p className="text-sm text-muted-foreground">No campaigns added yet.</p>
           <button onClick={() => setIsCreating(true)} className="mt-4 text-sm font-medium text-primary hover:underline">
             Create your first campaign
           </button>
@@ -100,12 +100,12 @@ export function CampaignList({
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h3 className="text-lg font-medium text-foreground">{campaign.name}</h3>
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-muted-foreground">
                     {campaign.status} • {campaign.channel || "No channel"} • {campaign.objective || "No objective"}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setEditingId(campaign.id)} className="text-sm text-muted hover:text-foreground">
+                  <button onClick={() => setEditingId(campaign.id)} className="text-sm text-muted-foreground hover:text-foreground">
                     Edit
                   </button>
                   <button
@@ -120,19 +120,19 @@ export function CampaignList({
 
               <div className="grid gap-4 sm:grid-cols-4 pt-4 border-t border-border">
                 <div>
-                  <div className="text-xs text-muted uppercase">Spend</div>
+                  <div className="text-xs text-muted-foreground uppercase">Spend</div>
                   <div className="text-sm font-medium">${(campaign.spend / 100).toFixed(2)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-muted uppercase">Revenue</div>
+                  <div className="text-xs text-muted-foreground uppercase">Revenue</div>
                   <div className="text-sm font-medium">${(campaign.revenue / 100).toFixed(2)}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-muted uppercase">Leads</div>
+                  <div className="text-xs text-muted-foreground uppercase">Leads</div>
                   <div className="text-sm font-medium">{campaign.leads_generated}</div>
                 </div>
                 <div>
-                  <div className="text-xs text-muted uppercase">CPL</div>
+                  <div className="text-xs text-muted-foreground uppercase">CPL</div>
                   <div className="text-sm font-medium">${(metrics.cplCents / 100).toFixed(2)}</div>
                 </div>
               </div>

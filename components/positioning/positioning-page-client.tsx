@@ -56,7 +56,7 @@ export function PositioningPageClient() {
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           Positioning
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           How{" "}
           <span className="font-medium text-foreground">{productName}</span>{" "}
           is uniquely placed in the market — who it is for, what problem it
@@ -66,7 +66,7 @@ export function PositioningPageClient() {
 
       {/* Positioning content */}
       {state.status === "loading" && (
-        <p className="text-sm text-muted">Loading...</p>
+        <p className="text-sm text-muted-foreground">Loading...</p>
       )}
 
       {state.status === "error" && (

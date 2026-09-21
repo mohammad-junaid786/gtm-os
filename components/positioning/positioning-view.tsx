@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-medium tracking-[0.08em] text-muted uppercase">{title}</h3>
+      <h3 className="text-xs font-medium tracking-[0.08em] text-muted-foreground uppercase">{title}</h3>
       {children}
     </div>
   );
@@ -34,7 +34,7 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   if (!value) return null;
   return (
     <div>
-      <p className="text-xs text-muted">{label}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-0.5 text-sm leading-relaxed text-foreground">{value}</p>
     </div>
   );
@@ -44,7 +44,7 @@ function TagList({ label, values }: { label: string; values: string[] | null | u
   if (!values || values.length === 0) return null;
   return (
     <div>
-      <p className="mb-1.5 text-xs text-muted">{label}</p>
+      <p className="mb-1.5 text-xs text-muted-foreground">{label}</p>
       <div className="flex flex-wrap gap-1.5">
         {values.map((v, i) => (
           <span
@@ -101,7 +101,7 @@ export function PositioningView({
           type="button"
           onClick={() => setEditing(true)}
           className={cn(
-            "shrink-0 rounded-sm border border-border px-3 py-1.5 text-xs font-medium text-muted",
+            "shrink-0 rounded-sm border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground",
             "hover:border-foreground/20 hover:text-foreground focus:outline-none focus:ring-1 focus:ring-ring",
           )}
         >
@@ -161,7 +161,7 @@ export function PositioningView({
       )}
 
       {/* Metadata */}
-      <p className="text-xs text-muted">
+      <p className="text-xs text-muted-foreground">
         Last updated {pos.updated_at.toLocaleDateString(undefined, { dateStyle: "medium" })}
       </p>
     </div>
@@ -195,7 +195,7 @@ export function PositioningEmpty({
     <div className="flex flex-col items-start gap-4 border border-dashed border-border bg-surface/40 px-5 py-10">
       <div className="space-y-1">
         <p className="text-sm font-medium text-foreground">No positioning defined yet</p>
-        <p className="max-w-md text-sm leading-relaxed text-muted">
+        <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
           Positioning defines who your product is for, what problem it solves, and why
           it is uniquely valuable. A clear positioning statement aligns your team and
           strengthens every go-to-market motion.

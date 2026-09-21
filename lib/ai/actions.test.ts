@@ -2,6 +2,7 @@ import test, { describe, mock, beforeEach } from "node:test";
 import assert from "node:assert";
 import { extractJson } from "./utils";
 import * as actions from "./actions";
+import { _deps } from "./ai-deps";
 
 const VALID_UUID_A = "00000000-0000-0000-0000-00000000000a";
 const VALID_UUID_B = "00000000-0000-0000-0000-00000000000b";
@@ -29,11 +30,11 @@ describe("generateIcpDraftAction", () => {
 
   beforeEach(() => {
     mock.restoreAll();
-    authMock = mock.method(actions._deps, "authorizeProductAction", async () => ({
+    authMock = mock.method(_deps, "authorizeProductAction", async () => ({
       ok: true,
       data: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
     }));
-    aiMock = mock.method(actions._deps, "generateText", async () => ({
+    aiMock = mock.method(_deps, "generateText", async () => ({
       ok: true,
       data: { content: '{"name":"AI ICP"}' },
       usage: {},
@@ -73,15 +74,15 @@ describe("generateIcpDraftAction", () => {
 describe("generatePersonaDraftAction", () => {
   beforeEach(() => {
     mock.restoreAll();
-    mock.method(actions._deps, "authorizeProductAction", async () => ({
+    mock.method(_deps, "authorizeProductAction", async () => ({
       ok: true,
       data: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
     }));
-    mock.method(actions._deps, "getIcpById", async (prodId: string, icpId: string) => {
+    mock.method(_deps, "getIcpById", async (prodId: string, icpId: string) => {
       if (prodId !== VALID_UUID_A || icpId !== VALID_UUID_B) return { ok: false };
       return { ok: true, data: { name: "Existing ICP" } as unknown as import("@/lib/icp/types").IcpRow };
     });
-    mock.method(actions._deps, "generateText", async () => ({
+    mock.method(_deps, "generateText", async () => ({
       ok: true,
       data: { content: '{"name":"AI Persona", "role":"Manager"}' },
       usage: {},
@@ -104,19 +105,19 @@ describe("generatePersonaDraftAction", () => {
 describe("generatePositioningDraftAction", () => {
   beforeEach(() => {
     mock.restoreAll();
-    mock.method(actions._deps, "authorizeProductAction", async () => ({
+    mock.method(_deps, "authorizeProductAction", async () => ({
       ok: true,
       data: { userId: "user-1", workspaceId: VALID_UUID_A, productId: VALID_UUID_A },
     }));
-    mock.method(actions._deps, "getIcpById", async (prodId: string, icpId: string) => {
+    mock.method(_deps, "getIcpById", async (prodId: string, icpId: string) => {
       if (prodId !== VALID_UUID_A || icpId !== VALID_UUID_B) return { ok: false };
       return { ok: true, data: { name: "Context ICP" } as unknown as import("@/lib/icp/types").IcpRow };
     });
-    mock.method(actions._deps, "getPersonaContext", async (prodId: string, personaId: string) => {
+    mock.method(_deps, "getPersonaContext", async (prodId: string, personaId: string) => {
       if (prodId !== VALID_UUID_A || personaId !== "persona-1") return undefined;
       return { name: "Context Persona", role: "CISO" };
     });
-    mock.method(actions._deps, "generateText", async () => ({
+    mock.method(_deps, "generateText", async () => ({
       ok: true,
       data: { content: '{"positioning_statement":"AI Positioning"}' },
       usage: {},

@@ -1,26 +1,7 @@
-import type { LucideIcon } from "lucide-react";
-import {
-  Building2,
-  LayoutDashboard,
-  ListOrdered,
-  Megaphone,
-  MessageSquare,
-  Radio,
-  Search,
-  Settings,
-  Swords,
-  Target,
-  Users,
-  Workflow,
-  Beaker,
-  BarChart2,
-  Lightbulb,
-} from "lucide-react";
-
 export type NavItem = {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: string;
   description: string;
 };
 
@@ -43,7 +24,7 @@ export const navSections: NavSection[] = [
       {
         href: "/",
         label: "Overview",
-        icon: LayoutDashboard,
+        icon: "LayoutDashboard",
         description: "Workspace snapshot and recent activity.",
       },
     ],
@@ -55,19 +36,13 @@ export const navSections: NavSection[] = [
       {
         href: "/icp",
         label: "ICP",
-        icon: Target,
+        icon: "Target",
         description: "Ideal customer profile definitions.",
-      },
-      {
-        href: "/signals",
-        label: "Signals",
-        icon: Radio,
-        description: "Market and account signals.",
       },
       {
         href: "/research",
         label: "Research",
-        icon: Search,
+        icon: "Search",
         description: "Account and market research.",
       },
     ],
@@ -79,32 +54,20 @@ export const navSections: NavSection[] = [
       {
         href: "/leads",
         label: "Leads",
-        icon: Building2,
+        icon: "Building2",
         description: "Target accounts and contacts.",
       },
       {
         href: "/campaigns",
         label: "Campaigns",
-        icon: Megaphone,
+        icon: "Megaphone",
         description: "Outbound and inbound campaign work.",
       },
       {
         href: "/experiments",
         label: "Experiments",
-        icon: Beaker,
+        icon: "Beaker",
         description: "GTM experiments and hypotheses.",
-      },
-      {
-        href: "/plays",
-        label: "Plays",
-        icon: Workflow,
-        description: "Repeatable go-to-market plays.",
-      },
-      {
-        href: "/sequences",
-        label: "Sequences",
-        icon: ListOrdered,
-        description: "Multi-step outreach sequences.",
       },
     ],
   },
@@ -113,7 +76,7 @@ export const navSections: NavSection[] = [
 export const settingsItem: NavItem = {
   href: "/settings",
   label: "Settings",
-  icon: Settings,
+  icon: "Settings",
   description: "Workspace and application preferences.",
 };
 
@@ -152,7 +115,7 @@ export function buildProductNav(basePath: string): ProductNavConfig {
           {
             href: b,
             label: "Overview",
-            icon: LayoutDashboard,
+            icon: "LayoutDashboard",
             description: "Product snapshot and recent activity.",
           },
         ],
@@ -164,25 +127,25 @@ export function buildProductNav(basePath: string): ProductNavConfig {
           {
             href: `${b}/strategy/icp`,
             label: "ICP",
-            icon: Target,
+            icon: "Target",
             description: "Ideal customer profile for this product.",
           },
           {
             href: `${b}/strategy/personas`,
             label: "Personas",
-            icon: Users,
+            icon: "Users",
             description: "Buyer roles and messaging within the ICP.",
           },
           {
             href: `${b}/strategy/positioning`,
             label: "Positioning",
-            icon: MessageSquare,
+            icon: "MessageSquare",
             description: "How your product is uniquely positioned in the market.",
           },
           {
             href: `${b}/strategy/competitors`,
             label: "Competitors",
-            icon: Swords,
+            icon: "Swords",
             description: "Track and analyze your competitive landscape.",
           },
         ],
@@ -192,15 +155,9 @@ export function buildProductNav(basePath: string): ProductNavConfig {
         label: "Intelligence",
         items: [
           {
-            href: `${b}/signals`,
-            label: "Signals",
-            icon: Radio,
-            description: "Market and account signals.",
-          },
-          {
             href: `${b}/research`,
             label: "Research",
-            icon: Search,
+            icon: "Search",
             description: "Account and market research.",
           },
         ],
@@ -212,32 +169,20 @@ export function buildProductNav(basePath: string): ProductNavConfig {
           {
             href: `${b}/execution/leads`,
             label: "Leads",
-            icon: Building2,
+            icon: "Building2",
             description: "Target accounts and contacts.",
           },
           {
             href: `${b}/execution/campaigns`,
             label: "Campaigns",
-            icon: Megaphone,
+            icon: "Megaphone",
             description: "Outbound and inbound campaign work.",
           },
           {
             href: `${b}/execution/experiments`,
             label: "Experiments",
-            icon: Beaker,
+            icon: "Beaker",
             description: "GTM experiments and hypotheses.",
-          },
-          {
-            href: `${b}/plays`,
-            label: "Plays",
-            icon: Workflow,
-            description: "Repeatable go-to-market plays.",
-          },
-          {
-            href: `${b}/sequences`,
-            label: "Sequences",
-            icon: ListOrdered,
-            description: "Multi-step outreach sequences.",
           },
         ],
       },
@@ -248,22 +193,22 @@ export function buildProductNav(basePath: string): ProductNavConfig {
           {
             href: `${b}/analytics`,
             label: "Analytics",
-            icon: BarChart2,
+            icon: "BarChart2",
             description: "Performance metrics for your go-to-market execution.",
           },
           {
             href: `${b}/learnings`,
             label: "Learnings",
-            icon: Lightbulb,
+            icon: "Lightbulb",
             description: "Strategic insights and action items.",
           },
         ],
       },
     ],
     settingsItem: {
-      href: `${b}/settings`,
+      href: "/settings",
       label: "Settings",
-      icon: Settings,
+      icon: "Settings",
       description: "Workspace and application preferences.",
     },
   };

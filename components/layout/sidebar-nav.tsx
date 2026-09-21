@@ -11,10 +11,46 @@ import {
 } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
+import {
+  Building2,
+  LayoutDashboard,
+  ListOrdered,
+  Megaphone,
+  MessageSquare,
+  Radio,
+  Search,
+  Settings,
+  Swords,
+  Target,
+  Users,
+  Workflow,
+  Beaker,
+  BarChart2,
+  Lightbulb,
+} from "lucide-react";
+
+const IconMap: Record<string, React.ElementType> = {
+  Building2,
+  LayoutDashboard,
+  ListOrdered,
+  Megaphone,
+  MessageSquare,
+  Radio,
+  Search,
+  Settings,
+  Swords,
+  Target,
+  Users,
+  Workflow,
+  Beaker,
+  BarChart2,
+  Lightbulb,
+};
+
 function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
   const pathname = usePathname();
   const active = isNavItemActive(pathname, item.href);
-  const Icon = item.icon;
+  const Icon = IconMap[item.icon] || LayoutDashboard;
 
   return (
     <Link

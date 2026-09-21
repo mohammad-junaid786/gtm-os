@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const serverEnvironmentSchema = z.object({
   DATABASE_URL: z.string().url().optional(),
+  AUTH_SECRET: z.string().optional(),
   AI_PROVIDER: z.string().optional(),
   AI_MODEL: z.string().optional(),
   AI_API_KEY: z.string().optional(),
@@ -10,6 +11,7 @@ const serverEnvironmentSchema = z.object({
 
 const parsedEnvironment = serverEnvironmentSchema.safeParse({
   DATABASE_URL: process.env.DATABASE_URL,
+  AUTH_SECRET: process.env.AUTH_SECRET,
   AI_PROVIDER: process.env.AI_PROVIDER,
   AI_MODEL: process.env.AI_MODEL,
   AI_API_KEY: process.env.AI_API_KEY,

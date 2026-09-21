@@ -2,10 +2,10 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { StatCard } from "@/components/ui/stat-card";
 
 const placeholderStats = [
-  { label: "Accounts", hint: "No records yet" },
-  { label: "Contacts", hint: "No records yet" },
+  { label: "Leads", hint: "No records yet" },
   { label: "Campaigns", hint: "No records yet" },
-  { label: "Plays", hint: "No records yet" },
+  { label: "Experiments", hint: "No records yet" },
+  { label: "Personas", hint: "No records yet" },
 ] as const;
 
 interface OverviewDashboardProps {
@@ -62,7 +62,7 @@ export function OverviewDashboard({ workspaceName, productName }: OverviewDashbo
         </div>
         <EmptyState
           title="No activity yet"
-          description="There is nothing to show. Activity will list here when accounts, campaigns, and plays start generating events."
+          description="There is nothing to show. Activity will list here when leads, campaigns, and experiments start generating events."
         />
       </section>
     </div>

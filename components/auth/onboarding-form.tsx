@@ -44,7 +44,7 @@ export function OnboardingForm() {
   }
 
   return (
-    <div className="w-full max-w-md p-8 bg-white rounded-lg border shadow-sm">
+    <div className="w-full max-w-md p-8 bg-card text-card-foreground rounded-lg border shadow-sm">
       <h2 className="text-2xl font-bold mb-2">Welcome to GTM OS</h2>
       <p className="text-muted-foreground mb-6">Let&apos;s set up your first workspace and product to get started.</p>
 
@@ -74,7 +74,7 @@ export function OnboardingForm() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-muted-foreground">Or</span>
+          <span className="bg-card px-2 text-muted-foreground">Or</span>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import test, { describe, beforeEach, mock } from "node:test";
 import assert from "node:assert/strict";
-import { createDemoAction, _deps } from "@/lib/actions/demo-actions";
+import { createDemoAction } from "@/lib/actions/demo-actions";
+import { _deps } from "@/lib/demo/demo-deps";
 import { DEMO_PRODUCT_SLUG } from "./demo-seeder";
 import crypto from "crypto";
 

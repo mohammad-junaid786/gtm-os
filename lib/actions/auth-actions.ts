@@ -1,4 +1,5 @@
 "use server";
+import { redirect } from "next/navigation";
 
 import { signIn, signOut } from "@/lib/auth";
 import { getDb } from "@/db";
@@ -15,7 +16,9 @@ const AuthSchema = z.object({
 
 export async function loginAction(formData: FormData) {
   try {
-    await signIn("credentials", formData);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    await signIn("credentials", { email, password, redirect: false });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -27,6 +30,8 @@ export async function loginAction(formData: FormData) {
     }
     throw error;
   }
+  
+  redirect("/");
 }
 
 export async function registerAction(formData: FormData) {
@@ -53,15 +58,17 @@ export async function registerAction(formData: FormData) {
 
   // After registration, sign them in
   try {
-    await signIn("credentials", formData);
+    await signIn("credentials", { email, password, redirect: false });
   } catch (error) {
     if (error instanceof AuthError) {
       return { error: "Something went wrong during sign in." };
     }
     throw error;
   }
+  
+  redirect("/");
 }
 
 export async function logoutAction() {
-  await signOut();
+  await signOut({ redirectTo: "/login" });
 }

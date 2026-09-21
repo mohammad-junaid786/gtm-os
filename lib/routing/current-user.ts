@@ -39,5 +39,6 @@ import { auth } from "@/lib/auth";
 export async function getCurrentUserId(): Promise<string | null> {
   if (process.env.IS_TEST === "1") return null;
   const session = await auth();
+  console.log("[DEBUG] getCurrentUserId session:", session);
   return session?.user?.id ?? null;
 }

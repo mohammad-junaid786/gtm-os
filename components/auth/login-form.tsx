@@ -26,7 +26,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-sm p-6 bg-white rounded-lg border shadow-sm">
+    <div className="w-full max-w-sm p-6 bg-card text-card-foreground rounded-lg border shadow-sm">
       <h2 className="text-2xl font-bold mb-6 text-center">
         {isRegister ? "Create an Account" : "Sign In"}
       </h2>

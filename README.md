@@ -1,45 +1,106 @@
-# GTM OS
+<div align="center">
+  <img src="public/logo/gtm-os-logo.svg" alt="GTM OS" width="220" />
+</div>
 
-An open-source, self-hostable web application for planning, executing, measuring, experimenting, and learning from go-to-market strategies.
+<br />
 
-> 🚀 **MVP implementation complete through Stage 17.** The foundational architecture and core GTM modules are fully implemented.
+**GTM OS** is an open-source, self-hostable web application for planning, executing, measuring, experimenting, and learning from go-to-market strategies.
 
----
+The core GTM loop is:
 
-## What is GTM OS?
+`PLAN → EXECUTE → MEASURE → LEARN → IMPROVE → PLAN AGAIN`
 
-GTM OS is a structured workspace for go-to-market work. The core idea is a repeatable loop:
+GTM OS provides a structured, self-owned alternative to scattered spreadsheets and disconnected SaaS tools. It is built for founders, indie hackers, early-stage startups, small GTM teams, growth/marketing teams, analysts, and researchers.
 
-```
-PLAN → EXECUTE → MEASURE → LEARN → IMPROVE → PLAN AGAIN
-```
-
-Target users are founders, indie hackers, early-stage startups, and small GTM teams who want a structured, self-owned alternative to scattered spreadsheets and disconnected SaaS tools.
-
-GTM OS is designed so the core application works without paid AI APIs. AI features are optional and provider-agnostic.
+Core functionality works without an AI provider. AI features are optional.
 
 ---
 
-## Core capabilities
+## Current Status
 
-MVP implementation complete through Stage 17. GTM OS includes the following modules:
+The project has successfully implemented its foundational MVP architecture, including robust data isolation, authentication, and a modern UI/UX redesign. We are currently in an active product refinement phase. 
 
-- **Workspace / Product**: Isolated data boundaries and product management.
-- **Authentication**: Seamless membership-aware routing.
-- **Strategy**: ICP, Personas, Positioning.
-- **Market**: Competitors, Research Library.
-- **Execution**: Leads, Campaigns, Experiments.
-- **Measurement**: Analytics and Learnings.
-- **AI Drafting**: Integrated AI capabilities for Strategy modules.
-- **Demo Mode**: Instant onboarding with representative data.
+**Currently Implemented:**
+- Core MVP architecture
+- Core GTM modules
+- Authentication (Auth.js / NextAuth)
+- Welcome, authentication, and onboarding experiences
+- AI architecture and drafting
+- Search functionality
+- Demo Mode
+- UI/UX redesign
+- Continued refinement and product polish in progress
+
+*Note: GTM OS is under active development and is not yet designated as fully production-ready.*
+
+---
+
+## Core Capabilities
+
+### Workspace and Product
+- **Workspace Architecture**: Workspace membership provides the authorization boundary for workspace-scoped access.
+- **Workspace Membership**: Managed user access to isolated data.
+- **Product Management**: Create, manage, and archive products.
+- **Product-Scoped Routing**: Routes are structured as `/w/[workspaceSlug]/[productSlug]`.
+- **Workspace Switching**: UI context switching between workspaces.
+- **Workspace Lifecycle**: Workspace creation and management workflows.
+- **Product Archiving**: Archived products are not routable.
+
+### Authentication and Onboarding
+- **Powered by Auth.js / NextAuth**: Secure session management.
+- **Sign In & Sign Up**: Full credential-based entry.
+- **Welcome Experience**: The root route (`/`) intentionally displays the GTM OS Welcome page even when a user is already authenticated.
+- **Smart "Get Started" Flow**:
+  - Logged-out user → Sign In
+  - Authenticated user without a workspace → Onboarding (Workspace/Product setup)
+  - Authenticated user with a workspace → Existing/default workspace
+- **Workspace & Product Setup**: Streamlined onboarding flow for new users.
+- **Demo Mode**: Instant generation of a representative workspace.
+
+### Strategy
+- **ICP** (Ideal Customer Profile)
+- **Personas**
+- **Positioning**
+
+### Market / Research
+- **Competitors**
+- **Research Library**
+
+### Execution
+- **Leads**
+- **Campaigns**
+- **Experiments**
+
+### Analytics / Learning
+- **Analytics**: A read-only aggregation layer that visualizes data over existing domain tables. It does not use standalone analytics persistence tables.
+- **Funnel & Performance Measurements**
+- **Learnings**
+
+### Search
+- **Product-Scoped Global Search**: Searches across GTM entities including ICPs, Personas, Competitors, Research, Leads, Campaigns, Experiments, and Learnings.
+- **Database-Backed**: Uses fast, direct database querying. There is no vector database, no embeddings, and no external search APIs required.
+
+### AI (Optional)
+- **Provider-Agnostic**: Supports OpenAI-compatible APIs and local Ollama deployments.
+- **Server-Side Security**: Configured entirely on the server (`AI_PROVIDER`, `AI_MODEL`, `AI_API_KEY`, `AI_BASE_URL`). AI keys must never be exposed to the client.
+- **AI Drafting**: Can generate content drafts for ICP, Personas, and Positioning.
+- **Safe Persistence**: AI generates drafts for user review and editing only. It does not directly bypass normal application persistence or authorization boundaries.
+- **Settings Diagnostics**: The Settings UI includes real-time AI configuration status and connection testing.
 
 ### Demo Mode
+- Requires authentication but does **not** require an AI API key.
+- Deterministically generates a real, fully isolated demo workspace and product for the authenticated user containing representative GTM data.
+- It respects normal application data boundaries.
+- **Not a shared sandbox**: Every user gets their own securely isolated instance of demo data.
 
-Demo Mode is available directly from onboarding.
-- It requires authentication but does not require an AI API key.
-- It creates a real, fully isolated demo workspace and product for the authenticated user using normal application data boundaries.
-- The generated data is deterministic and internally coherent.
-- Note: It is an isolated sandbox for the individual user, not a public playground.
+### UI/UX
+GTM OS features a modern UI/UX redesign built for clarity and focus:
+- Clean light/white interface with a vibrant blue primary accent.
+- Powered by `DM Sans` and `DM Mono` typography.
+- Restrained borders, gentle radii, and subtle shadows.
+- Product-scoped application shell.
+- Updated Welcome and Auth experiences.
+- Responsive two-column authentication/entry layout for desktop and mobile.
 
 ---
 
@@ -47,23 +108,34 @@ Demo Mode is available directly from onboarding.
 
 ```
 User
-  ↓
-Workspace (membership-verified)
-  ↓
-Product (workspace-scoped, active only)
-  ↓
-GTM modules
-  ↓
+↓
+Authentication
+↓
+Workspace
+↓
+Product
+↓
+GTM Modules
+↓
 PLAN → EXECUTE → MEASURE → LEARN → IMPROVE
 ```
 
-Each product belongs to a workspace. Routes are resolved through workspace membership — bare workspace slug lookup is intentionally not a security boundary. A product must be active (not archived) to be routable through the normal application flow.
+**Key Security and Architectural Principles:**
+- Workspace membership is actively verified when resolving workspace context.
+- Product access is strictly scoped to the authorized workspace.
+- Cross-product and cross-workspace context access is rejected by domain services.
+- Bare workspace slug lookup is not treated as a security boundary.
+- Archived products are not normally routable.
+- Domain services perform their own authorization checks.
+- AI drafts cannot bypass normal application persistence.
+- Server-side secrets remain securely server-side.
+- Demo data is strictly isolated per authenticated user.
 
-For implementation details, see [docs/architecture.md](docs/architecture.md).
+Current product route pattern: `/w/[workspaceSlug]/[productSlug]`
 
 ---
 
-## Tech stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -72,6 +144,7 @@ For implementation details, see [docs/architecture.md](docs/architecture.md).
 | Database | PostgreSQL, Drizzle ORM |
 | Validation | Zod |
 | Charts | Recharts |
+| Authentication | Auth.js / NextAuth |
 | Testing | Node.js built-in test runner, tsx |
 | Linting | ESLint |
 
@@ -79,42 +152,33 @@ For implementation details, see [docs/architecture.md](docs/architecture.md).
 
 ## Roadmap
 
-### Completed
+### Current Focus
+- UI refinement and visual polish
+- GTM workflow improvements
+- Navigation and information architecture
+- Authentication and onboarding polish
+- Search experience
+- AI experience improvements
+- Product stability
+- Documentation and open-source project polish
 
-- [x] Project foundation (Next.js, TypeScript, Tailwind, PostgreSQL, Drizzle)
-- [x] Workspace data model and membership model
-- [x] Workspace creation service and slug utilities
-- [x] Product data model (create, read, update, archive)
-- [x] Workspace-scoped product access and IDOR prevention
-- [x] Secure product-scoped routing (`/w/[workspaceSlug]/[productSlug]`)
-- [x] Membership-aware workspace resolver
-- [x] Product-scoped application shell and navigation
-- [x] Product-aware Overview foundation
-- [x] ICP (Ideal Customer Profile)
-- [x] Personas
-- [x] Execution (plays, sequences, campaigns, leads)
-- [x] Analytics and measurement
-- [x] Learnings
-- [x] Authentication integration
-- [x] Positioning
-- [x] Competitors
-- [x] Research library
-- [x] AI architecture (optional, provider-agnostic)
-- [x] AI features (BYOK, local Ollama support)
-- [x] Demo mode
-
-### Future Work
-
-Future capabilities beyond the MVP are still in planning.
+### Future Possibilities
+- Advanced GTM analytics
+- Expanded experiments
+- Additional research capabilities
+- More AI-assisted workflows
+- Integrations
+- Collaboration features
+- Advanced permissions
 
 ---
 
-## Getting started
+## Getting Started
 
 ### Prerequisites
-
-- Node.js 22 or later
-- PostgreSQL 14 or later (local installation)
+- Node.js 22+
+- PostgreSQL 14+
+- Git
 
 ### Setup
 
@@ -128,39 +192,36 @@ npm install
 
 # 3. Configure environment
 cp .env.example .env
-# Edit .env and set DATABASE_URL to your local PostgreSQL connection string
+# Edit .env and set your DATABASE_URL and AUTH_SECRET
+```
 
-# 4. Run database migrations
+### Environment Variables
+`DATABASE_URL` is required for core functionality.
+```env
+DATABASE_URL=your-postgresql-connection-string
+AUTH_SECRET=your-auth-secret
+```
+AI environment variables (`AI_PROVIDER`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`) are entirely optional.
+
+### Run
+
+```bash
+# Run database migrations
 npm run db:migrate
 
-# 5. Start the development server
+# Start the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-### Environment variables
-
-`.env.example` documents the required variables. Currently only one is needed for core functionality:
-
-```
-DATABASE_URL=postgresql://user:password@localhost:5432/gtm_os
-```
-
-`DATABASE_URL` is read exclusively by server-side code and Drizzle CLI commands. It is never exposed to the client bundle.
-
-Optional AI configuration requires additional server-side environment variables (`AI_PROVIDER`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`), but the application functions normally without them.
-
-### Available scripts
-
+### Available Scripts
 ```bash
 npm run dev          # Start development server
 npm run build        # Production build
 npm run start        # Start production server
 
-npm test             # Run unit tests (Node.js built-in runner)
-npm run typecheck    # TypeScript type check (tsc --noEmit)
 npm run lint         # ESLint
+npm run typecheck    # TypeScript type check (tsc --noEmit)
+npm test             # Run unit tests (Node.js built-in runner)
 
 npm run db:generate  # Generate Drizzle migrations from schema
 npm run db:migrate   # Apply pending migrations
@@ -171,35 +232,30 @@ npm run db:studio    # Open Drizzle Studio (database browser)
 
 ## Database
 
-PostgreSQL is the only supported database. Drizzle ORM is used for schema definition, migrations, and queries. The schema covers workspaces, products, and persistent GTM domain models (ICP, Personas, Positioning, Competitors, Research, Leads, Campaigns, Experiments, Learnings).
+GTM OS is built exclusively on PostgreSQL and Drizzle ORM. 
 
-Note: Analytics is a read-only aggregation layer over existing domain data and does not have its own analytics tables.
+The main domain models include:
+- `workspaces` and `workspace_members`
+- `products`
+- `icps`, `personas`, `positioning`
+- `competitors`, `research_library` (Research)
+- `leads`, `campaigns`, `experiments`
+- `learnings`
 
-Migrations live in `drizzle/` and are generated with `npm run db:generate` and applied with `npm run db:migrate`.
-
----
-
-## AI Architecture
-
-AI is an optional copilot. Core functionality does not require an AI provider.
-
-- **Provider Abstraction**: Switchable between OpenAI-compatible APIs and local Ollama.
-- **Server-side Config**: Keys are never exposed to the client (BYOK).
-- **Drafting**: Generates drafts for ICP, Personas, and Positioning using workspace context.
-- **Safe Persistence**: AI generates drafts only; normal application forms handle actual data persistence.
+*Note: Analytics is computed dynamically as a read-only aggregation layer over these existing domain tables. There are no standalone analytics tables.*
 
 ---
 
-## Open source
+## Open Source
 
-GTM OS is being built as an open-source, self-hostable project. The core modules are being developed incrementally. As the codebase stabilizes, contribution guidelines and a formal license will be added.
+GTM OS is an open-source, self-hostable project under active development. 
 
-If you are exploring the codebase, the best starting points are:
-
-- [`docs/architecture.md`](docs/architecture.md) — design decisions and stage-by-stage implementation notes
-- [`db/schema.ts`](db/schema.ts) — current database schema
-- [`lib/workspace/`](lib/workspace/) — workspace domain services
-- [`lib/product/`](lib/product/) — product domain services
-- [`lib/routing/`](lib/routing/) — route resolver and auth seam
-- [`lib/ai/`](lib/ai/) — AI capabilities and provider abstraction
-- [`lib/demo/`](lib/demo/) — Demo Mode isolation and seeding
+Useful repository entry points for exploring the codebase:
+- [`docs/architecture.md`](docs/architecture.md)
+- [`db/schema.ts`](db/schema.ts)
+- [`lib/workspace/`](lib/workspace/)
+- [`lib/product/`](lib/product/)
+- [`lib/routing/`](lib/routing/)
+- [`lib/ai/`](lib/ai/)
+- [`lib/search/`](lib/search/)
+- [`lib/demo/`](lib/demo/)

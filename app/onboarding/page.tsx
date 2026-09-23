@@ -1,6 +1,7 @@
 import { OnboardingForm } from "@/components/auth/onboarding-form";
 import { getCurrentUserId } from "@/lib/routing/current-user";
 import { redirect } from "next/navigation";
+import { AuthLayout } from "@/components/auth/auth-layout";
 
 export const metadata = {
   title: "Onboarding | GTM OS",
@@ -25,8 +26,8 @@ export default async function OnboardingPage({
   const workspaceId = resolved.workspaceId;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
+    <AuthLayout>
       <OnboardingForm mode={mode} workspaceId={workspaceId} />
-    </div>
+    </AuthLayout>
   );
 }

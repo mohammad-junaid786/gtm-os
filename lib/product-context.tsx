@@ -60,11 +60,10 @@ export function ProductContextProvider({
 // Hook
 // ---------------------------------------------------------------------------
 
-/**
- * Access the resolved workspace/product context from within the product shell.
- *
- * Must be used inside a <ProductContextProvider>. Throws if called outside.
- */
+export function useOptionalProductContext(): ProductContextValue | null {
+  return use(ProductCtx);
+}
+
 export function useProductContext(): ProductContextValue {
   const ctx = use(ProductCtx);
   if (!ctx) {

@@ -2,6 +2,7 @@ import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { cn } from "@/lib/utils";
 import type { NavSection, NavItem } from "@/lib/navigation";
 import { WorkspaceSwitcher } from "./workspace-switcher";
+import Image from "next/image";
 
 export function Sidebar({
   onNavigate,
@@ -29,9 +30,7 @@ export function Sidebar({
       {showBrand ? (
         <div className="flex shrink-0 flex-col border-b border-border">
           <div className="flex h-12 items-center px-5 gap-2">
-            <div className="flex h-5 w-5 items-center justify-center rounded-sm bg-primary">
-              <span className="text-[9px] font-bold leading-none text-primary-foreground tracking-tight">G</span>
-            </div>
+            <Image src="/logo/gtm-os-logo.svg" alt="GTM OS Logo" width={20} height={20} className="shrink-0" />
             <p className="font-display text-sm font-semibold tracking-tight text-foreground">GTM OS</p>
           </div>
           {workspaces && workspaces.length > 0 && (

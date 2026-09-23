@@ -4,6 +4,7 @@ import { useState } from "react";
 import { submitOnboardingAction } from "@/lib/actions/onboarding-actions";
 import { createDemoAction } from "@/lib/actions/demo-actions";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export function OnboardingForm({
   mode = "onboarding",
@@ -53,56 +54,77 @@ export function OnboardingForm({
   }
 
   const isCreateProduct = mode === "create-product";
-  const title = isCreateProduct ? "Create a Product" : mode === "create-workspace" ? "Create a Workspace" : "Welcome to GTM OS";
+  const title = isCreateProduct ? "Create a Product" : mode === "create-workspace" ? "Create a Workspace" : "Welcome to GTM OS Workspace";
   const subtitle = isCreateProduct ? "Add a new product to your workspace." : mode === "create-workspace" ? "Set up a new workspace and your first product." : "Let's set up your first workspace and product to get started.";
   const showDemo = mode === "onboarding";
 
   return (
-    <div className="w-full max-w-md p-8 bg-card text-card-foreground rounded-lg border shadow-sm">
-      <h2 className="text-2xl font-bold mb-2">{title}</h2>
-      <p className="text-muted-foreground mb-6">{subtitle}</p>
+    <div className="w-full text-center">
+      <div className="space-y-2 mb-8">
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground">
+          {title}
+        </h2>
+        <p className="text-muted-foreground">
+          {subtitle}
+        </p>
+      </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md text-sm">
+        <div className="mb-6 p-3 bg-red-50 text-red-600 border border-red-100 rounded-md text-sm text-center">
           {error}
         </div>
       )}
 
-      <form action={handleSubmit} className="space-y-4">
+      <form action={handleSubmit} className="space-y-4 text-left">
         {!isCreateProduct && (
           <div className="space-y-2 flex flex-col">
-            <label htmlFor="workspaceName" className="text-sm font-medium">Workspace Name</label>
-            <input id="workspaceName" name="workspaceName" placeholder="e.g. Acme Corp" required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
+            <label htmlFor="workspaceName" className="text-sm font-semibold text-foreground">Workspace Name</label>
+            <input 
+              id="workspaceName" 
+              name="workspaceName" 
+              placeholder="e.g. Acme Corp" 
+              required 
+              className="flex h-11 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" 
+            />
           </div>
         )}
         <div className="space-y-2 flex flex-col">
-          <label htmlFor="productName" className="text-sm font-medium">Product Name</label>
-          <input id="productName" name="productName" placeholder="e.g. Acme SaaS" required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
+          <label htmlFor="productName" className="text-sm font-semibold text-foreground">Product Name</label>
+          <input 
+            id="productName" 
+            name="productName" 
+            placeholder="e.g. Acme SaaS" 
+            required 
+            className="flex h-11 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" 
+          />
         </div>
 
-        <button type="submit" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full mt-4" disabled={loading || demoLoading}>
+        <Button type="submit" size="lg" className="w-full mt-2 bg-[#0055FF] hover:bg-[#0055FF]/90 text-white font-medium" disabled={loading || demoLoading}>
           {loading ? "Creating..." : isCreateProduct ? "Create Product" : "Complete Setup"}
-        </button>
+        </Button>
       </form>
 
       {showDemo && (
         <>
-          <div className="relative my-6">
+          <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-muted/60" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
             </div>
           </div>
 
-          <button
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
             onClick={handleDemo}
             disabled={loading || demoLoading}
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full"
+            className="w-full text-foreground hover:bg-muted"
           >
             {demoLoading ? "Preparing Demo..." : "Try Demo Mode"}
-          </button>
+          </Button>
         </>
       )}
     </div>

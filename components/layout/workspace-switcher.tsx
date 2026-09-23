@@ -54,7 +54,9 @@ export function WorkspaceSwitcher({ workspaces, currentWorkspaceId, currentProdu
         >
           <div className="flex items-center gap-2 truncate">
             <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-primary">
-              <span className="text-[9px] font-bold leading-none text-primary-foreground tracking-tight">G</span>
+              <span className="text-[9px] font-bold leading-none text-primary-foreground tracking-tight uppercase">
+                {currentWorkspace.name.charAt(0)}
+              </span>
             </div>
             <span className="truncate font-display text-sm font-semibold tracking-tight text-foreground">
               {currentWorkspace.name}

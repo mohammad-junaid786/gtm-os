@@ -19,6 +19,7 @@ import { createPositioningAction, updatePositioningAction } from "@/lib/position
 import { getAiAvailabilityAction, generatePositioningDraftAction } from "@/lib/ai/actions";
 import type { PositioningRow } from "@/lib/positioning/types";
 import { cn } from "@/lib/utils";
+import { useProductContext } from "@/lib/product-context";
 
 // ---------------------------------------------------------------------------
 // Field helpers (same pattern as icp-form.tsx)
@@ -277,6 +278,8 @@ export function PositioningForm({
     });
   }
 
+  const { workspaceSlug } = useProductContext();
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {error && (
@@ -285,35 +288,48 @@ export function PositioningForm({
         </div>
       )}
 
-      {isAiEnabled && !positioning && (
+      {!positioning && (
         <div className="rounded-md border border-accent bg-accent/5 p-4 space-y-3">
           <label className="block text-sm font-medium text-foreground">
             ✨ Draft with AI
           </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="E.g. A privacy-focused alternative to Google Analytics..."
-              value={aiPrompt}
-              onChange={(e) => setAiPrompt(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleAiDraft();
-                }
-              }}
-              className="flex-1 rounded-sm border border-border bg-surface px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
-              disabled={isAiLoading}
-            />
-            <button
-              type="button"
-              onClick={handleAiDraft}
-              disabled={isAiLoading || !aiPrompt.trim()}
-              className="rounded-sm bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground disabled:opacity-50"
-            >
-              {isAiLoading ? "Generating..." : "Generate Draft"}
-            </button>
-          </div>
+          
+          {isAiEnabled ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="E.g. A privacy-focused alternative to Google Analytics..."
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAiDraft();
+                  }
+                }}
+                className="flex-1 rounded-sm border border-border bg-surface px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+                disabled={isAiLoading}
+              />
+              <button
+                type="button"
+                onClick={handleAiDraft}
+                disabled={isAiLoading || !aiPrompt.trim()}
+                className="rounded-sm bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground disabled:opacity-50"
+              >
+                {isAiLoading ? "Generating..." : "Generate Draft"}
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between text-sm">
+              <p className="text-muted-foreground">AI isn't configured yet.</p>
+              <a
+                href={`/settings?w=${workspaceSlug}`}
+                className="text-accent hover:underline font-medium"
+              >
+                [Configure AI]
+              </a>
+            </div>
+          )}
         </div>
       )}
 

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { loginAction } from "@/lib/actions/auth-actions";
+import { registerAction } from "@/lib/actions/auth-actions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export function LoginForm() {
+export function SignupForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -13,7 +13,7 @@ export function LoginForm() {
     setLoading(true);
     setError(null);
     try {
-      const result = await loginAction(formData);
+      const result = await registerAction(formData);
 
       if (result?.error) {
         setError(result.error);
@@ -29,10 +29,10 @@ export function LoginForm() {
     <div className="w-full text-center">
       <div className="space-y-2 mb-8">
         <h1 className="font-display text-3xl font-semibold tracking-tight text-foreground">
-          Sign In to GTM OS
+          Sign Up to GTM OS
         </h1>
         <p className="text-muted-foreground">
-          Enter your details to access your account.
+          Enter your details to create your account.
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export function LoginForm() {
             id="password" 
             name="password" 
             type="password" 
-            autoComplete="current-password"
+            autoComplete="new-password"
             required 
             className="flex h-11 w-full rounded-md border border-input bg-muted/30 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" 
             placeholder="At Least 8 Characters"
@@ -69,17 +69,17 @@ export function LoginForm() {
         </div>
 
         <Button type="submit" size="lg" className="w-full mt-2 bg-[#0055FF] hover:bg-[#0055FF]/90 text-white font-medium" disabled={loading}>
-          {loading ? "Signing in..." : "Sign In"}
+          {loading ? "Signing up..." : "Sign Up"}
         </Button>
       </form>
 
       <div className="mt-8 text-center text-sm">
-        <span className="text-muted-foreground">Don&apos;t have an account? </span>
+        <span className="text-muted-foreground">Already have an account? </span>
         <Link
-          href="/signup"
+          href="/login"
           className="text-[#0055FF] hover:text-[#0055FF]/80 font-medium hover:underline underline-offset-4"
         >
-          Sign Up
+          Sign In
         </Link>
       </div>
     </div>

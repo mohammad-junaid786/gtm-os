@@ -16,6 +16,63 @@ export async function getAiAvailabilityAction(): Promise<{ isAiEnabled: boolean 
   return { isAiEnabled: configResult.ok };
 }
 
+export async function getAiSettingsStatusAction(): Promise<{
+  isConfigured: boolean;
+  provider: "openai-compatible" | "ollama" | null;
+  model: string | null;
+  baseUrl: string | null;
+}> {
+  const configResult = getAiConfig();
+  if (!configResult.ok) {
+    return {
+      isConfigured: false,
+      provider: null,
+      model: null,
+      baseUrl: null,
+    };
+  }
+
+  const { provider, model, baseUrl } = configResult.data;
+  
+  let safeBaseUrl = baseUrl;
+  try {
+    const url = new URL(baseUrl);
+    url.username = '';
+    url.password = '';
+    safeBaseUrl = url.toString();
+  } catch (e) {
+    // ignore
+  }
+
+  return {
+    isConfigured: true,
+    provider,
+    model,
+    baseUrl: safeBaseUrl,
+  };
+}
+
+export async function testAiConnectionAction(): Promise<{ ok: boolean; message: string }> {
+  const configResult = getAiConfig();
+  if (!configResult.ok) {
+    return { ok: false, message: "AI is not configured." };
+  }
+
+  try {
+    const result = await _deps.generateText({
+      messages: [{ role: "user", content: "Ping" }],
+    });
+
+    if (result.ok) {
+      return { ok: true, message: "Connected successfully." };
+    } else {
+      return { ok: false, message: "Unable to connect: The provider returned an error." };
+    }
+  } catch (error) {
+    return { ok: false, message: "Unable to connect: An unexpected error occurred." };
+  }
+}
+
 const icpDraftSchema = z.object({
   name: z.string(),
   description: z.string().nullable().optional(),

@@ -13,6 +13,8 @@ export const metadata: Metadata = { title: "Settings" };
 
 import { products } from "@/db/schema";
 import { asc } from "drizzle-orm";
+import { AiSettings } from "@/components/settings/ai-settings";
+import { getAiSettingsStatusAction } from "@/lib/ai/actions";
 
 export default async function SettingsPage(
   props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }
@@ -71,6 +73,8 @@ export default async function SettingsPage(
 
   const { sections, settingsItem } = buildProductNav(defaultRoute === "/onboarding" ? "/" : defaultRoute);
 
+  const aiStatus = await getAiSettingsStatusAction();
+
   return (
     <AppShell
       sections={sections}
@@ -121,6 +125,10 @@ export default async function SettingsPage(
               </div>
             </section>
           )}
+
+          <div className="sm:col-span-2">
+            <AiSettings status={aiStatus} />
+          </div>
         </div>
       </div>
     </AppShell>

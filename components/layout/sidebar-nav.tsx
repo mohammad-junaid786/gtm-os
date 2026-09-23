@@ -29,7 +29,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 
-const IconMap: Record<string, React.ElementType> = {
+export const IconMap: Record<string, React.ElementType> = {
   Building2,
   LayoutDashboard,
   ListOrdered,

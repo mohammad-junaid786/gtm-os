@@ -106,6 +106,10 @@ export interface ProductNavConfig {
 export function buildProductNav(basePath: string): ProductNavConfig {
   const b = basePath.replace(/\/$/, ""); // strip trailing slash
 
+  const match = b.match(/^\/w\/([^/]+)/);
+  const workspaceSlug = match ? match[1] : null;
+  const settingsHref = workspaceSlug ? `/settings?w=${workspaceSlug}` : "/settings";
+
   return {
     sections: [
       {
@@ -206,7 +210,7 @@ export function buildProductNav(basePath: string): ProductNavConfig {
       },
     ],
     settingsItem: {
-      href: "/settings",
+      href: settingsHref,
       label: "Settings",
       icon: "Settings",
       description: "Workspace and application preferences.",
@@ -232,7 +236,18 @@ export function getNavItemByPathname(pathname: string): NavItem | undefined {
 }
 
 export function isNavItemActive(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
-  // Exact match or sub-path match
-  return pathname === href || pathname.startsWith(`${href}/`);
+  const baseHref = href.split("?")[0];
+  if (baseHref === "/") return pathname === "/";
+  if (pathname === baseHref) return true;
+
+  // Overview routes have exactly /w/[workspaceSlug]/[productSlug] (3 segments after /)
+  // e.g. /w/demo/product
+  // Test if it's EXACTLY the product root
+  const isProductRoot = /^\/w\/[^/]+\/[^/]+$/.test(baseHref);
+  if (isProductRoot) return false; // Exact match was already checked above
+
+  // Settings is a global route that should only match exact or sub-routes under it
+  if (baseHref === "/settings") return pathname.startsWith("/settings");
+
+  return pathname.startsWith(`${baseHref}/`);
 }

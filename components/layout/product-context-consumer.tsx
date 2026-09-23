@@ -9,8 +9,9 @@
  */
 import { useProductContext } from "@/lib/product-context";
 import { OverviewDashboard } from "@/components/overview-dashboard";
+import type { OverviewMetrics } from "@/lib/overview/service";
 
-export function ProductContextConsumer() {
+export function ProductContextConsumer({ metrics }: { metrics: OverviewMetrics }) {
   const { workspaceName, productName } = useProductContext();
-  return <OverviewDashboard workspaceName={workspaceName} productName={productName} />;
+  return <OverviewDashboard workspaceName={workspaceName} productName={productName} metrics={metrics} />;
 }

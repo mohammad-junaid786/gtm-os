@@ -61,6 +61,10 @@ export async function generateMetadata({
 // Layout
 // ---------------------------------------------------------------------------
 
+import { getDb } from "@/db";
+import { workspaces as workspacesTable, workspaceMembers } from "@/db/schema";
+import { eq } from "drizzle-orm";
+
 export default async function ProductRouteLayout({
   children,
   params,
@@ -84,11 +88,23 @@ export default async function ProductRouteLayout({
 
   const { workspace, product } = result.data;
 
-  // Step 3: Build product-scoped navigation.
+  // Step 3: Fetch all workspaces for the switcher.
+  const db = getDb();
+  const userWorkspaces = await db
+    .select({
+      id: workspacesTable.id,
+      name: workspacesTable.name,
+      slug: workspacesTable.slug,
+    })
+    .from(workspaceMembers)
+    .innerJoin(workspacesTable, eq(workspaceMembers.workspace_id, workspacesTable.id))
+    .where(eq(workspaceMembers.user_id, userId));
+
+  // Step 4: Build product-scoped navigation.
   const basePath = `/w/${workspace.slug}/${product.slug}`;
   const { sections, settingsItem } = buildProductNav(basePath);
 
-  // Step 4: Serializable context for the client provider.
+  // Step 5: Serializable context for the client provider.
   const contextValue = {
     workspaceId: workspace.id,
     workspaceName: workspace.name,
@@ -98,7 +114,7 @@ export default async function ProductRouteLayout({
     productSlug: product.slug,
   };
 
-  // Step 5: Render AppShell with product context.
+  // Step 6: Render AppShell with product context.
   return (
     <ProductContextProvider value={contextValue}>
       <AppShell
@@ -106,6 +122,9 @@ export default async function ProductRouteLayout({
         settingsItem={settingsItem}
         workspaceName={workspace.name}
         productName={product.name}
+        workspaces={userWorkspaces}
+        currentWorkspaceId={workspace.id}
+        currentProductSlug={product.slug}
       >
         {children}
       </AppShell>

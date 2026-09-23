@@ -1,13 +1,7 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatCard } from "@/components/ui/stat-card";
 import { PageHeader } from "@/components/ui/page-header";
-
-const placeholderStats = [
-  { label: "Leads", hint: "No records yet" },
-  { label: "Campaigns", hint: "No records yet" },
-  { label: "Experiments", hint: "No records yet" },
-  { label: "Personas", hint: "No records yet" },
-] as const;
+import type { OverviewMetrics } from "@/lib/overview/service";
 
 interface OverviewDashboardProps {
   /**
@@ -20,10 +14,21 @@ interface OverviewDashboardProps {
    * Undefined when rendered outside a product route (legacy).
    */
   productName?: string;
+  /**
+   * Metrics fetched from the server.
+   */
+  metrics?: OverviewMetrics;
 }
 
-export function OverviewDashboard({ workspaceName, productName }: OverviewDashboardProps) {
+export function OverviewDashboard({ workspaceName, productName, metrics }: OverviewDashboardProps) {
   const isProductScope = workspaceName && productName;
+
+  const stats = [
+    { label: "Leads", value: metrics?.totalLeads ? String(metrics.totalLeads) : "—", hint: metrics?.totalLeads ? "Total leads in pipeline" : "No records yet" },
+    { label: "Campaigns", value: metrics?.totalCampaigns ? String(metrics.totalCampaigns) : "—", hint: metrics?.totalCampaigns ? "Total active campaigns" : "No records yet" },
+    { label: "Experiments", value: metrics?.totalExperiments ? String(metrics.totalExperiments) : "—", hint: metrics?.totalExperiments ? "Total experiments" : "No records yet" },
+    { label: "Personas", value: metrics?.totalPersonas ? String(metrics.totalPersonas) : "—", hint: metrics?.totalPersonas ? "Total personas mapped" : "No records yet" },
+  ];
 
   return (
     <div className="space-y-12">
@@ -42,8 +47,8 @@ export function OverviewDashboard({ workspaceName, productName }: OverviewDashbo
           {productName ? `${productName} metrics` : "Workspace metrics"}
         </h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {placeholderStats.map((stat) => (
-            <StatCard key={stat.label} label={stat.label} value="—" hint={stat.hint} />
+          {stats.map((stat) => (
+            <StatCard key={stat.label} label={stat.label} value={stat.value} hint={stat.hint} />
           ))}
         </div>
       </section>

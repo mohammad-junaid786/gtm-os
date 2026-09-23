@@ -16,6 +16,7 @@ import type { Metadata } from "next";
 import { getCurrentUserId } from "@/lib/routing/current-user";
 import { resolveProductContext } from "@/lib/routing/resolver";
 import { ProductContextConsumer } from "@/components/layout/product-context-consumer";
+import { getOverviewMetrics } from "@/lib/overview/service";
 
 // ---------------------------------------------------------------------------
 // Metadata (separate from layout.tsx — Next.js uses the closest generateMetadata)
@@ -41,9 +42,29 @@ export async function generateMetadata({
 // Page
 // ---------------------------------------------------------------------------
 
-export default function ProductOverviewPage() {
-  // The layout has already verified auth + context. If we reach here, the
-  // ProductContextProvider is available in the tree. We use a thin client
-  // consumer to forward context to OverviewDashboard.
-  return <ProductContextConsumer />;
+export default async function ProductOverviewPage({
+  params,
+}: {
+  params: Promise<{ workspaceSlug: string; productSlug: string }>;
+}) {
+  const { workspaceSlug, productSlug } = await params;
+
+  // The layout has already verified auth + context.
+  // Re-resolve context here to get the product ID to fetch metrics.
+  const userId = await getCurrentUserId();
+  if (!userId) return null;
+
+  const contextResult = await resolveProductContext({ userId, workspaceSlug, productSlug });
+  if (!contextResult.ok) return null;
+
+  const { product } = contextResult.data;
+
+  const metricsResult = await getOverviewMetrics(product.id);
+  const metrics = metricsResult.ok 
+    ? metricsResult.data 
+    : { totalLeads: 0, totalCampaigns: 0, totalExperiments: 0, totalPersonas: 0 };
+
+  // The ProductContextProvider is available in the tree from layout.
+  // We use a thin client consumer to forward context and the fetched metrics to OverviewDashboard.
+  return <ProductContextConsumer metrics={metrics} />;
 }

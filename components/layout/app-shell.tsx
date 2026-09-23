@@ -24,6 +24,12 @@ interface AppShellProps {
    * Product display name — used as a fallback header title.
    */
   productName?: string;
+  /**
+   * Workspaces for the switcher.
+   */
+  workspaces?: { id: string; name: string; slug: string }[];
+  currentWorkspaceId?: string;
+  currentProductSlug?: string;
 }
 
 export function AppShell({
@@ -32,6 +38,9 @@ export function AppShell({
   settingsItem,
   workspaceName,
   productName,
+  workspaces = [],
+  currentWorkspaceId,
+  currentProductSlug,
 }: AppShellProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const titleId = useId();
@@ -64,7 +73,13 @@ export function AppShell({
       </a>
 
       <aside className="sticky top-0 hidden h-screen w-56 shrink-0 border-r border-border bg-sidebar md:flex md:flex-col">
-        <Sidebar sections={sections} settingsItem={settingsItem} />
+        <Sidebar 
+          sections={sections} 
+          settingsItem={settingsItem} 
+          workspaces={workspaces}
+          currentWorkspaceId={currentWorkspaceId}
+          currentProductSlug={currentProductSlug}
+        />
       </aside>
 
       {mobileNavOpen ? (
@@ -93,6 +108,9 @@ export function AppShell({
               onNavigate={() => setMobileNavOpen(false)}
               sections={sections}
               settingsItem={settingsItem}
+              workspaces={workspaces}
+              currentWorkspaceId={currentWorkspaceId}
+              currentProductSlug={currentProductSlug}
             />
           </div>
         </div>
@@ -104,6 +122,7 @@ export function AppShell({
           onOpenMobileNav={() => setMobileNavOpen(true)}
           workspaceName={workspaceName}
           productName={productName}
+          sections={sections}
         />
         <main id="main-content" className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 md:px-8 md:py-8 lg:px-12 lg:py-10">
           {children}

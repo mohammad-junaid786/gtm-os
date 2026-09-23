@@ -1,9 +1,13 @@
 import { getDb } from "@/db";
 import { workspaceMembers, workspaces, products } from "@/db/schema";
-import { eq, isNull, and } from "drizzle-orm";
+import { eq, isNull, and, asc, desc, sql } from "drizzle-orm";
+
+export const _deps = {
+  getDb,
+};
 
 export async function resolveUserDefaultRoute(userId: string) {
-  const db = getDb();
+  const db = _deps.getDb();
   // Find the first workspace they are a member of
   const members = await db
     .select({
@@ -13,6 +17,10 @@ export async function resolveUserDefaultRoute(userId: string) {
     .from(workspaceMembers)
     .innerJoin(workspaces, eq(workspaceMembers.workspace_id, workspaces.id))
     .where(eq(workspaceMembers.user_id, userId))
+    .orderBy(
+      asc(sql`CASE WHEN ${workspaces.slug} LIKE 'demo-%' THEN 1 ELSE 0 END`),
+      desc(workspaces.created_at)
+    )
     .limit(1);
 
   if (members.length === 0) {

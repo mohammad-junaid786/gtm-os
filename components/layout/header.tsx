@@ -1,12 +1,13 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
 import { Kbd } from "@/components/ui/kbd";
 import { Button } from "@/components/ui/button";
-import { getNavItemByPathname } from "@/lib/navigation";
+import { getNavItemByPathname, NavSection } from "@/lib/navigation";
 import { logoutAction } from "@/lib/actions/auth-actions";
+import { CommandMenu } from "./command-menu";
 
 function subscribe() {
   return () => undefined;
@@ -21,6 +22,7 @@ export function Header({
   mobileNavOpen,
   productName,
   workspaceName,
+  sections,
 }: {
   onOpenMobileNav: () => void;
   mobileNavOpen: boolean;
@@ -34,12 +36,15 @@ export function Header({
    * label next to the workspace indicator.
    */
   workspaceName?: string;
+  sections?: NavSection[];
 }) {
   const pathname = usePathname();
   const current = getNavItemByPathname(pathname);
   const title = current?.label ?? productName ?? "GTM OS";
   const isMac = useSyncExternalStore(subscribe, getMacSnapshot, () => false);
   const shortcut = isMac ? "⌘K" : "Ctrl K";
+  
+  const [commandOpen, setCommandOpen] = useState(false);
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background px-4 md:px-6">
@@ -63,8 +68,9 @@ export function Header({
         <Button
           variant="ghost"
           size="sm"
+          onClick={() => setCommandOpen(true)}
           className="hidden h-8 w-full max-w-[200px] justify-start gap-2 px-2.5 text-muted-foreground sm:inline-flex font-normal"
-          aria-label="Search (not available yet)"
+          aria-label="Search navigation"
         >
           <Search className="size-3.5 shrink-0" aria-hidden="true" />
           <span className="flex-1 truncate text-left">Search</span>
@@ -74,11 +80,14 @@ export function Header({
         <Button
           variant="ghost"
           size="icon"
+          onClick={() => setCommandOpen(true)}
           className="size-8 text-muted-foreground sm:hidden"
-          aria-label="Search (not available yet)"
+          aria-label="Search navigation"
         >
           <Search className="size-3.5" aria-hidden="true" />
         </Button>
+        
+        <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} sections={sections} />
 
         <div className="h-4 w-px bg-border hidden sm:block" />
 

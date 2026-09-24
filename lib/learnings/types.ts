@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const SOURCE_TYPES = ["campaign", "experiment", "lead", "analytics", "other"] as const;
+export const SOURCE_TYPES = ["campaign", "experiment", "lead", "research", "competitor", "analytics", "other"] as const;
 export type SourceType = typeof SOURCE_TYPES[number];
 
 export const CONFIDENCE_LEVELS = ["low", "medium", "high"] as const;

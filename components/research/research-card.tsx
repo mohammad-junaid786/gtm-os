@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Edit2, Archive, FileText, Calendar, Building, Type } from "lucide-react";
+import { ExternalLink, Edit2, Archive, Building, Lightbulb } from "lucide-react";
 import type { ResearchItemRow } from "@/lib/research/types";
 import type { CompetitorRow } from "@/lib/competitors/types";
 import { archiveResearchItemAction } from "@/lib/research/actions";
@@ -13,11 +13,13 @@ export function ResearchCard({
   item,
   competitors,
   onChanged,
+  onLogLearning,
 }: {
   productId: string;
   item: ResearchItemRow;
   competitors: CompetitorRow[];
   onChanged: () => void;
+  onLogLearning: () => void;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
@@ -83,7 +85,16 @@ export function ResearchCard({
             )}
           </div>
         </div>
-        <div className="flex gap-2 shrink-0 ml-4">
+        <div className="flex gap-2 shrink-0 ml-4 items-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onLogLearning}
+            className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground font-medium"
+          >
+            <Lightbulb className="h-4 w-4" />
+            <span className="hidden sm:inline">Log Learning</span>
+          </Button>
           <Button
             variant="ghost"
             size="icon"

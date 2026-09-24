@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { CampaignForm } from "./campaign-form";
+import { ContextualLearningDialog } from "@/components/learnings/contextual-learning-dialog";
+import { Lightbulb } from "lucide-react";
 import { getCampaignMetrics } from "@/lib/campaigns/types";
 import type { CampaignRow } from "@/lib/campaigns/types";
 import { archiveCampaignAction } from "@/lib/campaigns/actions";
@@ -18,6 +20,7 @@ export function CampaignList({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [archivingId, setArchivingId] = useState<string | null>(null);
+  const [learningCampaign, setLearningCampaign] = useState<CampaignRow | null>(null);
 
   async function handleArchive(campaignId: string) {
     setArchivingId(campaignId);
@@ -105,6 +108,13 @@ export function CampaignList({
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setLearningCampaign(campaign)}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  >
+                    <Lightbulb className="h-4 w-4" />
+                    Log Learning
+                  </button>
                   <button onClick={() => setEditingId(campaign.id)} className="text-sm text-muted-foreground hover:text-foreground">
                     Edit
                   </button>
@@ -140,6 +150,21 @@ export function CampaignList({
           );
         })}
       </div>
+
+      {learningCampaign && (
+        <ContextualLearningDialog
+          open={!!learningCampaign}
+          onOpenChange={(open) => {
+            if (!open) setLearningCampaign(null);
+          }}
+          productId={productId}
+          sourceType="campaign"
+          sourceId={learningCampaign.id}
+          sourceDisplayName={learningCampaign.name}
+          sourceContext={learningCampaign.outcome ?? undefined}
+          onSuccess={() => setLearningCampaign(null)}
+        />
+      )}
     </div>
   );
 }

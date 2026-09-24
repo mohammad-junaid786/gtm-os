@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { ExperimentForm } from "./experiment-form";
+import { ContextualLearningDialog } from "@/components/learnings/contextual-learning-dialog";
+import { Lightbulb } from "lucide-react";
 import type { ExperimentRow } from "@/lib/experiments/types";
 import { archiveExperimentAction } from "@/lib/experiments/actions";
 
@@ -17,6 +19,7 @@ export function ExperimentList({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [archivingId, setArchivingId] = useState<string | null>(null);
+  const [learningExperiment, setLearningExperiment] = useState<ExperimentRow | null>(null);
 
   async function handleArchive(experimentId: string) {
     setArchivingId(experimentId);
@@ -102,6 +105,13 @@ export function ExperimentList({
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setLearningExperiment(experiment)}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                  >
+                    <Lightbulb className="h-4 w-4" />
+                    Log Learning
+                  </button>
                   <button onClick={() => setEditingId(experiment.id)} className="text-sm text-muted-foreground hover:text-foreground">
                     Edit
                   </button>
@@ -139,6 +149,21 @@ export function ExperimentList({
           );
         })}
       </div>
+
+      {learningExperiment && (
+        <ContextualLearningDialog
+          open={!!learningExperiment}
+          onOpenChange={(open) => {
+            if (!open) setLearningExperiment(null);
+          }}
+          productId={productId}
+          sourceType="experiment"
+          sourceId={learningExperiment.id}
+          sourceDisplayName={learningExperiment.name}
+          sourceContext={learningExperiment.outcome ?? undefined}
+          onSuccess={() => setLearningExperiment(null)}
+        />
+      )}
     </div>
   );
 }

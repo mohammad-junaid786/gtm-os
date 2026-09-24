@@ -2,7 +2,7 @@ import "server-only";
 
 import { eq, and, isNull } from "drizzle-orm";
 import { getDb } from "../../db";
-import { learnings, campaigns, experiments, leads } from "../../db/schema";
+import { learnings, campaigns, experiments, leads, researchItems, competitors } from "../../db/schema";
 import {
   type LearningRow,
   type CreateLearningInput,
@@ -40,6 +40,18 @@ async function validateSourceEntity(
     } else if (sourceType === "lead") {
       const row = await db.query.leads.findFirst({
         where: and(eq(leads.id, sourceId), eq(leads.product_id, productId)),
+        columns: { id: true },
+      });
+      return !!row;
+    } else if (sourceType === "research") {
+      const row = await db.query.researchItems.findFirst({
+        where: and(eq(researchItems.id, sourceId), eq(researchItems.product_id, productId)),
+        columns: { id: true },
+      });
+      return !!row;
+    } else if (sourceType === "competitor") {
+      const row = await db.query.competitors.findFirst({
+        where: and(eq(competitors.id, sourceId), eq(competitors.product_id, productId)),
         columns: { id: true },
       });
       return !!row;

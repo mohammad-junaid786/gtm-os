@@ -6,6 +6,7 @@ import type { ResearchItemRow } from "@/lib/research/types";
 import type { CompetitorRow } from "@/lib/competitors/types";
 import { ResearchCard } from "./research-card";
 import { ResearchForm } from "./research-form";
+import { ContextualLearningDialog } from "@/components/learnings/contextual-learning-dialog";
 
 interface ResearchListProps {
   productId: string;
@@ -16,6 +17,7 @@ interface ResearchListProps {
 
 export function ResearchList({ productId, items, competitors, onChanged }: ResearchListProps) {
   const [isCreating, setIsCreating] = useState(false);
+  const [learningResearch, setLearningResearch] = useState<ResearchItemRow | null>(null);
 
   const handleCreateNew = () => setIsCreating(true);
   const handleCancelCreate = () => setIsCreating(false);
@@ -62,6 +64,7 @@ export function ResearchList({ productId, items, competitors, onChanged }: Resea
               item={item}
               competitors={competitors}
               onChanged={onChanged}
+              onLogLearning={() => setLearningResearch(item)}
             />
           ))}
         </div>
@@ -73,6 +76,26 @@ export function ResearchList({ productId, items, competitors, onChanged }: Resea
           competitors={competitors}
           onSuccess={handleSuccess}
           onCancel={handleCancelCreate}
+        />
+      )}
+
+      {learningResearch && (
+        <ContextualLearningDialog
+          open={!!learningResearch}
+          onOpenChange={(open) => {
+            if (!open) setLearningResearch(null);
+          }}
+          productId={productId}
+          sourceType="research"
+          sourceId={learningResearch.id}
+          sourceDisplayName={learningResearch.title}
+          sourceContext={
+            [
+              learningResearch.type ? `Type: ${learningResearch.type.replace("_", " ")}` : null,
+              learningResearch.date_researched ? `Date: ${learningResearch.date_researched}` : null,
+            ].filter(Boolean).join("\n") || undefined
+          }
+          onSuccess={() => setLearningResearch(null)}
         />
       )}
     </div>

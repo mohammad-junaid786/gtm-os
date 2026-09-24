@@ -183,11 +183,19 @@ function TagInput({
 export function LearningForm({
   productId,
   learning,
+  prefilledSourceType,
+  prefilledSourceId,
+  sourceDisplayName,
+  sourceContext,
   onSuccess,
   onCancel,
 }: {
   productId: string;
   learning?: LearningRow;
+  prefilledSourceType?: string;
+  prefilledSourceId?: string | null;
+  sourceDisplayName?: string;
+  sourceContext?: string;
   onSuccess: (learning: LearningRow) => void;
   onCancel: () => void;
 }) {
@@ -196,8 +204,8 @@ export function LearningForm({
 
   const [title, setTitle] = useState(learning?.title ?? "");
   const [insight, setInsight] = useState(learning?.insight ?? "");
-  const [sourceType, setSourceType] = useState<string>(learning?.source_type ?? "");
-  const [sourceId, setSourceId] = useState(learning?.source_id ?? "");
+  const [sourceType, setSourceType] = useState<string>(prefilledSourceType ?? learning?.source_type ?? "");
+  const [sourceId, setSourceId] = useState(prefilledSourceId ?? learning?.source_id ?? "");
   const [confidenceLevel, setConfidenceLevel] = useState<string>(learning?.confidence_level ?? "");
   const [impactLevel, setImpactLevel] = useState<string>(learning?.impact_level ?? "");
   const [actionItems, setActionItems] = useState<string[]>(learning?.action_items ?? []);
@@ -275,17 +283,38 @@ export function LearningForm({
 
       <div className="space-y-4 pt-4 border-t border-border">
         <h3 className="text-sm font-medium text-foreground">Source</h3>
-        <p className="text-sm text-muted-foreground">Link this learning to the entity that generated it.</p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="sourceType">Source Type</Label>
-            <Select id="sourceType" value={sourceType} onChange={setSourceType} options={SOURCE_TYPES} allowEmpty disabled={isPending} />
+        
+        {prefilledSourceType ? (
+          <div className="rounded-sm border border-border bg-surface p-4">
+            <div className="text-sm font-medium text-foreground mb-1">
+              Linked to {prefilledSourceType.charAt(0).toUpperCase() + prefilledSourceType.slice(1)}
+            </div>
+            {sourceDisplayName && (
+              <div className="text-sm text-muted-foreground mb-3">{sourceDisplayName}</div>
+            )}
+            
+            {sourceContext && (
+              <div className="pt-3 border-t border-border mt-3">
+                <div className="text-xs font-medium text-muted-foreground uppercase mb-1">Outcome / Context</div>
+                <div className="text-sm text-foreground whitespace-pre-wrap">{sourceContext}</div>
+              </div>
+            )}
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="sourceId">Source ID</Label>
-            <TextInput id="sourceId" value={sourceId} onChange={setSourceId} disabled={isPending} placeholder="UUID of the campaign, experiment, etc." />
-          </div>
-        </div>
+        ) : (
+          <>
+            <p className="text-sm text-muted-foreground">Link this learning to the entity that generated it.</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="sourceType">Source Type</Label>
+                <Select id="sourceType" value={sourceType} onChange={setSourceType} options={SOURCE_TYPES} allowEmpty disabled={isPending} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="sourceId">Source ID</Label>
+                <TextInput id="sourceId" value={sourceId} onChange={setSourceId} disabled={isPending} placeholder="UUID of the campaign, experiment, etc." />
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="space-y-4 pt-4 border-t border-border">

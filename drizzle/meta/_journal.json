@@ -71,6 +71,13 @@
       "when": 1789903510712,
       "tag": "0009_lean_lifeguard",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790236868357,
+      "tag": "0010_lethal_lila_cheney",
+      "breakpoints": true
     }
   ]
 }

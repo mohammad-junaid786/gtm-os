@@ -220,18 +220,20 @@ function TagInput({
 export function ExperimentForm({
   productId,
   experiment,
+  prefilledName,
   onSuccess,
   onCancel,
 }: {
   productId: string;
   experiment?: ExperimentRow;
+  prefilledName?: string;
   onSuccess: (experiment: ExperimentRow) => void;
   onCancel: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const [name, setName] = useState(experiment?.name ?? "");
+  const [name, setName] = useState(experiment?.name ?? prefilledName ?? "");
   const [hypothesis, setHypothesis] = useState(experiment?.hypothesis ?? "");
   const [goal, setGoal] = useState(experiment?.goal ?? "");
   const [audience, setAudience] = useState(experiment?.audience ?? "");

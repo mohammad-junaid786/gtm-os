@@ -22,6 +22,7 @@ export interface ExperimentRow {
   end_date: Date | null;
   budget: number | null; // cents
   status: string;
+  outcome: string | null;
 
   archived_at: Date | null;
   created_at: Date;
@@ -41,6 +42,7 @@ export interface CreateExperimentInput {
   end_date?: Date;
   budget?: number; // cents
   status?: ExperimentStatus;
+  outcome?: string;
 }
 
 export interface UpdateExperimentInput {
@@ -56,6 +58,7 @@ export interface UpdateExperimentInput {
   end_date?: Date | null;
   budget?: number | null; // cents
   status?: ExperimentStatus;
+  outcome?: string | null;
 }
 
 export type ExperimentResult<T> =

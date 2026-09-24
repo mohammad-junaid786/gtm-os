@@ -253,4 +253,24 @@ describe("Learning Source Validation (Integration)", () => {
         expectCode(result as any, "SOURCE_NOT_FOUND_IN_PRODUCT");
       });
     });
-  }
+
+  describe("Non-entity sources (analytics, other)", () => {
+    test("analytics with valid UUID -> accepted (untyped escape hatch)", async () => {
+      const randomUuid = crypto.randomUUID();
+      const result = await createLearning(PROD_A, { title: "T", insight: "I", source_type: "analytics", source_id: randomUuid });
+      assert.equal(result.ok, true, "Analytics should accept any valid UUID format");
+    });
+
+    test("other with valid UUID -> accepted (untyped escape hatch)", async () => {
+      const randomUuid = crypto.randomUUID();
+      const result = await createLearning(PROD_A, { title: "T", insight: "I", source_type: "other", source_id: randomUuid });
+      assert.equal(result.ok, true, "Other should accept any valid UUID format");
+    });
+
+    test("analytics with invalid UUID format -> rejected", async () => {
+      const result = await createLearning(PROD_A, { title: "T", insight: "I", source_type: "analytics", source_id: "not-a-uuid" });
+      assert.equal(result.ok, false);
+      expectCode(result as any, "INVALID_INPUT");
+    });
+  });
+});

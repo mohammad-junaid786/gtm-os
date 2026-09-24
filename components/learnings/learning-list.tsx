@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, MoreHorizontal } from "lucide-react";
 import { LearningForm } from "./learning-form";
 import type { LearningRow } from "@/lib/learnings/types";
 import { archiveLearningAction } from "@/lib/learnings/actions";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ExperimentForm } from "@/components/experiments/experiment-form";
+import { CampaignForm } from "@/components/campaigns/campaign-form";
 
 export function LearningList({
   productId,
@@ -17,6 +22,7 @@ export function LearningList({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [archivingId, setArchivingId] = useState<string | null>(null);
+  const [promotingAction, setPromotingAction] = useState<{ type: "experiment" | "campaign"; text: string } | null>(null);
 
   async function handleArchive(learningId: string) {
     setArchivingId(learningId);
@@ -136,9 +142,27 @@ export function LearningList({
               {learning.action_items && learning.action_items.length > 0 && (
                 <div className="mt-6 border-t border-border pt-4">
                   <h4 className="text-sm font-medium text-foreground mb-2">Next Steps</h4>
-                  <ul className="list-inside list-disc text-sm text-muted-foreground">
+                  <ul className="space-y-1">
                     {learning.action_items.map((action, i) => (
-                      <li key={i}>{action}</li>
+                      <li key={i} className="group flex items-start gap-2 text-sm text-muted-foreground">
+                        <span className="flex-1 mt-0.5">• {action}</span>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Create</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => setPromotingAction({ type: "experiment", text: action })}>
+                              Create Experiment
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setPromotingAction({ type: "campaign", text: action })}>
+                              Create Campaign
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -147,6 +171,42 @@ export function LearningList({
           );
         })}
       </div>
+
+      {promotingAction && (
+        <Dialog 
+          open={!!promotingAction} 
+          onOpenChange={(open) => {
+            if (!open) setPromotingAction(null);
+          }}
+        >
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                Create {promotingAction.type === "experiment" ? "Experiment" : "Campaign"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="mt-4">
+              {promotingAction.type === "experiment" ? (
+                <ExperimentForm
+                  key={promotingAction.text}
+                  productId={productId}
+                  prefilledName={promotingAction.text}
+                  onSuccess={() => setPromotingAction(null)}
+                  onCancel={() => setPromotingAction(null)}
+                />
+              ) : (
+                <CampaignForm
+                  key={promotingAction.text}
+                  productId={productId}
+                  prefilledName={promotingAction.text}
+                  onSuccess={() => setPromotingAction(null)}
+                  onCancel={() => setPromotingAction(null)}
+                />
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

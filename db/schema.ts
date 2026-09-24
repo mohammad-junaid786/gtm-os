@@ -267,6 +267,7 @@ export const campaigns = pgTable(
 
     name: text("name").notNull(),
     objective: text("objective"),
+    outcome: text("outcome"),
     audience: text("audience"),
     channel: text("channel"),
     start_date: timestamp("start_date", { withTimezone: true }),
@@ -312,6 +313,7 @@ export const experiments = pgTable(
 
     name: text("name").notNull(),
     hypothesis: text("hypothesis"),
+    outcome: text("outcome"),
     goal: text("goal"),
     audience: text("audience"),
     channel: text("channel"),

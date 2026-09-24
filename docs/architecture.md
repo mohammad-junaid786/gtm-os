@@ -781,3 +781,6 @@ Like the other product modules, all Server Actions for analytics go through the 
  
  L e a r n i n g s   a r e   i n t e g r a t e d   i n t o   t h e   \ M e a s u r e m e n t \   n a v i g a t i o n   s e c t i o n   a l o n g s i d e   A n a l y t i c s ,   r e i n f o r c i n g   t h e   G T M   l o o p :   P L A N   ’!  E X E C U T E   ’!  M E A S U R E   ’!  L E A R N .  
  
+### Stage 24 - Closing the Learning Loop
+
+Stage 24 connects Analytics and Learnings, and introduces Action Item promotion. Learnings can be logged directly from Analytics (source_type = 'analytics'), allowing users to record insights about their metrics. Additionally, Action Items created in Learnings can now be promoted directly into new Campaigns or Experiments via a 'Create...' context menu, completing the GTM loop from measurement back to planning.

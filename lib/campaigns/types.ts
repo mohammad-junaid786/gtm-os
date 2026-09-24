@@ -18,6 +18,7 @@ export interface CampaignRow {
   end_date: Date | null;
   budget: number | null; // cents
   status: string;
+  outcome: string | null;
 
   impressions: number;
   clicks: number;
@@ -41,6 +42,7 @@ export interface CreateCampaignInput {
   end_date?: Date;
   budget?: number; // cents
   status?: CampaignStatus;
+  outcome?: string;
 }
 
 export interface UpdateCampaignInput {
@@ -52,6 +54,7 @@ export interface UpdateCampaignInput {
   end_date?: Date | null;
   budget?: number | null; // cents
   status?: CampaignStatus;
+  outcome?: string | null;
 
   impressions?: number;
   clicks?: number;

@@ -108,18 +108,20 @@ function Select({
 export function CampaignForm({
   productId,
   campaign,
+  prefilledName,
   onSuccess,
   onCancel,
 }: {
   productId: string;
   campaign?: CampaignRow;
+  prefilledName?: string;
   onSuccess: (campaign: CampaignRow) => void;
   onCancel: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const [name, setName] = useState(campaign?.name ?? "");
+  const [name, setName] = useState(campaign?.name ?? prefilledName ?? "");
   const [objective, setObjective] = useState(campaign?.objective ?? "");
   const [audience, setAudience] = useState(campaign?.audience ?? "");
   const [channel, setChannel] = useState(campaign?.channel ?? "");

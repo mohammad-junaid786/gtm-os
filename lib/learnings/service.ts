@@ -56,8 +56,11 @@ async function validateSourceEntity(
       });
       return !!row;
     }
-    // For "analytics" or "other", we don't have a specific table to validate against.
-    // If a UUID is provided, we accept it.
+    // CONTRACT FOR "analytics" AND "other" SOURCES:
+    // Analytics is an aggregate/query layer, not a single database entity.
+    // "other" is an untyped escape hatch.
+    // These do NOT represent a specific database row that can be validated through source_id.
+    // They bypass entity validation, but we still expect a valid UUID format per the schema column type.
     return true;
   } catch {
     return false;

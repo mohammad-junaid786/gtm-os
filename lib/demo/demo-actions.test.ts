@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import { createDemoAction } from "@/lib/actions/demo-actions";
 import { _deps } from "@/lib/demo/demo-deps";
 import { DEMO_PRODUCT_SLUG } from "./demo-seeder";
-import crypto from "crypto";
+
 
 const VALID_UUID_A = "11111111-1111-4111-8111-111111111111";
-const VALID_UUID_B = "22222222-2222-4222-8222-222222222222";
+
 
 describe("Demo Actions", () => {
   let currentUserMock: ReturnType<typeof mock.method>;

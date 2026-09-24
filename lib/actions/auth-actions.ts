@@ -1,5 +1,4 @@
 "use server";
-import { redirect, RedirectType } from "next/navigation";
 
 import { signIn, signOut } from "@/lib/auth";
 import { getDb } from "@/db";

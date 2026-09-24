@@ -3,9 +3,8 @@ import assert from "node:assert/strict";
 import { resolveUserDefaultRoute, _deps } from "./default-route";
 
 describe("resolveUserDefaultRoute - Routing Logic", () => {
-  let getDbMock: ReturnType<typeof mock.method>;
-  let workspacesData: any[] = [];
-  let productsData: any[] = [];
+  let workspacesData: unknown[] = [];
+  let productsData: unknown[] = [];
 
   const mockQueryChain = {
     select: () => mockQueryChain,
@@ -26,7 +25,7 @@ describe("resolveUserDefaultRoute - Routing Logic", () => {
 
   beforeEach(() => {
     mock.restoreAll();
-    getDbMock = mock.method(_deps, "getDb", () => mockQueryChain);
+    mock.method(_deps, "getDb", () => mockQueryChain);
   });
 
   test("returns /onboarding if no workspaces exist", async () => {

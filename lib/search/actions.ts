@@ -78,7 +78,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.icps = icpRows.map((row: any) => ({
+    results.icps = icpRows.map((row) => ({
       id: row.id,
       type: "icp",
       title: row.name,
@@ -107,7 +107,7 @@ export async function searchProductEntitiesAction(
       )
       .limit(MAX_RESULTS);
 
-    results.personas = personaRows.map((row: any) => ({
+    results.personas = personaRows.map((row) => ({
       id: row.id,
       type: "persona",
       title: row.name,
@@ -124,7 +124,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.positioning = posRows.map((row: any) => ({
+    results.positioning = posRows.map((row) => ({
       id: row.id,
       type: "positioning",
       title: row.target_customer || "Positioning Target",
@@ -144,7 +144,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.competitors = competitorRows.map((row: any) => ({
+    results.competitors = competitorRows.map((row) => ({
       id: row.id,
       type: "competitor",
       title: row.name,
@@ -164,7 +164,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.research = researchRows.map((row: any) => ({
+    results.research = researchRows.map((row) => ({
       id: row.id,
       type: "research",
       title: row.title,
@@ -184,7 +184,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.leads = leadRows.map((row: any) => ({
+    results.leads = leadRows.map((row) => ({
       id: row.id,
       type: "lead",
       title: row.company,
@@ -201,7 +201,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.campaigns = campaignRows.map((row: any) => ({
+    results.campaigns = campaignRows.map((row) => ({
       id: row.id,
       type: "campaign",
       title: row.name,
@@ -218,7 +218,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.experiments = experimentRows.map((row: any) => ({
+    results.experiments = experimentRows.map((row) => ({
       id: row.id,
       type: "experiment",
       title: row.name,
@@ -235,7 +235,7 @@ export async function searchProductEntitiesAction(
       ),
       limit: MAX_RESULTS
     });
-    results.learnings = learningRows.map((row: any) => ({
+    results.learnings = learningRows.map((row) => ({
       id: row.id,
       type: "learning",
       title: row.title,
@@ -244,7 +244,7 @@ export async function searchProductEntitiesAction(
     }));
 
     return { ok: true, data: results };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Search Error:", err);
     return { ok: false, error: "An error occurred while searching" };
   }

@@ -233,7 +233,7 @@ describe("Learning Source Validation (Integration)", () => {
         await db.insert(entity.table).values([
           entity.insert(srcA, PROD_A),
           entity.insert(srcB, PROD_B)
-        ] as any);
+        ] as never[]);
       });
 
       test("Same-product source -> accepted", async () => {
@@ -244,15 +244,16 @@ describe("Learning Source Validation (Integration)", () => {
       test("Cross-product source -> rejected", async () => {
         const result = await createLearning(PROD_A, { title: "T", insight: "I", source_type: entity.type, source_id: srcB });
         assert.equal(result.ok, false);
-        expectCode(result as any, "SOURCE_NOT_FOUND_IN_PRODUCT");
+        expectCode(result as Extract<typeof result, { ok: false }>, "SOURCE_NOT_FOUND_IN_PRODUCT");
       });
 
       test("Non-existent source ID -> rejected", async () => {
         const result = await createLearning(PROD_A, { title: "T", insight: "I", source_type: entity.type, source_id: "00000000-0000-0000-0000-fake00000000" });
         assert.equal(result.ok, false);
-        expectCode(result as any, "SOURCE_NOT_FOUND_IN_PRODUCT");
+        expectCode(result as Extract<typeof result, { ok: false }>, "SOURCE_NOT_FOUND_IN_PRODUCT");
       });
     });
+  }
 
   describe("Non-entity sources (analytics, other)", () => {
     test("analytics with valid UUID -> accepted (untyped escape hatch)", async () => {
@@ -270,7 +271,7 @@ describe("Learning Source Validation (Integration)", () => {
     test("analytics with invalid UUID format -> rejected", async () => {
       const result = await createLearning(PROD_A, { title: "T", insight: "I", source_type: "analytics", source_id: "not-a-uuid" });
       assert.equal(result.ok, false);
-      expectCode(result as any, "INVALID_INPUT");
+      expectCode(result as Extract<typeof result, { ok: false }>, "INVALID_INPUT");
     });
   });
 });

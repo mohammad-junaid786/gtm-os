@@ -63,7 +63,7 @@ export async function getOverviewMetrics(productId: string): Promise<OverviewMet
         totalPersonas: personasAgg?.count ?? 0,
       },
     };
-  } catch (e) {
+  } catch {
     return { ok: false, error: "UNKNOWN" };
   }
 }

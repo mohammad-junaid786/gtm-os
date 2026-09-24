@@ -34,13 +34,11 @@ export function CommandMenu({
   // Debounce search
   useEffect(() => {
     if (!productCtx) {
-      setSearchResults(null);
       return;
     }
 
     const trimmed = query.trim();
     if (trimmed.length < 2) {
-      setSearchResults(null);
       return;
     }
 
@@ -169,8 +167,12 @@ export function CommandMenu({
             placeholder="Type a command or search entities..."
             value={query}
             onChange={(e) => {
-              setQuery(e.target.value);
+              const val = e.target.value;
+              setQuery(val);
               setSelectedIndex(0);
+              if (val.trim().length < 2) {
+                setSearchResults(null);
+              }
             }}
             onKeyDown={handleKeyDown}
             autoFocus

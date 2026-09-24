@@ -74,7 +74,8 @@ The project has successfully implemented its foundational MVP architecture, incl
 ### Analytics / Learning
 - **Analytics**: A read-only aggregation layer that visualizes data over existing domain tables. It does not use standalone analytics persistence tables.
 - **Funnel & Performance Measurements**
-- **Learnings**
+- **Learnings**: Create contextual learnings from anywhere in the application (Experiments, Campaigns, Research, Leads, Analytics).
+- **Action Item Promotion**: Easily promote learning action items into new Campaigns or Experiments to close the GTM loop.
 
 ### Search
 - **Product-Scoped Global Search**: Searches across GTM entities including ICPs, Personas, Competitors, Research, Leads, Campaigns, Experiments, and Learnings.
@@ -191,8 +192,8 @@ cd gtm-os
 npm install
 
 # 3. Configure environment
-cp .env.example .env
-# Edit .env and set your DATABASE_URL and AUTH_SECRET
+cp .env.example .env.local
+# Edit .env.local and set your DATABASE_URL and Auth secrets
 ```
 
 ### Environment Variables
@@ -207,7 +208,7 @@ AI environment variables (`AI_PROVIDER`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`
 
 ```bash
 # Run database migrations
-npm run db:migrate
+npm run db:push
 
 # Start the development server
 npm run dev
@@ -224,7 +225,7 @@ npm run typecheck    # TypeScript type check (tsc --noEmit)
 npm test             # Run unit tests (Node.js built-in runner)
 
 npm run db:generate  # Generate Drizzle migrations from schema
-npm run db:migrate   # Apply pending migrations
+npm run db:push      # Push schema directly to database
 npm run db:studio    # Open Drizzle Studio (database browser)
 ```
 

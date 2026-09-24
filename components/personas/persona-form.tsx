@@ -290,7 +290,7 @@ export function PersonaForm({
             </div>
           ) : (
             <div className="flex items-center justify-between text-sm">
-              <p className="text-muted-foreground">AI isn't configured yet.</p>
+              <p className="text-muted-foreground">AI isn&apos;t configured yet.</p>
               <a
                 href={`/settings?w=${workspaceSlug}`}
                 className="text-accent hover:underline font-medium"

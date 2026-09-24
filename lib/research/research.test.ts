@@ -123,7 +123,7 @@ describe("Research Service - Database Invariants", () => {
 
   function setMockRows(responses: unknown[][]) {
     let callCount = 0;
-    queryMock.mock.mockImplementation(async (_config: unknown) => {
+    queryMock.mock.mockImplementation(async () => {
       // Return the next response array or empty
       const rows = responses[callCount++] || [];
       return { rows };

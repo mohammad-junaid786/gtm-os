@@ -40,7 +40,7 @@ export async function getAiSettingsStatusAction(): Promise<{
     url.username = '';
     url.password = '';
     safeBaseUrl = url.toString();
-  } catch (e) {
+  } catch {
     // ignore
   }
 
@@ -68,7 +68,7 @@ export async function testAiConnectionAction(): Promise<{ ok: boolean; message: 
     } else {
       return { ok: false, message: "Unable to connect: The provider returned an error." };
     }
-  } catch (error) {
+  } catch {
     return { ok: false, message: "Unable to connect: An unexpected error occurred." };
   }
 }

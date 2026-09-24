@@ -1,18 +1,24 @@
 import "server-only";
-import { eq, and, isNull, sql } from "drizzle-orm";
+import { eq, and, or, gte, lte, isNull, sql } from "drizzle-orm";
 import { getDb } from "@/db";
-import { campaigns, leads } from "@/db/schema";
+import { campaigns, leads, experiments, learnings, researchItems } from "@/db/schema";
 import { z } from "zod";
 import type {
   AnalyticsResult,
   GtmMetrics,
   PipelineFunnel,
   CampaignPerformance,
+  LeadStatusDistribution,
+  LeadsOverTime,
+  ExperimentStatusDistribution,
+  StrategicVolume,
+  AnalyticsFilters,
+  AvailableFilters
 } from "./types";
 
 const uuidSchema = z.string().uuid();
 
-export async function getGtmMetrics(productId: string): Promise<AnalyticsResult<GtmMetrics>> {
+export async function getGtmMetrics(productId: string, filters?: AnalyticsFilters): Promise<AnalyticsResult<GtmMetrics>> {
   const parsedProductId = uuidSchema.safeParse(productId);
   if (!parsedProductId.success) {
     return { ok: false, error: "PRODUCT_ID_INVALID" };
@@ -33,7 +39,10 @@ export async function getGtmMetrics(productId: string): Promise<AnalyticsResult<
       .where(
         and(
           eq(campaigns.product_id, parsedProductId.data),
-          isNull(campaigns.archived_at)
+          isNull(campaigns.archived_at),
+          filters?.campaignId ? eq(campaigns.id, filters.campaignId) : undefined,
+          filters?.startDate ? or(isNull(campaigns.end_date), gte(campaigns.end_date, new Date(filters.startDate))) : undefined,
+          filters?.endDate ? or(isNull(campaigns.start_date), lte(campaigns.start_date, new Date(filters.endDate + 'T23:59:59.999Z'))) : undefined
         )
       );
 
@@ -47,7 +56,10 @@ export async function getGtmMetrics(productId: string): Promise<AnalyticsResult<
       .where(
         and(
           eq(leads.product_id, parsedProductId.data),
-          isNull(leads.archived_at)
+          isNull(leads.archived_at),
+          filters?.leadStatus ? eq(leads.status, filters.leadStatus) : undefined,
+          filters?.startDate ? gte(leads.created_at, new Date(filters.startDate)) : undefined,
+          filters?.endDate ? lte(leads.created_at, new Date(filters.endDate + 'T23:59:59.999Z')) : undefined
         )
       );
 
@@ -73,7 +85,7 @@ export async function getGtmMetrics(productId: string): Promise<AnalyticsResult<
   }
 }
 
-export async function getPipelineFunnel(productId: string): Promise<AnalyticsResult<PipelineFunnel[]>> {
+export async function getPipelineFunnel(productId: string, filters?: AnalyticsFilters): Promise<AnalyticsResult<PipelineFunnel[]>> {
   const parsedProductId = uuidSchema.safeParse(productId);
   if (!parsedProductId.success) {
     return { ok: false, error: "PRODUCT_ID_INVALID" };
@@ -90,7 +102,10 @@ export async function getPipelineFunnel(productId: string): Promise<AnalyticsRes
       .where(
         and(
           eq(leads.product_id, parsedProductId.data),
-          isNull(leads.archived_at)
+          isNull(leads.archived_at),
+          filters?.leadStatus ? eq(leads.status, filters.leadStatus) : undefined,
+          filters?.startDate ? gte(leads.created_at, new Date(filters.startDate)) : undefined,
+          filters?.endDate ? lte(leads.created_at, new Date(filters.endDate + 'T23:59:59.999Z')) : undefined
         )
       )
       .groupBy(leads.status);
@@ -101,7 +116,7 @@ export async function getPipelineFunnel(productId: string): Promise<AnalyticsRes
   }
 }
 
-export async function getCampaignPerformance(productId: string): Promise<AnalyticsResult<CampaignPerformance[]>> {
+export async function getCampaignPerformance(productId: string, filters?: AnalyticsFilters): Promise<AnalyticsResult<CampaignPerformance[]>> {
   const parsedProductId = uuidSchema.safeParse(productId);
   if (!parsedProductId.success) {
     return { ok: false, error: "PRODUCT_ID_INVALID" };
@@ -115,7 +130,10 @@ export async function getCampaignPerformance(productId: string): Promise<Analyti
       .where(
         and(
           eq(campaigns.product_id, parsedProductId.data),
-          isNull(campaigns.archived_at)
+          isNull(campaigns.archived_at),
+          filters?.campaignId ? eq(campaigns.id, filters.campaignId) : undefined,
+          filters?.startDate ? or(isNull(campaigns.end_date), gte(campaigns.end_date, new Date(filters.startDate))) : undefined,
+          filters?.endDate ? or(isNull(campaigns.start_date), lte(campaigns.start_date, new Date(filters.endDate + 'T23:59:59.999Z'))) : undefined
         )
       )
       .orderBy(campaigns.name);
@@ -133,6 +151,204 @@ export async function getCampaignPerformance(productId: string): Promise<Analyti
     }));
 
     return { ok: true, data };
+  } catch {
+    return { ok: false, error: "UNKNOWN" };
+  }
+}
+
+export async function getLeadStatusDistribution(productId: string, filters?: AnalyticsFilters): Promise<AnalyticsResult<LeadStatusDistribution[]>> {
+  const parsedProductId = uuidSchema.safeParse(productId);
+  if (!parsedProductId.success) {
+    return { ok: false, error: "PRODUCT_ID_INVALID" };
+  }
+
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({
+        status: leads.status,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(leads)
+      .where(
+        and(
+          eq(leads.product_id, parsedProductId.data),
+          isNull(leads.archived_at),
+          filters?.leadStatus ? eq(leads.status, filters.leadStatus) : undefined,
+          filters?.startDate ? gte(leads.created_at, new Date(filters.startDate)) : undefined,
+          filters?.endDate ? lte(leads.created_at, new Date(filters.endDate + 'T23:59:59.999Z')) : undefined
+        )
+      )
+      .groupBy(leads.status)
+      .orderBy(leads.status);
+
+    return { ok: true, data: rows };
+  } catch {
+    return { ok: false, error: "UNKNOWN" };
+  }
+}
+
+export async function getLeadsOverTime(productId: string, filters?: AnalyticsFilters): Promise<AnalyticsResult<LeadsOverTime[]>> {
+  const parsedProductId = uuidSchema.safeParse(productId);
+  if (!parsedProductId.success) {
+    return { ok: false, error: "PRODUCT_ID_INVALID" };
+  }
+
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({
+        period: sql<string>`to_char(${leads.created_at}, 'YYYY-MM')`,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(leads)
+      .where(
+        and(
+          eq(leads.product_id, parsedProductId.data),
+          isNull(leads.archived_at),
+          filters?.leadStatus ? eq(leads.status, filters.leadStatus) : undefined,
+          filters?.startDate ? gte(leads.created_at, new Date(filters.startDate)) : undefined,
+          filters?.endDate ? lte(leads.created_at, new Date(filters.endDate + 'T23:59:59.999Z')) : undefined
+        )
+      )
+      .groupBy(sql`to_char(${leads.created_at}, 'YYYY-MM')`)
+      .orderBy(sql`to_char(${leads.created_at}, 'YYYY-MM')`);
+
+    return { ok: true, data: rows };
+  } catch {
+    return { ok: false, error: "UNKNOWN" };
+  }
+}
+
+export async function getExperimentStatusDistribution(productId: string, filters?: AnalyticsFilters): Promise<AnalyticsResult<ExperimentStatusDistribution[]>> {
+  const parsedProductId = uuidSchema.safeParse(productId);
+  if (!parsedProductId.success) {
+    return { ok: false, error: "PRODUCT_ID_INVALID" };
+  }
+
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({
+        status: experiments.status,
+        count: sql<number>`COUNT(*)::int`,
+      })
+      .from(experiments)
+      .where(
+        and(
+          eq(experiments.product_id, parsedProductId.data),
+          isNull(experiments.archived_at),
+          filters?.experimentStatus ? eq(experiments.status, filters.experimentStatus) : undefined,
+          filters?.startDate ? or(isNull(experiments.end_date), gte(experiments.end_date, new Date(filters.startDate))) : undefined,
+          filters?.endDate ? or(isNull(experiments.start_date), lte(experiments.start_date, new Date(filters.endDate + 'T23:59:59.999Z'))) : undefined
+        )
+      )
+      .groupBy(experiments.status)
+      .orderBy(experiments.status);
+
+    return { ok: true, data: rows };
+  } catch {
+    return { ok: false, error: "UNKNOWN" };
+  }
+}
+
+export async function getStrategicVolume(productId: string, filters?: AnalyticsFilters): Promise<AnalyticsResult<StrategicVolume>> {
+  const parsedProductId = uuidSchema.safeParse(productId);
+  if (!parsedProductId.success) {
+    return { ok: false, error: "PRODUCT_ID_INVALID" };
+  }
+
+  try {
+    const db = getDb();
+
+    const [learningsAgg] = await db
+      .select({ count: sql<number>`COUNT(*)::int` })
+      .from(learnings)
+      .where(
+        and(
+          eq(learnings.product_id, parsedProductId.data),
+          isNull(learnings.archived_at),
+          filters?.startDate ? gte(learnings.created_at, new Date(filters.startDate)) : undefined,
+          filters?.endDate ? lte(learnings.created_at, new Date(filters.endDate + 'T23:59:59.999Z')) : undefined
+        )
+      );
+
+    const [researchAgg] = await db
+      .select({ count: sql<number>`COUNT(*)::int` })
+      .from(researchItems)
+      .where(
+        and(
+          eq(researchItems.product_id, parsedProductId.data),
+          isNull(researchItems.archived_at),
+          filters?.startDate ? gte(sql`COALESCE(${researchItems.date_researched}, ${researchItems.created_at})`, new Date(filters.startDate)) : undefined,
+          filters?.endDate ? lte(sql`COALESCE(${researchItems.date_researched}, ${researchItems.created_at})`, new Date(filters.endDate + 'T23:59:59.999Z')) : undefined
+        )
+      );
+
+    return {
+      ok: true,
+      data: {
+        totalLearnings: learningsAgg?.count ?? 0,
+        totalResearchItems: researchAgg?.count ?? 0,
+      },
+    };
+  } catch {
+    return { ok: false, error: "UNKNOWN" };
+  }
+}
+export async function getAvailableAnalyticsFilters(productId: string): Promise<AnalyticsResult<AvailableFilters>> {
+  const parsedProductId = uuidSchema.safeParse(productId);
+  if (!parsedProductId.success) {
+    return { ok: false, error: "PRODUCT_ID_INVALID" };
+  }
+
+  try {
+    const db = getDb();
+
+    // 1. Get distinct lead statuses
+    const leadStatusRows = await db
+      .selectDistinct({ status: leads.status })
+      .from(leads)
+      .where(
+        and(
+          eq(leads.product_id, parsedProductId.data),
+          isNull(leads.archived_at)
+        )
+      )
+      .orderBy(leads.status);
+      
+    // 2. Get distinct experiment statuses
+    const experimentStatusRows = await db
+      .selectDistinct({ status: experiments.status })
+      .from(experiments)
+      .where(
+        and(
+          eq(experiments.product_id, parsedProductId.data),
+          isNull(experiments.archived_at)
+        )
+      )
+      .orderBy(experiments.status);
+
+    // 3. Get all active campaigns for the product
+    const campaignRows = await db
+      .select({ id: campaigns.id, name: campaigns.name })
+      .from(campaigns)
+      .where(
+        and(
+          eq(campaigns.product_id, parsedProductId.data),
+          isNull(campaigns.archived_at)
+        )
+      )
+      .orderBy(campaigns.name);
+
+    return {
+      ok: true,
+      data: {
+        leadStatuses: leadStatusRows.map((r) => r.status),
+        experimentStatuses: experimentStatusRows.map((r) => r.status),
+        campaigns: campaignRows,
+      },
+    };
   } catch {
     return { ok: false, error: "UNKNOWN" };
   }

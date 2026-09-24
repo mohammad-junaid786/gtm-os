@@ -17,6 +17,7 @@ import { getCurrentUserId } from "@/lib/routing/current-user";
 import { resolveProductContext } from "@/lib/routing/resolver";
 import { ProductContextConsumer } from "@/components/layout/product-context-consumer";
 import { getOverviewMetrics } from "@/lib/overview/service";
+import { getGtmMetrics, getPipelineFunnel, getCampaignPerformance } from "@/lib/analytics/service";
 
 // ---------------------------------------------------------------------------
 // Metadata (separate from layout.tsx — Next.js uses the closest generateMetadata)
@@ -59,12 +60,30 @@ export default async function ProductOverviewPage({
 
   const { product } = contextResult.data;
 
-  const metricsResult = await getOverviewMetrics(product.id);
-  const metrics = metricsResult.ok 
+  // Fetch all overview data in parallel
+  const [
+    metricsResult,
+    gtmMetricsResult,
+    funnelResult,
+    campaignsResult
+  ] = await Promise.all([
+    getOverviewMetrics(product.id),
+    getGtmMetrics(product.id),
+    getPipelineFunnel(product.id),
+    getCampaignPerformance(product.id)
+  ]);
+
+  const overviewMetrics = metricsResult.ok 
     ? metricsResult.data 
     : { totalLeads: 0, totalCampaigns: 0, totalExperiments: 0, totalPersonas: 0 };
+    
+  const analyticsData = {
+    metrics: gtmMetricsResult.ok ? gtmMetricsResult.data : null,
+    funnel: funnelResult.ok ? funnelResult.data : [],
+    campaigns: campaignsResult.ok ? campaignsResult.data : []
+  };
 
   // The ProductContextProvider is available in the tree from layout.
   // We use a thin client consumer to forward context and the fetched metrics to OverviewDashboard.
-  return <ProductContextConsumer metrics={metrics} />;
+  return <ProductContextConsumer metrics={overviewMetrics} analytics={analyticsData} />;
 }

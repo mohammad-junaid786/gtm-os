@@ -10,8 +10,15 @@
 import { useProductContext } from "@/lib/product-context";
 import { OverviewDashboard } from "@/components/overview-dashboard";
 import type { OverviewMetrics } from "@/lib/overview/service";
+import type { GtmMetrics, PipelineFunnel, CampaignPerformance } from "@/lib/analytics/types";
 
-export function ProductContextConsumer({ metrics }: { metrics: OverviewMetrics }) {
+export interface AnalyticsData {
+  metrics: GtmMetrics | null;
+  funnel: PipelineFunnel[];
+  campaigns: CampaignPerformance[];
+}
+
+export function ProductContextConsumer({ metrics, analytics }: { metrics: OverviewMetrics, analytics: AnalyticsData }) {
   const { workspaceName, productName } = useProductContext();
-  return <OverviewDashboard workspaceName={workspaceName} productName={productName} metrics={metrics} />;
+  return <OverviewDashboard workspaceName={workspaceName} productName={productName} metrics={metrics} analytics={analytics} />;
 }

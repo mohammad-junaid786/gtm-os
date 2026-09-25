@@ -1,62 +1,126 @@
 @import "tailwindcss";
 
 :root {
-  /* Neutral / Layout */
-  --background: #ffffff; /* Neutral 50 */
-  --foreground: #212121; /* Neutral 950 */
+  /* Level 0: Application Background */
+  --background: #F6F9FC;
+  /* Level 1: Primary Surface */
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --popover: #FFFFFF;
+  /* Level 2: Secondary / Highlighted Surface */
+  --surface-subtle: #F8FAFC;
+  --muted: #F8FAFC;
+  /* Level 3: Soft Brand Surface */
+  --surface-brand: #EFF6FF;
+
+  /* Typography */
+  --foreground: #0F172A;
+  --foreground-secondary: #475569;
+  --foreground-muted: #64748B;
+  --foreground-disabled: #94A3B8;
+  /* Backwards compatibility */
+  --card-foreground: #0F172A;
+  --popover-foreground: #0F172A;
+  --muted-foreground: #64748B;
+
+  /* Borders */
+  --border: #E2E8F0;
+  --border-subtle: #EEF2F7;
+  --input: #E2E8F0;
+
+  /* Brand / Primary */
+  --primary: #0562ef; /* Kept existing GTM OS blue */
+  --primary-hover: #0450c2;
+  --primary-muted: #EFF6FF;
+  --primary-foreground: #FFFFFF;
+
+  /* Semantics */
+  --success: #10B981;
+  --success-muted: #ECFDF5;
+  --warning: #F59E0B;
+  --warning-muted: #FFFBEB;
+  --danger: #EF4444;
+  --danger-muted: #FEF2F2;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --info: #3B82F6;
+  --info-muted: #EFF6FF;
   
-  --card: #ffffff;
-  --card-foreground: #212121;
+  --ring: #0562ef; /* Focus states */
   
-  --popover: #ffffff;
-  --popover-foreground: #212121;
+  /* Accent for existing uses */
+  --accent: #F8FAFC;
+  --accent-foreground: #0F172A;
   
-  --surface: #f0f0f0; /* Neutral 100 for secondary surfaces */
-  --sidebar: #f0f0f0;
-  
-  --border: #dbdbdb; /* Neutral 200 */
-  --input: #dbdbdb;
-  
-  --muted: #f0f0f0;
-  --muted-foreground: #6b6b6b; /* Neutral 600 */
-  
-  --primary: #0562ef; /* Primary 500 */
-  --primary-foreground: #ffffff;
-  
-  --secondary: #f0f0f0;
-  --secondary-foreground: #575757;
-  
-  --accent: #f2f6fc; /* Accent 50 for ghost/hover */
-  --accent-foreground: #0f2e5c; /* Accent 900 */
-  
-  --destructive: #ef4444; /* Semantic error */
-  --destructive-foreground: #ffffff;
-  
-  --ring: #3d8bff; /* Primary 400 */
+  /* Sidebar uses */
+  --sidebar: #F6F9FC;
+
+  /* Chart Colors */
+  --chart-primary: #0562ef;
+  --chart-secondary: #06B6D4;
+  --chart-tertiary: #8B5CF6;
+  --chart-success: #10B981;
+  --chart-warning: #F59E0B;
+  --chart-danger: #EF4444;
+  --chart-muted: #94A3B8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-disabled: var(--foreground-disabled);
+  
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-brand: var(--surface-brand);
+  
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-muted: var(--primary-muted);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-success: var(--success);
+  --color-success-muted: var(--success-muted);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-danger: var(--danger);
+  --color-danger-muted: var(--danger-muted);
+  --color-info: var(--info);
+  --color-info-muted: var(--info-muted);
+  
+  --color-secondary: var(--surface-subtle);
+  --color-secondary-foreground: var(--foreground-secondary);
+  
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  --color-surface: var(--surface);
+  
   --color-sidebar: var(--sidebar);
+  
   --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
   --color-input: var(--input);
+  
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-ring: var(--ring);
+
+  --color-chart-primary: var(--chart-primary);
+  --color-chart-secondary: var(--chart-secondary);
+  --color-chart-tertiary: var(--chart-tertiary);
+  --color-chart-success: var(--chart-success);
+  --color-chart-warning: var(--chart-warning);
+  --color-chart-danger: var(--chart-danger);
+  --color-chart-muted: var(--chart-muted);
 
   /* Typography */
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -64,12 +128,20 @@
   --font-mono: var(--font-dm-mono), ui-monospace, monospace;
   
   /* Radius */
-  --radius-sm: 0.0625rem;
-  --radius-md: 0.25rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-none: 0;
   --radius-full: 9999px;
+  /* Existing uses */
+  --radius: 8px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 html {

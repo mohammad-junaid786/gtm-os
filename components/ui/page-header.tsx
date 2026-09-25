@@ -24,7 +24,7 @@ export function PageHeader({
   return (
     <div className={cn("space-y-1.5", className)}>
       {eyebrow && (
-        <p className="font-mono text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+        <p className="font-mono text-[10px] font-medium tracking-[0.12em] text-foreground-muted uppercase">
           {eyebrow}
         </p>
       )}
@@ -32,7 +32,7 @@ export function PageHeader({
         {title}
       </h1>
       {description && (
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        <p className="max-w-2xl text-sm leading-relaxed text-foreground-secondary">
           {description}
         </p>
       )}
@@ -56,7 +56,7 @@ export function SectionHeader({
     <div className={cn("space-y-0.5", className)}>
       <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       {description && (
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <p className="text-xs text-foreground-secondary">{description}</p>
       )}
     </div>
   );
@@ -80,7 +80,7 @@ export function MetaLabel({
 }) {
   return (
     <div className={cn("space-y-0.5", className)}>
-      <p className="text-[9px] font-semibold tracking-[0.14em] uppercase text-muted-foreground">
+      <p className="text-[9px] font-semibold tracking-[0.14em] uppercase text-foreground-muted">
         {label}
       </p>
       <p className="font-mono text-xs text-foreground">{value}</p>

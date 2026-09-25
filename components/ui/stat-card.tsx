@@ -13,15 +13,15 @@ export function StatCard({
   className?: string;
 }) {
   return (
-    <Card className={cn("bg-card shadow-none", className)}>
+    <Card className={cn("bg-surface shadow-sm rounded-xl border border-border-subtle", className)}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+        <CardTitle className="text-xs font-semibold tracking-wider text-foreground-muted uppercase">
           {label}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="font-mono text-3xl font-medium tracking-tight text-foreground">{value}</p>
-        {hint ? <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p> : null}
+        {hint ? <p className="mt-1.5 text-xs text-foreground-secondary">{hint}</p> : null}
       </CardContent>
     </Card>
   );

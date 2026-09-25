@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid
-} from "recharts";
+import { CheckCircle2, PlayCircle, PauseCircle, XCircle } from "lucide-react";
 
 export interface ExperimentStatusChartProps {
   data: { status: string; count: number }[];
@@ -17,16 +9,15 @@ export interface ExperimentStatusChartProps {
 export function ExperimentStatusChart({ data }: ExperimentStatusChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-md bg-surface/50 p-6 text-center">
+      <div className="flex flex-col items-center justify-center border border-dashed border-border-subtle rounded-xl bg-surface-subtle/50 p-6 text-center min-h-[160px]">
         <p className="text-sm font-medium text-foreground">No experiments yet</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Launch experiments to see their status distribution here.
+        <p className="text-xs text-foreground-secondary mt-1">
+          Launch experiments to see their status here.
         </p>
       </div>
     );
   }
 
-  // Format statuses for display (e.g., 'in_progress' -> 'In Progress')
   const formatStatus = (status: string) => {
     return status
       .split('_')
@@ -34,46 +25,53 @@ export function ExperimentStatusChart({ data }: ExperimentStatusChartProps) {
       .join(' ');
   };
 
-  const chartData = data.map(item => ({
-    ...item,
-    displayName: formatStatus(item.status)
-  }));
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <PlayCircle className="w-4 h-4 text-primary" />;
+      case 'completed':
+        return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
+      case 'paused':
+        return <PauseCircle className="w-4 h-4 text-amber-500" />;
+      case 'failed':
+        return <XCircle className="w-4 h-4 text-rose-500" />;
+      default:
+        return <div className="w-2 h-2 rounded-full bg-foreground-muted" />;
+    }
+  };
+
+  const total = data.reduce((sum, item) => sum + item.count, 0);
 
   return (
-    <div className="h-72 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart 
-          data={chartData} 
-          layout="vertical" 
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
-          <XAxis type="number" hide />
-          <YAxis 
-            dataKey="displayName" 
-            type="category" 
-            axisLine={false} 
-            tickLine={false} 
-            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} 
-            width={90}
-          />
-          <Tooltip 
-            cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-            contentStyle={{ 
-              borderRadius: '6px', 
-              border: '1px solid var(--border)', 
-              boxShadow: 'none', 
-              fontSize: '12px', 
-              padding: '8px 12px', 
-              backgroundColor: 'var(--background)', 
-              color: 'var(--foreground)' 
-            }}
-            formatter={(value: number) => [value, "Experiments"]}
-            itemStyle={{ fontWeight: 500, color: "var(--foreground)" }}
-          />
-          <Bar dataKey="count" fill="var(--primary)" radius={[0, 2, 2, 0]} barSize={20} />
-        </BarChart>
-      </ResponsiveContainer>
+    <div className="w-full flex flex-col gap-4 py-1">
+      <div className="flex items-center justify-between text-xs pb-2 border-b border-border-subtle/50">
+        <span className="font-medium text-foreground-muted uppercase tracking-wider">Status</span>
+        <span className="font-medium text-foreground-muted uppercase tracking-wider">Experiments</span>
+      </div>
+      
+      <div className="flex flex-col gap-3">
+        {data.map((item) => {
+          const percentage = total > 0 ? (item.count / total) * 100 : 0;
+          return (
+            <div key={item.status} className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {getStatusIcon(item.status)}
+                  <span className="text-sm text-foreground">{formatStatus(item.status)}</span>
+                </div>
+                <span className="text-sm font-medium text-foreground tabular-nums">{item.count}</span>
+              </div>
+              {/* Very subtle background track for magnitude */}
+              <div className="w-full h-1 bg-surface-subtle rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-border-strong rounded-full transition-all duration-500"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

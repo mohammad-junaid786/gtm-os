@@ -84,7 +84,7 @@ export function SidebarNav({
   settingsItem?: NavItem;
 }) {
   return (
-    <nav aria-label="Primary" className="flex h-full flex-col">
+    <nav aria-label="Primary" className="flex flex-1 min-h-0 flex-col">
       <div className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
         {sections.map((section) => (
           <div key={section.id}>

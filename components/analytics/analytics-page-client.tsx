@@ -19,10 +19,8 @@ import type {
   AnalyticsFilters,
   AvailableFilters
 } from "@/lib/analytics/types";
-import { StatCard } from "@/components/ui/stat-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { LeadsOverTimeChart } from "@/components/charts/leads-over-time-chart";
 import { LeadDistributionChart } from "@/components/charts/lead-distribution-chart";
 import { CampaignEfficiencyScatter } from "@/components/charts/campaign-efficiency-scatter";
@@ -32,6 +30,9 @@ import { AnalyticsFilterBar } from "@/components/analytics/analytics-filter-bar"
 import { ContextualLearningDialog } from "@/components/learnings/contextual-learning-dialog";
 import { Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+import { PipelineFunnelChart } from "@/components/charts/pipeline-funnel-chart";
+import { CampaignPerformanceChart } from "@/components/charts/campaign-performance-chart";
 
 export function AnalyticsPageClient() {
   const { productId } = useProductContext();
@@ -108,7 +109,7 @@ export function AnalyticsPageClient() {
 
   if (!loaded || isPending) {
     return (
-      <div className="flex items-center justify-center h-64 text-sm text-neutral-500">
+      <div className="flex items-center justify-center h-64 text-sm text-foreground-secondary">
         Loading analytics...
       </div>
     );
@@ -158,19 +159,22 @@ export function AnalyticsPageClient() {
   };
 
   return (
-    <div className="space-y-12 max-w-6xl">
-      <div className="flex items-start justify-between">
+    <div className="space-y-6 pb-16 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <PageHeader
           eyebrow="MEASUREMENT"
-          title="Analytics & Measurement"
+          title="Analytics"
           description="Performance metrics for your go-to-market execution."
+          className="max-w-xl"
         />
-        <Button onClick={() => setShowLearningDialog(true)} className="mt-1">
+        <Button onClick={() => setShowLearningDialog(true)} className="mt-1 md:mt-0 shrink-0">
           <Lightbulb className="mr-2 h-4 w-4" />
           Log Learning
         </Button>
       </div>
 
+      {/* Filter Bar */}
       <AnalyticsFilterBar  
         activeFilters={activeFilters}
         availableFilters={availableFilters}
@@ -178,156 +182,114 @@ export function AnalyticsPageClient() {
         onReset={() => setActiveFilters({})}
       />
 
-      <section aria-labelledby="kpis-heading">
+      {/* KPI Snapshot */}
+      <section aria-labelledby="kpis-heading" className="mb-8">
         <h2 id="kpis-heading" className="sr-only">Key Performance Indicators</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            label="Total Spend"
-            value={formatCurrency(metrics.totalCampaignSpendCents)}
-          />
-          <StatCard
-            label="Total Revenue"
-            value={formatCurrency(metrics.totalCampaignRevenueCents)}
-          />
-          <StatCard
-            label="Overall ROAS"
-            value={metrics.overallRoas !== null ? `${metrics.overallRoas.toFixed(2)}x` : "—"}
-          />
-          <StatCard
-            label="Overall CAC"
-            value={formatCurrency(metrics.overallCacCents)}
-          />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="flex flex-col bg-surface border border-border-subtle rounded-xl p-5">
+            <span className="text-[10px] font-semibold tracking-wider text-foreground-muted uppercase mb-1">Total Spend</span>
+            <span className="text-2xl font-medium text-foreground tracking-tight">{formatCurrency(metrics.totalCampaignSpendCents)}</span>
+          </div>
+          <div className="flex flex-col bg-surface border border-border-subtle rounded-xl p-5">
+            <span className="text-[10px] font-semibold tracking-wider text-foreground-muted uppercase mb-1">Total Revenue</span>
+            <span className="text-2xl font-medium text-foreground tracking-tight">{formatCurrency(metrics.totalCampaignRevenueCents)}</span>
+          </div>
+          <div className="flex flex-col bg-surface border border-border-subtle rounded-xl p-5">
+            <span className="text-[10px] font-semibold tracking-wider text-foreground-muted uppercase mb-1">Overall ROAS</span>
+            <span className="text-2xl font-medium text-foreground tracking-tight">{metrics.overallRoas !== null ? `${metrics.overallRoas.toFixed(2)}x` : "—"}</span>
+          </div>
+          <div className="flex flex-col bg-surface border border-border-subtle rounded-xl p-5">
+            <span className="text-[10px] font-semibold tracking-wider text-foreground-muted uppercase mb-1">Overall CAC</span>
+            <span className="text-2xl font-medium text-foreground tracking-tight">{formatCurrency(metrics.overallCacCents)}</span>
+          </div>
         </div>
       </section>
 
-      <section aria-labelledby="leads-over-time-heading" className="pt-4">
-        <h2 id="leads-over-time-heading" className="text-sm font-semibold text-foreground">
-          Leads Over Time
-        </h2>
-        <p className="text-xs text-muted-foreground mt-1">Growth of lead generation over time.</p>
-        <div className="mt-6">
-          <LeadsOverTimeChart data={leadsOverTime} />
-        </div>
-      </section>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-4">
-        <section aria-labelledby="lead-distribution-heading">
-          <h2 id="lead-distribution-heading" className="text-sm font-semibold text-foreground">
-            Lead Distribution
+      {/* Primary Visualization - Trend */}
+      <section aria-labelledby="leads-over-time-heading" className="bg-surface border border-border-subtle rounded-xl p-6">
+        <header className="mb-5">
+          <h2 id="leads-over-time-heading" className="text-base font-semibold text-foreground">
+            Leads Over Time
           </h2>
-          <p className="text-xs text-muted-foreground mt-1">Current breakdown of leads by status.</p>
-          <div className="mt-6">
+          <p className="text-xs text-foreground-secondary mt-1">Growth of lead generation over time.</p>
+        </header>
+        <LeadsOverTimeChart data={leadsOverTime} />
+      </section>
+
+      {/* Secondary Visualizations (Funnel & Performance) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section aria-labelledby="campaign-performance-heading" className="lg:col-span-2 bg-surface border border-border-subtle rounded-xl p-6">
+          <header className="mb-5">
+            <h2 id="campaign-performance-heading" className="text-base font-semibold text-foreground">
+              Campaign Performance
+            </h2>
+            <p className="text-xs text-foreground-secondary mt-1">Spend versus revenue by campaign.</p>
+          </header>
+          <CampaignPerformanceChart data={campaigns} />
+        </section>
+
+        <section aria-labelledby="pipeline-funnel-heading" className="lg:col-span-1 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col">
+          <header className="mb-5">
+            <h2 id="pipeline-funnel-heading" className="text-base font-semibold text-foreground">
+              Pipeline Funnel
+            </h2>
+            <p className="text-xs text-foreground-secondary mt-1">Lead progression across all campaigns.</p>
+          </header>
+          <div className="flex-1">
+            <PipelineFunnelChart data={funnel} />
+          </div>
+        </section>
+      </div>
+
+      {/* Operational Visualizations (Distribution & Efficiency) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <section aria-labelledby="lead-distribution-heading" className="lg:col-span-1 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col">
+          <header className="mb-5">
+            <h2 id="lead-distribution-heading" className="text-base font-semibold text-foreground">
+              Lead Distribution
+            </h2>
+            <p className="text-xs text-foreground-secondary mt-1">Current breakdown of leads by status.</p>
+          </header>
+          <div className="flex-1">
             <LeadDistributionChart data={leadDistribution} />
           </div>
         </section>
 
-        <section aria-labelledby="campaign-efficiency-heading">
-          <h2 id="campaign-efficiency-heading" className="text-sm font-semibold text-foreground">
-            Campaign Efficiency
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">Spend vs Revenue across all campaigns.</p>
-          <div className="mt-6">
+        <section aria-labelledby="campaign-efficiency-heading" className="lg:col-span-2 bg-surface border border-border-subtle rounded-xl p-6 flex flex-col">
+          <header className="mb-5">
+            <h2 id="campaign-efficiency-heading" className="text-base font-semibold text-foreground">
+              Campaign Efficiency
+            </h2>
+            <p className="text-xs text-foreground-secondary mt-1">Spend vs Revenue efficiency mapping.</p>
+          </header>
+          <div className="flex-1 flex flex-col">
             <CampaignEfficiencyScatter data={campaigns} />
           </div>
         </section>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-4">
-        <section aria-labelledby="pipeline-funnel-heading">
-          <h2 id="pipeline-funnel-heading" className="text-sm font-semibold text-foreground">
-            Pipeline Funnel
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">Lead progression across all campaigns.</p>
-          {funnel.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center mt-6 border border-dashed border-border rounded-md bg-surface/50 p-6 text-center">
-              <p className="text-sm font-medium text-foreground">No pipeline data available</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Add leads to see your funnel conversion rates.
-              </p>
-            </div>
-          ) : (
-            <div className="h-72 mt-6">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={funnel} layout="vertical" margin={{ top: 0, right: 30, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
-                  <XAxis type="number" hide />
-                  <YAxis 
-                    dataKey="status" 
-                    type="category" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} 
-                    width={90}
-                  />
-                  <Tooltip 
-                    cursor={{ fill: "var(--muted)", opacity: 0.4 }}
-                    contentStyle={{ borderRadius: '6px', border: '1px solid var(--border)', boxShadow: 'none', fontSize: '12px', padding: '8px 12px', backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
-                    itemStyle={{ fontWeight: 500, color: "var(--foreground)" }}
-                  />
-                  <Bar dataKey="count" fill="var(--primary)" radius={[0, 2, 2, 0]} barSize={20} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </section>
-
-        <section aria-labelledby="campaign-performance-heading">
-          <h2 id="campaign-performance-heading" className="text-sm font-semibold text-foreground">
-            Campaign Performance
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">Spend versus revenue by campaign.</p>
-          {campaigns.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center mt-6 border border-dashed border-border rounded-md bg-surface/50 p-6 text-center">
-              <p className="text-sm font-medium text-foreground">No campaign data available</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Run campaigns and track spend/revenue to see performance.
-              </p>
-            </div>
-          ) : (
-            <div className="h-72 mt-6">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={campaigns} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                  <XAxis 
-                    dataKey="name" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} 
-                    dy={10}
-                  />
-                  <YAxis hide />
-                  <Tooltip 
-                    cursor={{ fill: "var(--muted)", opacity: 0.4 }} 
-                    contentStyle={{ borderRadius: '6px', border: '1px solid var(--border)', boxShadow: 'none', fontSize: '12px', padding: '8px 12px', backgroundColor: 'var(--background)', color: 'var(--foreground)' }}
-                    formatter={(val: number, name: string) => [formatCurrency(val), name === "revenue" ? "Revenue" : "Spend"]}
-                    itemStyle={{ fontWeight: 500 }}
-                  />
-                  <Bar dataKey="spend" fill="var(--muted-foreground)" radius={[2, 2, 0, 0]} name="Spend" barSize={16} />
-                  <Bar dataKey="revenue" fill="var(--primary)" radius={[2, 2, 0, 0]} name="Revenue" barSize={16} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          )}
-        </section>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-4 border-t border-border/40 mt-12">
-        <section aria-labelledby="experiment-status-heading" className="pt-8">
-          <h2 id="experiment-status-heading" className="text-sm font-semibold text-foreground">
-            Experiment Status
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">Current state of active and completed experiments.</p>
-          <div className="mt-6">
+      {/* Strategic Visualizations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <section aria-labelledby="experiment-status-heading" className="bg-surface border border-border-subtle rounded-xl p-6">
+          <header className="mb-5">
+            <h2 id="experiment-status-heading" className="text-base font-semibold text-foreground">
+              Experiment Status
+            </h2>
+            <p className="text-xs text-foreground-secondary mt-1">Current state of active and completed experiments.</p>
+          </header>
+          <div>
             <ExperimentStatusChart data={experimentStatus} />
           </div>
         </section>
 
-        <section aria-labelledby="strategic-volume-heading" className="pt-8">
-          <h2 id="strategic-volume-heading" className="text-sm font-semibold text-foreground">
-            Strategic Activity
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">Volume of foundational research and learnings.</p>
-          <div className="mt-6">
+        <section aria-labelledby="strategic-volume-heading" className="bg-surface border border-border-subtle rounded-xl p-6">
+          <header className="mb-5">
+            <h2 id="strategic-volume-heading" className="text-base font-semibold text-foreground">
+              Strategic Activity
+            </h2>
+            <p className="text-xs text-foreground-secondary mt-1">Volume of foundational research and learnings.</p>
+          </header>
+          <div className="flex items-center">
             <StrategicVolumeChart data={strategicVolume} />
           </div>
         </section>

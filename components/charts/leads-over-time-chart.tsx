@@ -17,20 +17,17 @@ export interface LeadsOverTimeChartProps {
 export function LeadsOverTimeChart({ data }: LeadsOverTimeChartProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="h-64 flex flex-col items-center justify-center border border-dashed border-border rounded-md bg-surface/50 p-6 text-center">
+      <div className="flex flex-col items-center justify-center border border-dashed border-border-subtle rounded-xl bg-surface-subtle/50 p-6 text-center h-72 w-full">
         <p className="text-sm font-medium text-foreground">No lead activity over time yet</p>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="text-xs text-foreground-secondary mt-1">
           Historical lead data will appear here as your pipeline grows.
         </p>
       </div>
     );
   }
 
-  // Convert 'YYYY-MM' to a more readable format 'MMM YYYY' for tooltip if desired,
-  // or just rely on standard string representation.
   const formatPeriod = (period: string) => {
     try {
-      // Period is expected as '2026-01'
       const [year, month] = period.split('-');
       if (!year || !month) return period;
       const date = new Date(parseInt(year), parseInt(month) - 1);
@@ -41,7 +38,7 @@ export function LeadsOverTimeChart({ data }: LeadsOverTimeChartProps) {
   };
 
   return (
-    <div className="h-72 w-full">
+    <div className="w-full h-72 mt-2">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}
@@ -49,35 +46,38 @@ export function LeadsOverTimeChart({ data }: LeadsOverTimeChartProps) {
         >
           <defs>
             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.2} />
+              <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15} />
               <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-subtle)" opacity={0.4} />
           <XAxis
             dataKey="period"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+            tick={{ fill: "var(--foreground-muted)", fontSize: 11 }}
             tickFormatter={formatPeriod}
             dy={10}
+            minTickGap={30}
           />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+            tick={{ fill: "var(--foreground-muted)", fontSize: 11 }}
+            width={40}
           />
           <Tooltip
-            cursor={{ stroke: "var(--border)", strokeWidth: 1, strokeDasharray: "3 3" }}
+            cursor={{ stroke: "var(--border-subtle)", strokeWidth: 1, strokeDasharray: "4 4" }}
             contentStyle={{
-              borderRadius: "6px",
-              border: "1px solid var(--border)",
-              boxShadow: "none",
+              borderRadius: "8px",
+              border: "1px solid var(--border-subtle)",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)",
               fontSize: "12px",
               padding: "8px 12px",
-              backgroundColor: "var(--background)",
+              backgroundColor: "var(--surface)",
               color: "var(--foreground)"
             }}
+            labelStyle={{ color: "var(--foreground-muted)", marginBottom: "4px" }}
             labelFormatter={(label) => formatPeriod(label as string)}
             formatter={(value: number) => [value, "Leads"]}
             itemStyle={{ fontWeight: 500, color: "var(--primary)" }}
@@ -89,7 +89,7 @@ export function LeadsOverTimeChart({ data }: LeadsOverTimeChartProps) {
             strokeWidth={2}
             fillOpacity={1}
             fill="url(#colorCount)"
-            activeDot={{ r: 4, strokeWidth: 0, fill: "var(--primary)" }}
+            activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--surface)", fill: "var(--primary)" }}
             dot={data.length === 1 ? { r: 4, strokeWidth: 0, fill: "var(--primary)" } : false}
           />
         </AreaChart>

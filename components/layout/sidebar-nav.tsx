@@ -58,15 +58,15 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex items-center gap-2.5 rounded px-2.5 py-1.5 text-sm transition-colors",
+        "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors duration-150",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         active
-          ? "bg-primary/8 text-primary font-medium"
-          : "text-[#575757] hover:bg-foreground/5 hover:text-foreground"
+          ? "bg-primary-muted text-primary font-medium"
+          : "text-foreground-secondary hover:bg-surface-subtle hover:text-foreground font-medium"
       )}
     >
       <Icon
-        className={cn("size-[14px] shrink-0", active ? "text-primary" : "text-[#9e9e9e]")}
+        className={cn("size-[16px] shrink-0", active ? "text-primary" : "text-foreground-muted")}
         aria-hidden="true"
       />
       <span className="truncate">{item.label}</span>
@@ -88,7 +88,7 @@ export function SidebarNav({
       <div className="flex-1 space-y-5 overflow-y-auto px-3 py-5">
         {sections.map((section) => (
           <div key={section.id}>
-            <p className="mb-1 px-2.5 text-[9px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+            <p className="mb-1 px-2.5 text-[10px] font-medium tracking-wider text-foreground-muted uppercase">
               {section.label}
             </p>
             <ul className="space-y-0.5">

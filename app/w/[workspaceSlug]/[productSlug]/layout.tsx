@@ -120,7 +120,6 @@ export default async function ProductRouteLayout({
       <AppShell
         sections={sections}
         settingsItem={settingsItem}
-        workspaceName={workspace.name}
         productName={product.name}
         workspaces={userWorkspaces}
         currentWorkspaceId={workspace.id}

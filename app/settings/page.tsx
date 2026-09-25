@@ -79,7 +79,6 @@ export default async function SettingsPage(
     <AppShell
       sections={sections}
       settingsItem={settingsItem}
-      workspaceName={primaryWorkspace?.name ?? "GTM OS"}
       productName="Settings"
       workspaces={userWorkspaces}
       currentWorkspaceId={primaryWorkspace?.id}

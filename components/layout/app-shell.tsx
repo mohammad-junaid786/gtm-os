@@ -17,10 +17,6 @@ interface AppShellProps {
    */
   settingsItem?: NavItem;
   /**
-   * Workspace display name — shown in the header workspace indicator.
-   */
-  workspaceName?: string;
-  /**
    * Product display name — used as a fallback header title.
    */
   productName?: string;
@@ -36,7 +32,6 @@ export function AppShell({
   children,
   sections,
   settingsItem,
-  workspaceName,
   productName,
   workspaces = [],
   currentWorkspaceId,
@@ -72,13 +67,14 @@ export function AppShell({
         Skip to content
       </a>
 
-      <aside className="sticky top-0 hidden h-screen w-56 shrink-0 border-r border-border bg-sidebar md:flex md:flex-col">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-border-subtle bg-sidebar md:flex md:flex-col">
         <Sidebar 
           sections={sections} 
           settingsItem={settingsItem} 
           workspaces={workspaces}
           currentWorkspaceId={currentWorkspaceId}
           currentProductSlug={currentProductSlug}
+          productName={productName}
         />
       </aside>
 
@@ -111,6 +107,7 @@ export function AppShell({
               workspaces={workspaces}
               currentWorkspaceId={currentWorkspaceId}
               currentProductSlug={currentProductSlug}
+              productName={productName}
             />
           </div>
         </div>
@@ -120,7 +117,6 @@ export function AppShell({
         <Header
           mobileNavOpen={mobileNavOpen}
           onOpenMobileNav={() => setMobileNavOpen(true)}
-          workspaceName={workspaceName}
           productName={productName}
           sections={sections}
         />

@@ -13,6 +13,7 @@ export function Sidebar({
   workspaces,
   currentWorkspaceId,
   currentProductSlug,
+  productName,
 }: {
   onNavigate?: () => void;
   showBrand?: boolean;
@@ -24,6 +25,7 @@ export function Sidebar({
   workspaces?: { id: string; name: string; slug: string }[];
   currentWorkspaceId?: string;
   currentProductSlug?: string;
+  productName?: string;
 }) {
   return (
     <div className={cn("flex h-full min-h-0 flex-col", className)}>
@@ -38,6 +40,7 @@ export function Sidebar({
               workspaces={workspaces}
               currentWorkspaceId={currentWorkspaceId}
               currentProductSlug={currentProductSlug}
+              productName={productName}
             />
           )}
         </div>

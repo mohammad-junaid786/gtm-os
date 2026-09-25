@@ -50,7 +50,6 @@ export default async function WorkspaceEmptyStatePage({
       <Header
         mobileNavOpen={false}
         onOpenMobileNav={() => {}}
-        workspaceName={workspace.name}
         productName="No Products"
       />
       <main className="flex-1 flex flex-col items-center justify-center p-8 text-center">

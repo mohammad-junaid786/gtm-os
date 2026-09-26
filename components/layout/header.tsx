@@ -41,41 +41,44 @@ export function Header({
   const [commandOpen, setCommandOpen] = useState(false);
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border bg-background px-4 md:px-6">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden text-muted-foreground"
-        onClick={onOpenMobileNav}
-        aria-controls="mobile-sidebar"
-        aria-expanded={mobileNavOpen}
-        aria-label="Open navigation"
-      >
-        <Menu className="size-4" aria-hidden="true" />
-      </Button>
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-4 md:px-6">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden text-muted-foreground shrink-0"
+          onClick={onOpenMobileNav}
+          aria-controls="mobile-sidebar"
+          aria-expanded={mobileNavOpen}
+          aria-label="Open navigation"
+        >
+          <Menu className="size-4" aria-hidden="true" />
+        </Button>
 
-      <h1 className="font-display min-w-0 flex-1 truncate text-lg font-medium tracking-tight text-foreground">
-        {title}
-      </h1>
+        <div className="hidden md:block h-4 w-1 rounded-full bg-primary shrink-0" aria-hidden="true" />
+        <h1 className="font-display min-w-0 truncate text-[15px] font-semibold tracking-tight text-foreground">
+          {title}
+        </h1>
+      </div>
 
-      <div className="flex flex-1 justify-end items-center gap-2 sm:gap-3">
+      <div className="flex items-center justify-end gap-2 sm:gap-4 shrink-0">
         <Button
           variant="outline"
           size="sm"
           onClick={() => setCommandOpen(true)}
-          className="hidden h-8 w-full max-w-[240px] justify-start gap-2 px-3 text-foreground-muted bg-surface hover:bg-surface-subtle border-border-subtle shadow-sm sm:inline-flex font-normal rounded-md transition-colors"
+          className="hidden h-8 w-full max-w-[240px] justify-start gap-2 px-3 text-muted-foreground bg-surface hover:bg-surface-subtle border-border-subtle shadow-sm sm:inline-flex font-normal rounded-md transition-colors"
           aria-label="Search navigation"
         >
           <Search className="size-3.5 shrink-0" aria-hidden="true" />
           <span className="flex-1 truncate text-left text-[13px]">Search</span>
-          <Kbd className="bg-transparent border-none text-[10px] text-foreground-disabled shadow-none px-0">{shortcut}</Kbd>
+          <Kbd className="bg-transparent border-none text-[10px] text-muted-foreground shadow-none px-0">{shortcut}</Kbd>
         </Button>
 
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCommandOpen(true)}
-          className="size-8 text-foreground-muted hover:text-foreground sm:hidden"
+          className="size-8 text-muted-foreground hover:text-foreground sm:hidden"
           aria-label="Search navigation"
         >
           <Search className="size-4" aria-hidden="true" />
@@ -98,7 +101,7 @@ export function Header({
               type="submit"
               variant="ghost"
               size="sm"
-              className="text-[13px] font-medium text-foreground-secondary hover:text-foreground hover:bg-surface-subtle h-8 px-2.5 rounded-md transition-colors"
+              className="text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-surface-subtle h-8 px-2.5 rounded-md transition-colors"
             >
               Sign out
             </Button>

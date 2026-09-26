@@ -18,6 +18,9 @@ const mono = DM_Mono({
 export const metadata: Metadata = {
   title: { default: "GTM OS", template: "%s · GTM OS" },
   description: "Open-source go-to-market operating system.",
+  icons: {
+    icon: "/logo/gtm-os-logo.svg",
+  },
 };
 
 /**

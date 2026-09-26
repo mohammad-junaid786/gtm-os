@@ -67,7 +67,7 @@ export function AppShell({
         Skip to content
       </a>
 
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-border-subtle bg-sidebar md:flex md:flex-col">
+      <aside className="sticky top-0 hidden h-screen w-56 shrink-0 border-r border-border-subtle bg-sidebar md:flex md:flex-col">
         <Sidebar 
           sections={sections} 
           settingsItem={settingsItem} 
@@ -91,7 +91,7 @@ export function AppShell({
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="relative flex h-full w-64 max-w-[85vw] flex-col border-r border-border bg-sidebar"
+            className="relative flex h-full w-56 max-w-[85vw] flex-col border-r border-border bg-sidebar"
           >
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
               <p id={titleId} className="text-sm font-semibold tracking-tight">

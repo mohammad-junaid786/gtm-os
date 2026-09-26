@@ -163,7 +163,8 @@ export function CommandMenu({
         <div className="flex items-center border-b px-3">
           <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
           <input
-            className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 w-full bg-transparent py-3 text-sm border-0 shadow-none outline-none focus:ring-0 focus:border-transparent focus:shadow-none focus:outline-none focus-visible:ring-0 focus-visible:border-transparent focus-visible:shadow-none focus-visible:!outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ outline: "none", boxShadow: "none" }}
             placeholder="Type a command or search entities..."
             value={query}
             onChange={(e) => {

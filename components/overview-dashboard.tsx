@@ -55,9 +55,9 @@ export function OverviewDashboard({ workspaceName, productName, metrics, analyti
   ];
 
   return (
-    <div className="space-y-12 pb-16">
+    <div className="space-y-8 pb-16">
       {/* 1. Page Header with Operational Summary */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border-subtle pb-8">
+      <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 border-b border-border-subtle pb-8">
         <PageHeader
           eyebrow={isProductScope ? "PRODUCT COMMAND CENTER" : "WORKSPACE OVERVIEW"}
           title={productName ? productName : "Overview"}
@@ -69,13 +69,13 @@ export function OverviewDashboard({ workspaceName, productName, metrics, analyti
           className="max-w-xl"
         />
         
-        <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
+        <div className="flex flex-wrap items-center gap-3">
           {operationalStats.map((stat) => (
-            <div key={stat.label} className="space-y-1.5">
-              <p className="text-[10px] font-semibold tracking-wider text-foreground-muted uppercase">
+            <div key={stat.label} className="flex flex-col justify-center rounded-lg bg-primary px-4 py-2.5 shadow-sm min-w-[120px]">
+              <p className="text-[10px] font-semibold tracking-widest text-white/80 uppercase mb-0.5">
                 {stat.label}
               </p>
-              <p className="font-mono text-2xl font-medium tracking-tight text-foreground">
+              <p className="font-mono text-xl font-medium tracking-tight text-white">
                 {stat.value}
               </p>
             </div>

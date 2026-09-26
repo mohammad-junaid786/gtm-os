@@ -11,6 +11,8 @@ type LoadState =
   | { status: "loaded"; experiments: ExperimentRow[] }
   | { status: "error"; message: string };
 
+import { PageHeader } from "@/components/ui/page-header";
+
 export function ExperimentsPageClient() {
   const { productId } = useProductContext();
   const [state, setState] = useState<LoadState>({ status: "loading" });
@@ -27,12 +29,11 @@ export function ExperimentsPageClient() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Experiments</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Design, run, and track go-to-market experiments and hypotheses.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="EXECUTION"
+        title="Experiments"
+        description="Design, run, and track go-to-market experiments and hypotheses."
+      />
 
       {state.status === "loading" && <p className="text-sm text-muted-foreground">Loading…</p>}
       {state.status === "error" && (

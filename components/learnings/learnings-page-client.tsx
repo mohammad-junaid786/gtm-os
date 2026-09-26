@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { loadLearningsAction } from "@/lib/learnings/actions";
 import type { LearningRow } from "@/lib/learnings/types";
 import { useProductContext } from "@/lib/product-context";
+import { PageHeader } from "@/components/ui/page-header";
 import { LearningList } from "./learning-list";
 
 export function LearningsPageClient() {
@@ -43,13 +44,12 @@ export function LearningsPageClient() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-foreground">Learnings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Document strategic insights, review past performance, and plan next steps.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="INTELLIGENCE"
+        title="Learnings"
+        description="Document strategic insights, review past performance, and plan next steps."
+      />
 
       <LearningList productId={productId} learnings={learnings} />
     </div>

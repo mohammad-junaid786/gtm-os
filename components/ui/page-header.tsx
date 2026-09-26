@@ -22,17 +22,17 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("space-y-1.5", className)}>
+    <div className={cn("", className)}>
       {eyebrow && (
-        <p className="font-mono text-[10px] font-medium tracking-[0.12em] text-foreground-muted uppercase">
+        <p className="mb-2 font-mono text-[11px] font-semibold tracking-[0.14em] text-foreground-muted uppercase">
           {eyebrow}
         </p>
       )}
-      <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">
+      <h1 className="font-display text-[28px] font-semibold leading-tight tracking-tight text-foreground">
         {title}
       </h1>
       {description && (
-        <p className="max-w-2xl text-sm leading-relaxed text-foreground-secondary">
+        <p className="mt-2.5 max-w-2xl text-[15px] leading-relaxed text-foreground-secondary">
           {description}
         </p>
       )}

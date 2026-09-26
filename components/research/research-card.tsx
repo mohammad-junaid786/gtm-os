@@ -43,7 +43,8 @@ export function ResearchCard({
 
   if (isEditing) {
     return (
-      <div className="py-2">
+      <div className="rounded-xl border border-border bg-surface p-6 shadow-sm">
+        <h3 className="mb-6 text-sm font-semibold text-foreground">Edit Research</h3>
         <ResearchForm
           productId={productId}
           item={item}
@@ -59,88 +60,97 @@ export function ResearchCard({
   }
 
   // Find linked competitor name if it exists (might be active or archived)
-  const linkedCompetitor = item.competitor_id 
-    ? competitors.find((c) => c.id === item.competitor_id)?.name || "Unknown/Archived Competitor" 
+  const linkedCompetitor = item.competitor_id
+    ? competitors.find((c) => c.id === item.competitor_id)?.name || "Archived Competitor"
     : null;
 
   return (
-    <div className="flex flex-col py-6 border-b border-border last:border-0">
-      <div className="flex flex-row items-start justify-between">
-        <div className="flex flex-col gap-2">
-          <h3 className="text-base font-semibold leading-none tracking-tight text-foreground">{item.title}</h3>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-1 text-xs text-muted-foreground font-mono">
-            <div className="flex items-center gap-1 uppercase tracking-widest">
-              <span>{item.type.replace("_", " ")}</span>
+    <div className="flex flex-col h-full rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
+      {/* Header / Identity */}
+      <div className="flex flex-col bg-primary p-5 gap-4">
+        <div className="flex items-start justify-between">
+          <div className="space-y-0.5 pr-4">
+            <h3 className="text-base font-semibold leading-tight tracking-tight text-white">{item.title}</h3>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-[11px] text-white/80">
+              <span className="font-medium">{item.type.replace("_", " ")}</span>
+              {item.date_researched && (
+                <>
+                  <span className="opacity-40">·</span>
+                  <span className="font-mono">{item.date_researched}</span>
+                </>
+              )}
+              {linkedCompetitor && (
+                <>
+                  <span className="opacity-40">·</span>
+                  <span className="flex items-center gap-1 text-white">
+                    <Building className="h-3 w-3" />
+                    {linkedCompetitor}
+                  </span>
+                </>
+              )}
             </div>
-            {item.date_researched && (
-              <div className="flex items-center gap-1">
-                <span>{item.date_researched}</span>
-              </div>
-            )}
-            {linkedCompetitor && (
-              <div className="flex items-center gap-1 text-foreground">
-                <Building className="h-3 w-3" />
-                <span>{linkedCompetitor}</span>
-              </div>
-            )}
+          </div>
+
+          {/* Actions — icon-only row; Log Learning is secondary */}
+          <div className="flex gap-1.5 shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onLogLearning}
+              title="Log Learning"
+              className="h-8 w-8 p-0 text-white hover:text-white hover:bg-white/20"
+            >
+              <Lightbulb className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditing(true)}
+              title="Edit"
+              className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/10"
+            >
+              <Edit2 className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleArchive}
+              disabled={isArchiving}
+              title="Archive"
+              className="h-8 w-8 p-0 text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-50"
+            >
+              {isArchiving ? "..." : <Archive className="h-3.5 w-3.5" />}
+            </Button>
           </div>
         </div>
-        <div className="flex gap-2 shrink-0 ml-4 items-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onLogLearning}
-            className="h-8 px-2.5 gap-1.5 text-muted-foreground hover:text-foreground font-medium"
-          >
-            <Lightbulb className="h-4 w-4" />
-            <span className="hidden sm:inline">Log Learning</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsEditing(true)}
-            title="Edit"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-          >
-            <Edit2 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleArchive}
-            disabled={isArchiving}
-            title="Archive"
-            className="h-8 w-8 text-muted-foreground hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
-          >
-            <Archive className="h-4 w-4" />
-          </Button>
-        </div>
+
       </div>
-      
-      <div className="mt-4 flex-1 flex flex-col gap-4">
+
+      {/* Body */}
+      <div className="flex-1 flex flex-col p-6 space-y-6">
         {item.content && (
-          <div className="text-sm whitespace-pre-wrap flex-1 text-foreground/90 font-serif leading-relaxed max-w-[85ch]">
+          <div className="text-sm whitespace-pre-wrap flex-1 text-foreground/90 font-serif leading-relaxed max-w-full">
             {item.content}
           </div>
         )}
-        
+
         {(item.source_name || item.source_url) && (
-          <div className="flex flex-col gap-1.5 pt-4 mt-2">
-            <div className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground flex items-center gap-1.5">
+          <div className="flex flex-col gap-1.5 pt-4 border-t border-border/50">
+            <h4 className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
               Source
-            </div>
-            <div className="flex items-center gap-3">
+            </h4>
+            <div className="flex flex-wrap items-center gap-3">
               {item.source_name && (
                 <span className="text-sm font-medium text-foreground">{item.source_name}</span>
               )}
               {item.source_url && (
-                <a 
-                  href={item.source_url} 
-                  target="_blank" 
+                <a
+                  href={item.source_url}
+                  target="_blank"
                   rel="noreferrer"
-                  className="text-sm text-primary hover:underline inline-flex items-center break-all"
+                  className="text-sm text-primary hover:underline inline-flex items-center break-all font-mono"
                 >
-                  {item.source_url}
+                  {item.source_url.replace(/^https?:\/\//, '')}
                   <ExternalLink className="ml-1 h-3 w-3 shrink-0" />
                 </a>
               )}

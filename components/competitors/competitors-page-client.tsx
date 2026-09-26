@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { loadCompetitorsAction } from "@/lib/competitors/actions";
 import type { CompetitorRow } from "@/lib/competitors/types";
 import { useProductContext } from "@/lib/product-context";
+import { PageHeader } from "@/components/ui/page-header";
 import { CompetitorList } from "./competitor-list";
 
 export function CompetitorsPageClient() {
@@ -43,13 +44,12 @@ export function CompetitorsPageClient() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-foreground">Competitors</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Track and analyze your competitive landscape.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="STRATEGY"
+        title="Competitors"
+        description="Track and analyze your competitive landscape to understand your unique differentiators."
+      />
 
       <CompetitorList 
         productId={productId} 

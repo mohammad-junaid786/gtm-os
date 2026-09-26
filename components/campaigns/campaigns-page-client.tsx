@@ -11,6 +11,8 @@ type LoadState =
   | { status: "loaded"; campaigns: CampaignRow[] }
   | { status: "error"; message: string };
 
+import { PageHeader } from "@/components/ui/page-header";
+
 export function CampaignsPageClient() {
   const { productId } = useProductContext();
   const [state, setState] = useState<LoadState>({ status: "loading" });
@@ -27,12 +29,11 @@ export function CampaignsPageClient() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Campaigns</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Manage and track outbound and inbound campaigns.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="EXECUTION"
+        title="Campaigns"
+        description="Manage and track outbound and inbound campaigns."
+      />
 
       {state.status === "loading" && <p className="text-sm text-muted-foreground">Loading…</p>}
       {state.status === "error" && (

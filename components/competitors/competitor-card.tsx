@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Edit2, Archive, Globe, Tag } from "lucide-react";
+import { Edit2, Archive, Globe, Tag } from "lucide-react";
 import type { CompetitorRow } from "@/lib/competitors/types";
 import { archiveCompetitorAction } from "@/lib/competitors/actions";
 
@@ -31,15 +31,16 @@ export function CompetitorCard({
   };
 
   return (
-    <div className="flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div className="flex flex-row items-center justify-between p-6 pb-4">
-        <div className="space-y-1.5">
-          <h3 className="font-semibold leading-none tracking-tight">{competitor.name}</h3>
+    <div className="flex flex-col h-full rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
+      {/* Identity */}
+      <div className="flex items-start justify-between bg-primary p-5">
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold tracking-tight text-white">{competitor.name}</h3>
           {(competitor.category || competitor.website) && (
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mt-2">
+            <div className="flex flex-wrap items-center gap-3 text-[11px] text-white/80 mt-1">
               {competitor.category && (
-                <span className="flex items-center gap-1.5">
-                  <Tag className="h-3.5 w-3.5" />
+                <span className="flex items-center gap-1.5 uppercase tracking-wider font-semibold">
+                  <Tag className="h-3 w-3" />
                   {competitor.category}
                 </span>
               )}
@@ -48,21 +49,20 @@ export function CompetitorCard({
                   href={competitor.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                  className="flex items-center gap-1.5 hover:text-white transition-colors font-mono"
                 >
-                  <Globe className="h-3.5 w-3.5" />
-                  Website
-                  <ExternalLink className="h-3 w-3" />
+                  <Globe className="h-3 w-3" />
+                  {competitor.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
             </div>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
             onClick={onEdit}
             title="Edit"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-transparent text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/20 bg-white/10 text-white text-sm font-medium shadow-sm transition-colors hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <Edit2 className="h-4 w-4" />
           </button>
@@ -70,52 +70,75 @@ export function CompetitorCard({
             onClick={handleArchive}
             disabled={isArchiving}
             title="Archive"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-transparent text-sm font-medium shadow-sm transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-red-500"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-transparent bg-transparent text-white/70 text-sm font-medium transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
           >
-            <Archive className="h-4 w-4" />
+            {isArchiving ? "..." : <Archive className="h-4 w-4" />}
           </button>
         </div>
       </div>
       
-      <div className="p-6 pt-0 flex-grow space-y-4">
+      <div className="flex-1 flex flex-col p-6 space-y-8">
+        {/* Competitive Context */}
         {competitor.description && (
           <div>
-            <h4 className="text-sm font-medium mb-1.5">Overview</h4>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Overview</h4>
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
               {competitor.description}
             </p>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
-          {competitor.strengths && competitor.strengths.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium mb-1.5 text-green-600 dark:text-green-500">Strengths</h4>
-              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                {competitor.strengths.map((s, i) => (
-                  <li key={i}>{s}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {competitor.weaknesses && competitor.weaknesses.length > 0 && (
-            <div>
-              <h4 className="text-sm font-medium mb-1.5 text-red-600 dark:text-red-500">Weaknesses</h4>
-              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                {competitor.weaknesses.map((w, i) => (
-                  <li key={i}>{w}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+        {/* Strengths & Weaknesses */}
+        {(competitor.strengths?.length || competitor.weaknesses?.length) ? (
+          <div className="grid grid-cols-2 gap-4">
+            {competitor.strengths && competitor.strengths.length > 0 && (
+              <div className="rounded-lg border border-border bg-surface-subtle p-3.5">
+                <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2.5">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-success shrink-0" />
+                  Strengths
+                </h4>
+                <ul className="space-y-1.5">
+                  {competitor.strengths.map((s, i) => (
+                    <li key={i} className="text-sm text-foreground leading-relaxed flex items-start gap-2">
+                      <span className="text-muted-foreground mt-1 shrink-0">·</span>
+                      <span>{s}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {competitor.weaknesses && competitor.weaknesses.length > 0 && (
+              <div className="rounded-lg border border-border bg-surface-subtle p-3.5">
+                <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2.5">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
+                  Weaknesses
+                </h4>
+                <ul className="space-y-1.5">
+                  {competitor.weaknesses.map((w, i) => (
+                    <li key={i} className="text-sm text-foreground leading-relaxed flex items-start gap-2">
+                      <span className="text-muted-foreground mt-1 shrink-0">·</span>
+                      <span>{w}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : null}
 
+        {/* Strategic Notes — How We Win */}
         {competitor.differentiators && competitor.differentiators.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium mb-1.5 text-blue-600 dark:text-blue-500">How We Win</h4>
-            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+            <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+              How We Win
+            </h4>
+            <ul className="space-y-1.5">
               {competitor.differentiators.map((d, i) => (
-                <li key={i}>{d}</li>
+                <li key={i} className="text-sm text-foreground leading-relaxed flex items-start gap-2">
+                  <span className="text-primary/60 mt-0.5 shrink-0">✓</span>
+                  <span>{d}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -123,10 +146,12 @@ export function CompetitorCard({
 
         {competitor.pricing_notes && (
           <div>
-            <h4 className="text-sm font-medium mb-1.5">Pricing & Business Model</h4>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-              {competitor.pricing_notes}
-            </p>
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Pricing & Business Model</h4>
+            <div className="rounded-lg bg-surface-subtle border border-border-subtle p-4">
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                {competitor.pricing_notes}
+              </p>
+            </div>
           </div>
         )}
       </div>

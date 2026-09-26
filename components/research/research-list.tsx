@@ -8,6 +8,8 @@ import { ResearchCard } from "./research-card";
 import { ResearchForm } from "./research-form";
 import { ContextualLearningDialog } from "@/components/learnings/contextual-learning-dialog";
 
+import { PageToolbar } from "@/components/ui/page-toolbar";
+
 interface ResearchListProps {
   productId: string;
   items: ResearchItemRow[];
@@ -29,34 +31,38 @@ export function ResearchList({ productId, items, competitors, onChanged }: Resea
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
-        <button
-          onClick={handleCreateNew}
-          className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Research
-        </button>
-      </div>
+      <PageToolbar
+        start={<h2 className="text-lg font-medium text-foreground">Research & Intelligence ({items.length})</h2>}
+        end={!isCreating && (
+          <button
+            onClick={handleCreateNew}
+            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Research
+          </button>
+        )}
+      />
 
-      {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center bg-card shadow-sm">
-          <h3 className="text-lg font-semibold">No research logged yet</h3>
-          <p className="text-sm text-muted-foreground mt-2 max-w-sm">
-            Capture interviews, industry reports, and competitor intelligence.
-          </p>
-          <div className="mt-6">
+      {items.length === 0 && !isCreating && (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface/50 py-24 px-6 text-center shadow-sm">
+          <div className="mx-auto flex max-w-md flex-col items-center space-y-4">
+            <h3 className="text-lg font-semibold text-foreground">No research logged yet</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Capture interviews, industry reports, and competitor intelligence.
+            </p>
             <button
               onClick={handleCreateNew}
-              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              className="mt-4 rounded-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
-              <Plus className="mr-2 h-4 w-4" />
               Add Research
             </button>
           </div>
         </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+      )}
+
+      {items.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
           {items.map((item) => (
             <ResearchCard
               key={item.id}

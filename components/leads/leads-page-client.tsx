@@ -11,6 +11,8 @@ type LoadState =
   | { status: "loaded"; leads: LeadRow[] }
   | { status: "error"; message: string };
 
+import { PageHeader } from "@/components/ui/page-header";
+
 export function LeadsPageClient() {
   const { productId } = useProductContext();
   const [state, setState] = useState<LoadState>({ status: "loading" });
@@ -27,12 +29,11 @@ export function LeadsPageClient() {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Leads</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Lightweight target accounts and contacts for outbound execution.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="EXECUTION"
+        title="Leads"
+        description="Lightweight target accounts and contacts for outbound execution."
+      />
 
       {state.status === "loading" && <p className="text-sm text-muted-foreground">Loading…</p>}
       {state.status === "error" && (

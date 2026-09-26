@@ -3,7 +3,8 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from "recharts";
 import type { CampaignPerformance } from "@/lib/analytics/types";
 
-const CustomizedAxisTick = ({ x, y, payload }: any) => {
+const CustomizedAxisTick = ({ x, y, payload }: { x?: number; y?: number; payload?: { value: string } }) => {
+  if (x === undefined || y === undefined || !payload) return null;
   const name = payload.value;
   
   let line1 = name;

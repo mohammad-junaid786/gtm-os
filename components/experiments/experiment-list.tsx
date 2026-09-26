@@ -1,12 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Lightbulb } from "lucide-react";
 import { ExperimentForm } from "./experiment-form";
 import { ContextualLearningDialog } from "@/components/learnings/contextual-learning-dialog";
-import { Lightbulb } from "lucide-react";
 import type { ExperimentRow } from "@/lib/experiments/types";
 import { archiveExperimentAction } from "@/lib/experiments/actions";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { PageToolbar } from "@/components/ui/page-toolbar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+function getStatusBadgeVariant(status: string) {
+  const s = status.toLowerCase();
+  if (s === "running" || s === "active") return "success";
+  if (s === "planned" || s === "draft") return "neutral";
+  if (s === "completed") return "info";
+  if (s === "failed" || s === "stopped") return "destructive";
+  return "default";
+}
 
 export function ExperimentList({
   productId,
@@ -45,19 +64,22 @@ export function ExperimentList({
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium text-foreground">Experiments ({experiments.length})</h2>
-        {!isCreating && (
-          <button
-            onClick={() => setIsCreating(true)}
-            className="inline-flex items-center gap-1.5 rounded-sm bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4" />
-            Add Experiment
-          </button>
-        )}
-      </div>
+    <div className="space-y-6">
+      <PageToolbar
+        start={
+          <h2 className="text-lg font-medium text-foreground">
+            Experiments <span className="text-muted-foreground text-sm font-normal ml-1">({experiments.length})</span>
+          </h2>
+        }
+        end={
+          !isCreating && (
+            <Button onClick={() => setIsCreating(true)} size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Experiment
+            </Button>
+          )
+        }
+      />
 
       {isCreating && (
         <div className="rounded-md border border-border bg-surface p-6 shadow-sm">
@@ -70,85 +92,103 @@ export function ExperimentList({
         </div>
       )}
 
-      {experiments.length === 0 && !isCreating && (
-        <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border py-16 text-center">
-          <p className="text-sm text-muted-foreground">No experiments added yet.</p>
-          <button onClick={() => setIsCreating(true)} className="mt-4 text-sm font-medium text-primary hover:underline">
-            Create your first experiment
-          </button>
+      {experiments.length === 0 && !isCreating ? (
+        <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-border py-16 text-center bg-surface/50">
+          <p className="text-sm font-medium text-foreground">No experiments added yet</p>
+          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+            Design, run, and track go-to-market experiments and hypotheses.
+          </p>
+          <Button onClick={() => setIsCreating(true)} variant="outline" size="sm" className="mt-6">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Experiment
+          </Button>
         </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Experiment Name</TableHead>
+              <TableHead>Hypothesis</TableHead>
+              <TableHead>Goal / Metric</TableHead>
+              <TableHead>Channel</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Budget</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {experiments.map((experiment) => {
+              if (editingId === experiment.id) {
+                return (
+                  <TableRow key={experiment.id}>
+                    <TableCell colSpan={7} className="p-0">
+                      <div className="border-b border-border bg-surface p-6">
+                        <h3 className="mb-6 text-sm font-medium text-foreground">Edit Experiment</h3>
+                        <ExperimentForm
+                          productId={productId}
+                          experiment={experiment}
+                          onSuccess={handleUpdated}
+                          onCancel={() => setEditingId(null)}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              }
+
+              return (
+                <TableRow key={experiment.id}>
+                  <TableCell>
+                    <div className="font-medium text-foreground">{experiment.name}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-xs truncate text-sm text-muted-foreground" title={experiment.hypothesis || ""}>
+                      {experiment.hypothesis || "—"}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-foreground">{experiment.goal || "—"}</div>
+                    <div className="text-xs text-muted-foreground">{experiment.primary_metric || "—"}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-muted-foreground">{experiment.channel || "—"}</div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusBadgeVariant(experiment.status)}>{experiment.status}</Badge>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums text-muted-foreground">
+                    {experiment.budget != null ? `$${(experiment.budget / 100).toFixed(2)}` : "—"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-3">
+                      <button
+                        onClick={() => setLearningExperiment(experiment)}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                        title="Log Learning"
+                      >
+                        <Lightbulb className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => setEditingId(experiment.id)}
+                        className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleArchive(experiment.id)}
+                        disabled={archivingId === experiment.id}
+                        className="text-sm font-medium text-destructive hover:text-destructive/80 transition-colors disabled:opacity-50"
+                      >
+                        {archivingId === experiment.id ? "Archiving..." : "Archive"}
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       )}
-
-      <div className="grid gap-6">
-        {experiments.map((experiment) => {
-          if (editingId === experiment.id) {
-            return (
-              <div key={experiment.id} className="rounded-md border border-border bg-surface p-6 shadow-sm">
-                <h3 className="mb-6 text-sm font-medium text-foreground">Edit Experiment</h3>
-                <ExperimentForm
-                  productId={productId}
-                  experiment={experiment}
-                  onSuccess={handleUpdated}
-                  onCancel={() => setEditingId(null)}
-                />
-              </div>
-            );
-          }
-
-          return (
-            <div key={experiment.id} className="rounded-md border border-border bg-surface p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-medium text-foreground">{experiment.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {experiment.status} • {experiment.goal || "No goal"}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={() => setLearningExperiment(experiment)}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
-                  >
-                    <Lightbulb className="h-4 w-4" />
-                    Log Learning
-                  </button>
-                  <button onClick={() => setEditingId(experiment.id)} className="text-sm text-muted-foreground hover:text-foreground">
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleArchive(experiment.id)}
-                    disabled={archivingId === experiment.id}
-                    className="text-sm text-red-500 hover:text-red-600 disabled:opacity-50"
-                  >
-                    {archivingId === experiment.id ? "Archiving..." : "Archive"}
-                  </button>
-                </div>
-              </div>
-
-              {experiment.hypothesis && (
-                <div className="mb-4 text-sm text-foreground">
-                  <span className="font-medium">Hypothesis:</span> {experiment.hypothesis}
-                </div>
-              )}
-
-              <div className="grid gap-4 sm:grid-cols-3 pt-4 border-t border-border">
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase">Channel</div>
-                  <div className="text-sm font-medium">{experiment.channel || "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase">Primary Metric</div>
-                  <div className="text-sm font-medium">{experiment.primary_metric || "—"}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground uppercase">Budget</div>
-                  <div className="text-sm font-medium">{experiment.budget != null ? `$${(experiment.budget / 100).toFixed(2)}` : "—"}</div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
 
       {learningExperiment && (
         <ContextualLearningDialog

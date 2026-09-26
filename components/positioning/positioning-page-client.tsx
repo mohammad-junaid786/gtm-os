@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * PositioningPageClient — client shell for the Positioning page.
@@ -20,6 +20,8 @@ import { useProductContext } from "@/lib/product-context";
 import { PositioningView, PositioningEmpty } from "@/components/positioning/positioning-view";
 import { loadPositioningAction } from "@/lib/positioning/actions";
 import type { PositioningRow } from "@/lib/positioning/types";
+
+import { PageHeader } from "@/components/ui/page-header";
 
 type LoadState =
   | { status: "loading" }
@@ -51,18 +53,11 @@ export function PositioningPageClient() {
 
   return (
     <div className="space-y-8">
-      {/* Page header */}
-      <div className="space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Positioning
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          How{" "}
-          <span className="font-medium text-foreground">{productName}</span>{" "}
-          is uniquely placed in the market — who it is for, what problem it
-          solves, and why it is the best choice over alternatives.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="STRATEGY"
+        title="Positioning"
+        description={`How ${productName ?? "your product"} is uniquely placed in the market — who it is for, what problem it solves, and why it is the best choice over alternatives.`}
+      />
 
       {/* Positioning content */}
       {state.status === "loading" && (

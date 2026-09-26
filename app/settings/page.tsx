@@ -83,51 +83,66 @@ export default async function SettingsPage(
       workspaces={userWorkspaces}
       currentWorkspaceId={primaryWorkspace?.id}
     >
-      <div className="flex flex-col gap-8 max-w-5xl">
+      <div className="flex flex-col max-w-5xl space-y-12 pb-16">
         <PageHeader
           eyebrow="SETTINGS"
           title="Account Configuration"
           description="Manage your account preferences and workspace settings."
         />
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          <section className="flex flex-col gap-4">
-            <h2 className="text-sm font-medium text-foreground tracking-tight">Account Information</h2>
-            <div className="rounded-md border border-border bg-background p-6 space-y-4">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Email</p>
-                <p className="text-sm text-foreground">{session.user.email ?? "No email provided"}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Authentication Method</p>
-                <p className="text-sm text-foreground">Credentials (Password)</p>
+        <div className="space-y-12">
+          {/* Account Information */}
+          <section className="flex flex-col md:flex-row gap-6 md:gap-12">
+            <div className="md:w-1/3 shrink-0">
+              <h2 className="text-base font-semibold text-foreground tracking-tight">Account</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Your personal authentication details.
+              </p>
+            </div>
+            <div className="flex-1 rounded-xl border border-border-subtle bg-surface shadow-sm overflow-hidden">
+              <div className="p-6 space-y-6">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Email</p>
+                  <p className="text-sm text-foreground">{session.user.email ?? "No email provided"}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Authentication Method</p>
+                  <p className="text-sm text-foreground">Credentials (Password)</p>
+                </div>
               </div>
             </div>
           </section>
 
+          {/* Primary Workspace */}
           {primaryWorkspace && (
-            <section className="flex flex-col gap-4">
-              <h2 className="text-sm font-medium text-foreground tracking-tight">Primary Workspace</h2>
-              <div className="rounded-md border border-border bg-background p-6 space-y-4">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Workspace Name</p>
-                  <p className="text-sm text-foreground">{primaryWorkspace.name}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Workspace Slug</p>
-                  <p className="text-sm text-foreground font-mono">{primaryWorkspace.slug}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Your Role</p>
-                  <p className="text-sm text-foreground capitalize">{primaryWorkspace.role}</p>
+            <section className="flex flex-col md:flex-row gap-6 md:gap-12">
+              <div className="md:w-1/3 shrink-0">
+                <h2 className="text-base font-semibold text-foreground tracking-tight">Workspace</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Details about your active workspace.
+                </p>
+              </div>
+              <div className="flex-1 rounded-xl border border-border-subtle bg-surface shadow-sm overflow-hidden">
+                <div className="p-6 space-y-6">
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Workspace Name</p>
+                    <p className="text-sm text-foreground">{primaryWorkspace.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Workspace Slug</p>
+                    <p className="text-sm text-foreground font-mono bg-surface-subtle inline-block px-2 py-0.5 rounded-md border border-border mt-1">{primaryWorkspace.slug}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Your Role</p>
+                    <p className="text-sm text-foreground capitalize inline-flex items-center px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 font-medium mt-1">{primaryWorkspace.role}</p>
+                  </div>
                 </div>
               </div>
             </section>
           )}
 
-          <div className="sm:col-span-2">
-            <AiSettings status={aiStatus} />
-          </div>
+          {/* AI Settings Component */}
+          <AiSettings status={aiStatus} />
         </div>
       </div>
     </AppShell>
